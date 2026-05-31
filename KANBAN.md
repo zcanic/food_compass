@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 21:36 CST
+Status timestamp: 2026-05-31 21:38 CST
 
 ## Done
 
@@ -119,6 +119,10 @@ Status timestamp: 2026-05-31 21:36 CST
 - Runtime research constants now have parity tests against generated sensory-axis and style-direction benchmark assets.
 - These tests protect the UI evidence copy from drifting away from the preprocessed paper CSV outputs.
 - Full gate passed again: `npm run test:all` with 38 unit tests and 42 E2E checks.
+- Query summaries now show the retrieval channel and elapsed milliseconds after each ordinary search.
+- Worker-backed searches report `Worker`; lookup-only searches can report `Mode atlas`; fallback paths report local execution.
+- Added E2E coverage that verifies retrieval diagnostics appear after a standard pairing query.
+- Full gate passed again: `npm run test:all` with 38 unit tests and 42 E2E checks.
 
 ## In Progress
 
@@ -128,4 +132,4 @@ Status timestamp: 2026-05-31 21:36 CST
 
 - Add screenshot snapshots only after the visual baseline is stable enough to avoid noisy review churn.
 - Add worker timing instrumentation for larger future data assets.
-- Add local retrieval timing diagnostics for the worker-backed search path.
+- Add Ask-mode retrieval diagnostics for multi-tool skill execution.

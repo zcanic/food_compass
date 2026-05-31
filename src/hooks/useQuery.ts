@@ -7,6 +7,7 @@ import {
   shiftStyleAsync,
   lookupModes,
   compareModelsAsync,
+  getSearchBackend,
 } from "../engine";
 import type { ModelName } from "../types/model";
 import type { AppMode, StyleStrength } from "../types/query";
@@ -23,9 +24,11 @@ export function useQuery() {
       targetStyle?: string,
       strength?: StyleStrength
     ) => {
+      const startedAt = readNow();
       store.setLoading(true);
       store.setMatchedIngredients(ingredients);
       store.setHasSearched(true);
+      store.setDiagnostics(null);
 
       try {
         switch (mode) {
@@ -92,6 +95,10 @@ export function useQuery() {
         store.setModes([]);
         store.setExplanation(error instanceof Error ? `检索失败：${error.message}` : "检索失败。");
       } finally {
+        store.setDiagnostics({
+          backend: mode === "lookup_mode" ? "mode-atlas" : getSearchBackend(),
+          elapsedMs: Math.max(0, Math.round(readNow() - startedAt)),
+        });
         store.setLoading(false);
       }
     },
@@ -99,4 +106,8 @@ export function useQuery() {
   );
 
   return { ...store, runQuery };
+}
+
+function readNow(): number {
+  return typeof performance === "undefined" ? Date.now() : performance.now();
 }

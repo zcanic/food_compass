@@ -18,6 +18,13 @@ export type AskIntent =
 
 export type StyleStrength = "light" | "medium" | "strong";
 
+export type RetrievalBackend = "worker" | "local" | "mode-atlas";
+
+export interface QueryDiagnostics {
+  backend: RetrievalBackend;
+  elapsedMs: number;
+}
+
 export interface IntentResult {
   intent: AskIntent | null;
   matchedIntents?: AskIntent[];

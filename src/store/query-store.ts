@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import type { ModelName } from "../types/model";
-import type { AppMode, StyleStrength } from "../types/query";
+import type { AppMode, QueryDiagnostics, StyleStrength } from "../types/query";
 import type { Recommendation } from "../types/result";
 import type { ModeMatch } from "../types/mode";
 
@@ -16,6 +16,7 @@ interface QueryStore {
   explanation: string;
   isLoading: boolean;
   hasSearched: boolean;
+  diagnostics: QueryDiagnostics | null;
 
   setRawInput: (s: string) => void;
   setMatchedIngredients: (ingredients: string[]) => void;
@@ -28,6 +29,7 @@ interface QueryStore {
   setExplanation: (e: string) => void;
   setLoading: (l: boolean) => void;
   setHasSearched: (v: boolean) => void;
+  setDiagnostics: (diagnostics: QueryDiagnostics | null) => void;
   reset: () => void;
 }
 
@@ -43,6 +45,7 @@ export const useQueryStore = create<QueryStore>((set) => ({
   explanation: "",
   isLoading: false,
   hasSearched: false,
+  diagnostics: null,
 
   setRawInput: (s) => set({ rawInput: s }),
   setMatchedIngredients: (ingredients) => set({ matchedIngredients: ingredients }),
@@ -55,6 +58,7 @@ export const useQueryStore = create<QueryStore>((set) => ({
   setExplanation: (e) => set({ explanation: e }),
   setLoading: (l) => set({ isLoading: l }),
   setHasSearched: (v) => set({ hasSearched: v }),
+  setDiagnostics: (diagnostics) => set({ diagnostics }),
   reset: () =>
     set({
       rawInput: "",
@@ -64,5 +68,6 @@ export const useQueryStore = create<QueryStore>((set) => ({
       explanation: "",
       isLoading: false,
       hasSearched: false,
+      diagnostics: null,
     }),
 }));

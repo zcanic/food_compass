@@ -1,6 +1,6 @@
 import type { ModelName } from "../../types/model";
 import { MODEL_LABELS } from "../../types/model";
-import type { AppMode, StyleStrength } from "../../types/query";
+import type { AppMode, QueryDiagnostics, RetrievalBackend, StyleStrength } from "../../types/query";
 import { STYLE_LABELS, STYLE_STRENGTH_LABELS } from "../../utils/constants";
 import { displayName } from "../../utils/text";
 
@@ -21,7 +21,14 @@ interface Props {
   hasSearched: boolean;
   targetStyle?: string;
   strength?: StyleStrength;
+  diagnostics?: QueryDiagnostics | null;
 }
+
+const BACKEND_LABELS: Record<RetrievalBackend, string> = {
+  worker: "Worker",
+  local: "本地 fallback",
+  "mode-atlas": "Mode atlas",
+};
 
 export function QuerySummary({
   mode,
@@ -30,6 +37,7 @@ export function QuerySummary({
   hasSearched,
   targetStyle,
   strength,
+  diagnostics,
 }: Props) {
   if (ingredients.length === 0) return null;
 
@@ -57,6 +65,12 @@ export function QuerySummary({
       <SummaryItem label="模型视角" value={MODEL_LABELS[model]} />
       {styleText && <SummaryItem label="目标风格" value={styleText} />}
       <SummaryItem label="状态" value={hasSearched ? "已检索" : "待检索"} />
+      {hasSearched && diagnostics && (
+        <SummaryItem
+          label="检索通道"
+          value={`${BACKEND_LABELS[diagnostics.backend]} · ${diagnostics.elapsedMs} ms`}
+        />
+      )}
     </div>
   );
 }

@@ -17,6 +17,7 @@ test("bulk ingredient entry runs the default pairing workflow", async ({ page })
 
   await page.getByRole("button", { name: "探索" }).click();
   await expect(summary.getByText("已检索")).toBeVisible();
+  await expect(summary.getByText(/(Worker|本地 fallback) · \d+ ms/)).toBeVisible();
   await expect(page.getByText(/这些结果来自常见搭配模型/)).toBeVisible();
   await expect(page.getByText(/分数为向量余弦相似度/)).toBeVisible();
   await expect(page.getByRole("list", { name: "推荐结果" })).toBeVisible();

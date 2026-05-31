@@ -47,6 +47,10 @@ export async function topKWorkerOrLocal(
   return topK(store, model, queryVec, k, excludeIndices);
 }
 
+export function getSearchBackend(): "worker" | "local" {
+  return client?.isReady() ? "worker" : "local";
+}
+
 class SearchWorkerClient {
   private nextId = 1;
   private ready = false;

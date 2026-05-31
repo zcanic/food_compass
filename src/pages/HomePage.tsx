@@ -294,6 +294,7 @@ export function HomePage() {
                 hasSearched={store.hasSearched}
                 targetStyle={store.activeMode === "style_shift" ? store.targetStyle : undefined}
                 strength={store.strength}
+                diagnostics={store.diagnostics}
               />
               {showResultList && (
                 <ResultList
