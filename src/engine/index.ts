@@ -49,7 +49,7 @@ export function findPairings(
   if (idx === undefined) return [];
 
   const vec = getVector(store, model, idx);
-  const results = topK(store, model, vec, topKCount + 1, new Set([idx]));
+  const results = topK(store, model, vec, topKCount, new Set([idx]));
 
   return results.map((r) => ({
     name: matcher.getName(r.index),
@@ -67,7 +67,7 @@ export async function findPairingsAsync(
   if (idx === undefined) return [];
 
   const vec = getVector(store, model, idx);
-  const results = await topKWorkerOrLocal(store, model, vec, topKCount + 1, new Set([idx]));
+  const results = await topKWorkerOrLocal(store, model, vec, topKCount, new Set([idx]));
 
   return results.map((r) => ({
     name: matcher.getName(r.index),
@@ -83,10 +83,10 @@ export function findSubstitutes(
   const idx = nameToIndex.get(ingredient);
   if (idx === undefined) return [];
 
-  const chemResults = topK(store, "chem", getVector(store, "chem", idx), topKCount + 1, new Set([idx]));
+  const chemResults = topK(store, "chem", getVector(store, "chem", idx), topKCount, new Set([idx]));
   const coocIdxSet = new Set<number>();
 
-  const coocTop = topK(store, "cooc", getVector(store, "cooc", idx), topKCount + 1, new Set([idx]));
+  const coocTop = topK(store, "cooc", getVector(store, "cooc", idx), topKCount, new Set([idx]));
   coocTop.forEach((r) => coocIdxSet.add(r.index));
 
   return chemResults.map((r) => {
@@ -111,7 +111,7 @@ export async function findSubstitutesAsync(
     store,
     "chem",
     getVector(store, "chem", idx),
-    topKCount + 1,
+    topKCount,
     new Set([idx])
   );
   const coocIdxSet = new Set<number>();
@@ -120,7 +120,7 @@ export async function findSubstitutesAsync(
     store,
     "cooc",
     getVector(store, "cooc", idx),
-    topKCount + 1,
+    topKCount,
     new Set([idx])
   );
   coocTop.forEach((r) => coocIdxSet.add(r.index));
@@ -295,7 +295,7 @@ export function compareModels(
 
   for (const model of ["cooc", "core", "chem"] as ModelName[]) {
     const vec = getVector(store, model, idx);
-    result[model] = topK(store, model, vec, topKCount + 1, exclude).map(
+    result[model] = topK(store, model, vec, topKCount, exclude).map(
       (r) => ({
         name: matcher.getName(r.index),
         score: r.score,
@@ -323,7 +323,7 @@ export async function compareModelsAsync(
 
   await Promise.all((["cooc", "core", "chem"] as ModelName[]).map(async (model) => {
     const vec = getVector(store, model, idx);
-    const modelResults = await topKWorkerOrLocal(store, model, vec, topKCount + 1, exclude);
+    const modelResults = await topKWorkerOrLocal(store, model, vec, topKCount, exclude);
     result[model] = modelResults.map((r) => ({
       name: matcher.getName(r.index),
       score: r.score,

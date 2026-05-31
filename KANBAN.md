@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 21:59 CST
+Status timestamp: 2026-05-31 22:01 CST
 
 ## Done
 
@@ -153,6 +153,9 @@ Status timestamp: 2026-05-31 21:59 CST
 - Full gate passed again: `npm run test:all` with 48 unit tests and 42 E2E checks.
 - Ask execution diagnostics now distinguish vector retrieval tools, mode lookup tools, and constraint-only tools.
 - Added E2E coverage for the tool-type breakdown on the multi-tool Ask flow.
+- Full gate passed again: `npm run test:all` with 48 unit tests and 42 E2E checks.
+- Pairing, substitute, and model-comparison retrieval now return exactly the requested topK count after excluding the input ingredient.
+- Added E2E coverage that locks the default pairing result count to 20 candidates.
 - Full gate passed again: `npm run test:all` with 48 unit tests and 42 E2E checks.
 
 ## In Progress
