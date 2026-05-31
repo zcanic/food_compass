@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 22:01 CST
+Status timestamp: 2026-05-31 22:08 CST
 
 ## Done
 
@@ -162,6 +162,11 @@ Status timestamp: 2026-05-31 22:01 CST
 - About now explains mode-atlas coverage and limits using source CSV labels instead of leaving coverage as an implicit implementation detail.
 - Added unit/static-asset/E2E coverage for the coverage summary and source-backed About copy.
 - Full gate passed again: `npm run test:all` with 49 unit tests and 42 E2E checks.
+- 2026-05-31 22:08 CST: Style-shift product-boundary card completed.
+- Experimental style shift now uses product seed-set vector interpolation, matching the MVP design boundary instead of defaulting to the paper SLERP operator.
+- UI, Ask skill summaries, and product limits now describe the operation as vector interpolation while keeping paper direction benchmarks as evidence only.
+- Added unit coverage that locks medium style strength to normalized linear mixing rather than SLERP direction arithmetic.
+- Full gate passed again: `npm run test:all` with 50 unit tests and 42 E2E checks.
 
 ## In Progress
 
@@ -172,4 +177,5 @@ Status timestamp: 2026-05-31 22:01 CST
 - Add screenshot snapshots only after the visual baseline is stable enough to avoid noisy review churn.
 - Add worker timing instrumentation for larger future data assets.
 - Add generated mode-atlas/runtime parity tests for coverage summary copy.
+- Add an About-page note separating product seed-set interpolation from paper SLERP more explicitly.
 - Add screenshot snapshots only after stabilizing the expanded About evidence page height.

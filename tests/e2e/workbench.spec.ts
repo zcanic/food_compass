@@ -116,7 +116,7 @@ test("style example chooses style mode and target direction", async ({ page }) =
 
   await expect(page.getByRole("button", { name: "移除 tomato" })).toBeVisible();
   await expect(page.getByRole("button", { name: "移除 egg" })).toBeVisible();
-  await expect(page.getByText(/向 日式 风格做了中等强度球面偏移/)).toBeVisible();
+  await expect(page.getByText(/向 日式 风格做了中等强度向量插值/)).toBeVisible();
   await expect(page.getByRole("region", { name: "风格迁移证据" }).getByText("direction_arithmetic_full.csv")).toBeVisible();
   await expect(page.getByRole("region", { name: "风格迁移证据" }).getByText("orthogonal SNR 0.538")).toBeVisible();
   await expect(page.getByRole("region", { name: "风格迁移证据" }).getByText("目标命中 5/5")).toBeVisible();
@@ -213,7 +213,7 @@ test("style shift uses readable labels and returns experimental results", async 
   await page.keyboard.press("Enter");
   await page.getByRole("button", { name: "探索" }).click();
 
-  await expect(page.getByText(/向 日式 风格做了中等强度球面偏移/)).toBeVisible();
+  await expect(page.getByText(/向 日式 风格做了中等强度向量插值/)).toBeVisible();
 });
 
 test("editing ingredient chips clears stale recommendations", async ({ page }) => {

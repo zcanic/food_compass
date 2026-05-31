@@ -298,6 +298,6 @@ export const PRODUCT_LIMITS = [
   "推荐候选来自 embedding 检索和 mode atlas，不是完整菜谱数据库。",
   "风味相似不等于现实中一定好吃，也不等于可以 1:1 替换。",
   "当前没有可靠的过敏源、医疗、宗教饮食、营养硬过滤数据。",
-  "风格迁移是产品层 seed set 球面插值实验，不是论文完整 direction system。",
+  "风格迁移是产品层 seed set 向量插值实验，不是论文完整 direction system。",
   "本产品不是官方 Epicure App，也没有声称重新训练了底层模型。",
 ];
