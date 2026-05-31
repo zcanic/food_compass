@@ -8,10 +8,15 @@ test("bulk ingredient entry runs the default pairing workflow", async ({ page })
   await expect(page.getByText(/Enter 将添加：tomato、egg/)).toBeVisible();
 
   await page.keyboard.press("Enter");
-  await expect(page.getByText("tomato")).toBeVisible();
-  await expect(page.getByText("egg")).toBeVisible();
+  await expect(page.getByRole("button", { name: "移除 tomato" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "移除 egg" })).toBeVisible();
+  const summary = page.getByRole("region", { name: "查询摘要" });
+  await expect(summary.getByText("当前任务")).toBeVisible();
+  await expect(summary.getByText("输入食材")).toBeVisible();
+  await expect(summary.getByText("待检索")).toBeVisible();
 
   await page.getByRole("button", { name: "探索" }).click();
+  await expect(summary.getByText("已检索")).toBeVisible();
   await expect(page.getByText(/这些结果来自常见搭配模型/)).toBeVisible();
   await expect(page.getByText("常见搭配").first()).toBeVisible();
 });

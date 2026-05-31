@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 17:37 CST
+Status timestamp: 2026-05-31 17:41 CST
 
 ## Done
 
@@ -23,10 +23,13 @@ Status timestamp: 2026-05-31 17:37 CST
 - Added accessible labels for ingredient chip removal.
 - Expanded browser coverage to 16 passed desktop/mobile checks, including style shift and stale-result clearing after chip edits.
 - Full gate passed again: `npm run test:all`.
+- Added a query summary region with task, ingredients, model, style, and search status.
+- Scoped browser assertions to the summary region to preserve accessibility and avoid duplicate-text ambiguity.
+- Full gate passed again: `npm run test:all`.
 
 ## In Progress
 
-- Capture final screenshots for this round and inspect desktop/mobile layout.
+- Improve result list readability and score interpretation.
 
 ## Backlog
 

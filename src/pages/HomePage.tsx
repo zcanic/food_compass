@@ -2,6 +2,7 @@ import { SearchBox } from "../components/search/SearchBox";
 import { ModeTabs } from "../components/mode-selector/ModeTabs";
 import { ModelToggle } from "../components/mode-selector/ModelToggle";
 import { ResultList } from "../components/results/ResultList";
+import { QuerySummary } from "../components/results/QuerySummary";
 import { ModePanel } from "../components/mode-panel/ModePanel";
 import { StyleShiftPanel } from "../components/style-shift/StyleShiftPanel";
 import { AskPanel } from "../components/ask-panel/AskPanel";
@@ -151,6 +152,14 @@ export function HomePage() {
             <AskPanel />
           ) : (
             <>
+              <QuerySummary
+                mode={store.activeMode}
+                ingredients={store.matchedIngredients}
+                model={store.activeModel}
+                hasSearched={store.hasSearched}
+                targetStyle={store.activeMode === "style_shift" ? store.targetStyle : undefined}
+                strength={store.strength}
+              />
               {showResultList && (
                 <ResultList
                   results={store.results}
