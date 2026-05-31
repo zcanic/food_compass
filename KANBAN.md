@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 21:47 CST
+Status timestamp: 2026-05-31 21:49 CST
 
 ## Done
 
@@ -138,6 +138,9 @@ Status timestamp: 2026-05-31 21:47 CST
 - About now includes a linear-probe section that separates strong cuisine navigation evidence from weaker product-boundary signals like NOVA level.
 - Added unit/static-asset/E2E coverage for linear probe metrics.
 - Full gate passed again: `npm run test:all` with 41 unit tests and 42 E2E checks.
+- Runtime linear-probe and cross-modal evidence copy now has parity tests against generated static assets.
+- The tests use explicit decimal rounding so displayed values stay aligned with source CSV metrics.
+- Full gate passed again: `npm run test:all` with 43 unit tests and 42 E2E checks.
 
 ## In Progress
 
@@ -148,4 +151,4 @@ Status timestamp: 2026-05-31 21:47 CST
 - Add screenshot snapshots only after the visual baseline is stable enough to avoid noisy review churn.
 - Add worker timing instrumentation for larger future data assets.
 - Expand Ask diagnostics to distinguish vector retrieval, mode lookup, and constraint-only tools.
-- Add parity tests between generated linear/cross-modal assets and runtime evidence copy.
+- Add generated evidence for continuous probe metrics from `linear_probe_continuous.csv`.
