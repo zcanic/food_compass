@@ -74,7 +74,7 @@ export function useQuery() {
                 store.setResults(results);
                 const styleLabel = STYLE_LABELS[targetStyle] ?? targetStyle;
                 const strengthLabel = STYLE_STRENGTH_LABELS[strength ?? "medium"] ?? "中等";
-                store.setExplanation(`向 ${styleLabel} 风格做了${strengthLabel}强度偏移。目标风格由产品层代表食材构造，用于早期探索。`);
+                store.setExplanation(`向 ${styleLabel} 风格做了${strengthLabel}强度球面偏移。目标风格由产品层代表食材构造，用于早期探索，不是论文完整方向系统。`);
               } else {
                 store.setResults([]);
                 store.setExplanation(`暂不支持 ${targetStyle} 风格。请选择面板中已有的风格方向。`);

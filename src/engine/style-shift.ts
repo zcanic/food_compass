@@ -1,7 +1,7 @@
 import type { EmbeddingStore } from "../types/ingredient";
 import type { ModelName } from "../types/model";
 import { STYLE_SEED_SETS, STYLE_STRENGTH_ALPHA } from "../utils/constants";
-import { lerpVectors, normalize } from "../utils/math";
+import { normalize, slerpVectors } from "../utils/math";
 import { getVector, averageVec } from "./embedding-store";
 import { EMBEDDING_DIM } from "../utils/constants";
 
@@ -37,5 +37,5 @@ export function mixWithStyle(
   if (!styleVec) return null;
 
   const alpha = STYLE_STRENGTH_ALPHA[strength] ?? 0.4;
-  return lerpVectors(queryVec, styleVec, alpha, EMBEDDING_DIM);
+  return slerpVectors(queryVec, styleVec, alpha, EMBEDDING_DIM);
 }

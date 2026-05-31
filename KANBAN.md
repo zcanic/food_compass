@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 20:52 CST
+Status timestamp: 2026-05-31 20:54 CST
 
 ## Done
 
@@ -78,6 +78,10 @@ Status timestamp: 2026-05-31 20:52 CST
 - Added evidence metrics tied to the paper and local supplementary CSVs, plus explicit product limitations.
 - Added unit coverage that keeps research metrics tied to sources and E2E coverage for the research/limits page.
 - Full gate passed again: `npm run test:all` with 20 unit tests and 34 E2E checks.
+- Style shift now uses spherical interpolation between the query vector and the product-layer target seed-set vector.
+- Style-shift explanation now states the operation is experimental and not the paper's complete direction system.
+- Added math unit coverage for SLERP endpoints, normalization, and halfway travel between orthogonal vectors.
+- Full gate passed again: `npm run test:all` with 22 unit tests and 34 E2E checks.
 
 ## In Progress
 
@@ -85,6 +89,5 @@ Status timestamp: 2026-05-31 20:52 CST
 
 ## Backlog
 
-- Revisit style shift against the paper's SLERP/angle framing while keeping it clearly experimental.
 - Add mode lookup empty-state examples and model-bias explanations.
 - Add visual regression snapshots for key viewport states.
