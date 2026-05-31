@@ -1,6 +1,11 @@
 import type { Recommendation } from "../../types/result";
 import type { ModelName } from "../../types/model";
 import { MODEL_LABELS } from "../../types/model";
+import {
+  COMPARISON_MODELS,
+  summarizeModelComparison,
+} from "../../utils/model-comparison-summary";
+import { displayName } from "../../utils/text";
 import { ResultCard } from "./ResultCard";
 
 interface Props {
@@ -97,9 +102,10 @@ function GroupedResults({
   results: Recommendation[];
   onAddIngredient?: (name: string) => void;
 }) {
-  const models: ModelName[] = ["cooc", "core", "chem"];
+  const models: ModelName[] = COMPARISON_MODELS;
   return (
     <div style={{ display: "grid", gap: 14 }}>
+      <ModelComparisonOverview results={results} />
       {models.map((model) => {
         const modelResults = results.filter((rec) => rec.model === model);
         if (modelResults.length === 0) return null;
@@ -121,5 +127,28 @@ function GroupedResults({
         );
       })}
     </div>
+  );
+}
+
+function ModelComparisonOverview({ results }: { results: Recommendation[] }) {
+  const summary = summarizeModelComparison(results);
+  const sharedText = summary.sharedNames.length > 0
+    ? summary.sharedNames.slice(0, 5).map(displayName).join("、")
+    : "暂无重复候选";
+
+  return (
+    <section className="model-comparison-overview" aria-label="模型对比概览">
+      <h4>模型对比概览</h4>
+      <div className="model-comparison-metrics">
+        <span>{summary.totalUnique} 个去重候选</span>
+        <span>{summary.sharedNames.length} 个重复候选</span>
+      </div>
+      <div className="model-comparison-detail">
+        共同出现：{sharedText}
+      </div>
+      <div className="model-comparison-detail">
+        独有：常见搭配 {summary.uniqueCounts.cooc} · 综合推荐 {summary.uniqueCounts.core} · 风味相似 {summary.uniqueCounts.chem}
+      </div>
+    </section>
   );
 }

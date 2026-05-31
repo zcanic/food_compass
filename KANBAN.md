@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 20:41 CST
+Status timestamp: 2026-05-31 20:43 CST
 
 ## Done
 
@@ -64,10 +64,14 @@ Status timestamp: 2026-05-31 20:41 CST
 - Adding a recommendation clears stale result state so the user can intentionally re-run the expanded query.
 - Added desktop/mobile E2E coverage for recommendation-driven exploration.
 - Full gate passed again: `npm run test:all` with 13 unit tests and 32 E2E checks.
+- Model-comparison results now include an overview with deduplicated candidates, repeated candidates, and per-model unique counts.
+- Added unit coverage for the model-comparison summary logic.
+- Expanded model-comparison E2E assertions to verify the comparison overview in desktop and mobile runs.
+- Full gate passed again: `npm run test:all` with 15 unit tests and 32 E2E checks.
 
 ## In Progress
 
-- Continue high-impact UX and test improvements before 22:30.
+- Continue high-impact UX and test improvements before 23:30.
 
 ## Backlog
 

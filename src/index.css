@@ -192,6 +192,41 @@ h1, h2, h3, h4 {
   outline-offset: 2px;
 }
 
+.model-comparison-overview {
+  background: #fbfcfa;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: grid;
+  gap: 7px;
+  padding: 10px 12px;
+}
+
+.model-comparison-overview h4 {
+  font-size: 13px;
+}
+
+.model-comparison-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.model-comparison-metrics span {
+  background: #eef4eb;
+  border: 1px solid #d7e3d2;
+  border-radius: 999px;
+  color: var(--accent-strong);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+}
+
+.model-comparison-detail {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .secondary-note {
   color: var(--subtle);
   font-size: 12px;

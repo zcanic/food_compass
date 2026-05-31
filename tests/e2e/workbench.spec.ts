@@ -121,6 +121,11 @@ test("model comparison runs all three model perspectives", async ({ page }) => {
 
   await expect(page.getByText(/三模型对比/)).toBeVisible();
   await expect(page.getByRole("region", { name: "查询摘要" }).getByText("模型对比")).toBeVisible();
+  const overview = page.getByRole("region", { name: "模型对比概览" });
+  await expect(overview.getByText("模型对比概览")).toBeVisible();
+  await expect(overview.getByText(/去重候选/)).toBeVisible();
+  await expect(overview.getByText(/重复候选/)).toBeVisible();
+  await expect(overview.getByText(/独有：常见搭配/)).toBeVisible();
   await expect(page.getByRole("list", { name: "常见搭配推荐结果" })).toBeVisible();
   await expect(page.getByRole("list", { name: "综合推荐推荐结果" })).toBeVisible();
   await expect(page.getByRole("list", { name: "风味相似推荐结果" })).toBeVisible();
