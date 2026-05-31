@@ -38,6 +38,14 @@ export interface WeatCheckEntry {
   detail: string;
 }
 
+export interface CrossModalEvidenceEntry {
+  model: ModelName;
+  label: string;
+  value: string;
+  source: string;
+  detail: string;
+}
+
 export const RESEARCH_FACTS: ResearchFact[] = [
   {
     label: "规范食材",
@@ -171,6 +179,30 @@ export const WEAT_CHECKS: WeatCheckEntry[] = [
     value: "skipped",
     source: "weat.csv",
     detail: "补充数据中该项被跳过；当前产品不能声称可以可靠判断健康光环、减脂或医疗饮食。",
+  },
+];
+
+export const CROSS_MODAL_EVIDENCE: CrossModalEvidenceEntry[] = [
+  {
+    model: "cooc",
+    label: "Cooc / USDA fiber",
+    value: "rho 0.570",
+    source: "cross_modal.csv",
+    detail: "Cooc 与 USDA fiber_g 的 Spearman 相关最高，说明菜谱共现空间也携带部分营养结构信号。",
+  },
+  {
+    model: "core",
+    label: "Core / CF bitter",
+    value: "rho 0.590",
+    source: "cross_modal.csv",
+    detail: "Core 与 ChemFlavor bitter 的相关最高，支持 Core 作为共现和化学信号的折中空间。",
+  },
+  {
+    model: "core",
+    label: "Core / USDA sodium",
+    value: "rho 0.553",
+    source: "cross_modal.csv",
+    detail: "外部营养维度也会在嵌入空间中显现，但当前产品没有把它实现为可靠营养过滤。",
   },
 ];
 

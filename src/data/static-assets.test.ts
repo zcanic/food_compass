@@ -56,6 +56,14 @@ describe("preprocessed static data assets", () => {
     expect(checks.some((entry) => entry.test === "Sweet vs Savory" && entry.effectSizeD !== null)).toBe(true);
   });
 
+  it("ships cross-modal validation rows from external USDA and ChemFlavor sources", () => {
+    const metrics = readJSON<CrossModalAsset[]>("cross_modal_evidence.json");
+
+    expect(metrics.length).toBeGreaterThan(50);
+    expect(metrics.some((entry) => entry.source === "USDA" && entry.dimension === "usda_fiber_g")).toBe(true);
+    expect(metrics.some((entry) => entry.source === "CF" && entry.dimension === "cf_bitter")).toBe(true);
+  });
+
   it("keeps aliases pointed at canonical vocab names", () => {
     const vocab = new Set(readJSON<VocabEntry[]>("vocab.json").map((entry) => entry.name));
     const aliases = readJSON<AliasTable>("aliases_zh_en.json");
@@ -93,4 +101,9 @@ interface WeatCheckAsset {
   test: string;
   effectSizeD: number | null;
   skipped: boolean;
+}
+
+interface CrossModalAsset {
+  dimension: string;
+  source: string;
 }

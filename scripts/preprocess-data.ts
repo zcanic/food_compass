@@ -66,6 +66,16 @@ interface WeatRow {
   skipped: string;
 }
 
+interface CrossModalRow {
+  model: string;
+  dimension: string;
+  source: string;
+  n: string;
+  spearman_rho: string;
+  p_value: string;
+  n_outliers: string;
+}
+
 const STYLE_BENCHMARK_CASES: Record<string, { cases: string[]; benchmarkDirection: string }> = {
   Japanese: { cases: ["chicken + Japanese"], benchmarkDirection: "Japanese" },
   East_Asian: { cases: ["beef + East_Asian"], benchmarkDirection: "East_Asian" },
@@ -208,7 +218,21 @@ function main() {
   fs.writeFileSync(path.join(DATA_OUT, "weat_checks.json"), JSON.stringify(weatChecks));
   console.log(`  weat_checks.json: ${weatChecks.length} checks`);
 
-  // 7. Aliases (placeholder)
+  // 7. Cross-modal validation metrics
+  const crossModalRows = readCSV<CrossModalRow>(path.join(DATA_SRC, "cross_modal.csv"));
+  const crossModal = crossModalRows.map((row) => ({
+    model: row.model,
+    dimension: row.dimension,
+    source: row.source,
+    n: Number(row.n),
+    spearmanRho: Number(row.spearman_rho),
+    pValue: Number(row.p_value),
+    nOutliers: Number(row.n_outliers),
+  }));
+  fs.writeFileSync(path.join(DATA_OUT, "cross_modal_evidence.json"), JSON.stringify(crossModal));
+  console.log(`  cross_modal_evidence.json: ${crossModal.length} metrics`);
+
+  // 8. Aliases (placeholder)
   const aliases: Record<string, { zh?: string[]; ja?: string[]; en_alt?: string[] }> = {
     soy_sauce: { zh: ["酱油", "生抽", "老抽", "豉油"], ja: ["しょうゆ", "醤油"], en_alt: ["soy sauce"] },
     tomato: { zh: ["番茄", "西红柿", "蕃茄"], ja: ["トマト"], en_alt: ["tomatoes"] },

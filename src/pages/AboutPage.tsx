@@ -1,4 +1,5 @@
 import {
+  CROSS_MODAL_EVIDENCE,
   EVIDENCE_METRICS,
   MODEL_AXIS,
   PRODUCT_LIMITS,
@@ -76,6 +77,24 @@ export function AboutPage() {
               <div className="evidence-card-value">{metric.value}</div>
               <div className="evidence-card-source">{metric.source}</div>
               <div className="evidence-card-detail">{metric.detail}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ marginBottom: 24 }} aria-label="跨模态验证">
+        <h2 style={{ fontSize: 16 }}>跨模态验证</h2>
+        <p style={{ fontSize: 14 }}>
+          cross-modal validation 把 embedding 维度和外部 USDA / ChemFlavor 指标做相关性检查。
+          它证明空间里有可解释信号，但不等于当前产品具备营养或医疗级判断能力。
+        </p>
+        <div className="evidence-grid">
+          {CROSS_MODAL_EVIDENCE.map((entry) => (
+            <div key={entry.label} className="evidence-card">
+              <div className="evidence-card-label">{entry.label}</div>
+              <div className="evidence-card-value">{entry.value}</div>
+              <div className="evidence-card-source">{entry.source}</div>
+              <div className="evidence-card-detail">{entry.detail}</div>
             </div>
           ))}
         </div>

@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 21:42 CST
+Status timestamp: 2026-05-31 21:45 CST
 
 ## Done
 
@@ -130,6 +130,10 @@ Status timestamp: 2026-05-31 21:42 CST
 - About now includes a WEAT association/boundary section so the product exposes bias and limitation evidence, not only positive metrics.
 - Added unit/static-asset/E2E coverage for WEAT checks, including the skipped Health Halo case.
 - Full gate passed again: `npm run test:all` with 39 unit tests and 42 E2E checks.
+- `cross_modal.csv` is now converted into a shipped `cross_modal_evidence.json` static asset.
+- About now includes source-backed USDA/ChemFlavor cross-modal validation instead of relying only on hardcoded summary copy.
+- Added unit/static-asset/E2E coverage for cross-modal evidence rows and source labels.
+- Full gate passed again: `npm run test:all` with 40 unit tests and 42 E2E checks.
 
 ## In Progress
 
@@ -140,4 +144,4 @@ Status timestamp: 2026-05-31 21:42 CST
 - Add screenshot snapshots only after the visual baseline is stable enough to avoid noisy review churn.
 - Add worker timing instrumentation for larger future data assets.
 - Expand Ask diagnostics to distinguish vector retrieval, mode lookup, and constraint-only tools.
-- Convert `cross_modal.csv` into source-backed evidence instead of hardcoded summary copy.
+- Convert linear probe metrics into generated evidence assets.
