@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 21:34 CST
+Status timestamp: 2026-05-31 21:36 CST
 
 ## Done
 
@@ -116,6 +116,9 @@ Status timestamp: 2026-05-31 21:34 CST
 - Style shift now shows the closest paper benchmark case, model, angle, and target-hit count without using those rows as recommendation output.
 - Added unit/static-asset/E2E coverage for the style benchmark evidence.
 - Full gate passed again: `npm run test:all` with 36 unit tests and 42 E2E checks.
+- Runtime research constants now have parity tests against generated sensory-axis and style-direction benchmark assets.
+- These tests protect the UI evidence copy from drifting away from the preprocessed paper CSV outputs.
+- Full gate passed again: `npm run test:all` with 38 unit tests and 42 E2E checks.
 
 ## In Progress
 
@@ -125,4 +128,4 @@ Status timestamp: 2026-05-31 21:34 CST
 
 - Add screenshot snapshots only after the visual baseline is stable enough to avoid noisy review churn.
 - Add worker timing instrumentation for larger future data assets.
-- Add deterministic parity checks between generated benchmark assets and runtime benchmark constants.
+- Add local retrieval timing diagnostics for the worker-backed search path.
