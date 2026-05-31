@@ -229,7 +229,8 @@ h1, h2, h3, h4 {
 
 .research-fact-grid,
 .model-axis-grid,
-.evidence-grid {
+.evidence-grid,
+.sensory-axis-grid {
   display: grid;
   gap: 10px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -237,7 +238,8 @@ h1, h2, h3, h4 {
 
 .research-fact,
 .model-axis-card,
-.evidence-card {
+.evidence-card,
+.sensory-axis-card {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -254,7 +256,8 @@ h1, h2, h3, h4 {
 
 .research-fact-label,
 .model-axis-label,
-.evidence-card-label {
+.evidence-card-label,
+.sensory-axis-label {
   color: var(--text);
   font-size: 13px;
   font-weight: 700;
@@ -263,7 +266,8 @@ h1, h2, h3, h4 {
 
 .research-fact-detail,
 .model-axis-detail,
-.evidence-card-detail {
+.evidence-card-detail,
+.sensory-axis-detail {
   color: var(--muted);
   font-size: 12px;
   line-height: 1.5;
@@ -271,11 +275,20 @@ h1, h2, h3, h4 {
 }
 
 .model-axis-signal,
-.evidence-card-source {
+.evidence-card-source,
+.sensory-axis-source {
   color: var(--amber);
   font-size: 11px;
   font-weight: 700;
   margin-top: 3px;
+}
+
+.sensory-axis-name {
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+  margin-top: 4px;
 }
 
 .secondary-note {
@@ -300,7 +313,8 @@ h1, h2, h3, h4 {
 
   .research-fact-grid,
   .model-axis-grid,
-  .evidence-grid {
+  .evidence-grid,
+  .sensory-axis-grid {
     grid-template-columns: 1fr;
   }
 }

@@ -20,6 +20,17 @@ export interface EvidenceMetric {
   detail: string;
 }
 
+export interface SensoryAxisEntry {
+  model: ModelName;
+  label: string;
+  axisLabel: string;
+  poleA: string;
+  poleB: string;
+  stabilityCosine: string;
+  stabilityJaccard: string;
+  source: string;
+}
+
 export const RESEARCH_FACTS: ResearchFact[] = [
   {
     label: "规范食材",
@@ -93,6 +104,39 @@ export const EVIDENCE_METRICS: EvidenceMetric[] = [
     value: "523 hubs",
     source: "paper limitations",
     detail: "只有一部分食材直接锚定 FlavorDB 化合物，非 hub 食材的化学信号更间接。",
+  },
+];
+
+export const SENSORY_AXES: SensoryAxisEntry[] = [
+  {
+    model: "cooc",
+    label: "常见搭配",
+    axisLabel: "Savory-Umami to Sweet-Floral Confection",
+    poleA: "Savory Pantry Staples",
+    poleB: "Sweet Confectionery & Floral Baking",
+    stabilityCosine: "0.823",
+    stabilityJaccard: "0.622",
+    source: "procrustes_sensory.csv",
+  },
+  {
+    model: "core",
+    label: "综合推荐",
+    axisLabel: "Sweet-Floral Aromatics vs Savory-Protein Staples",
+    poleA: "Floral-Sweet Confections & Liqueurs",
+    poleB: "Savory Staples & Plant Milks",
+    stabilityCosine: "0.738",
+    stabilityJaccard: "0.277",
+    source: "procrustes_sensory.csv",
+  },
+  {
+    model: "chem",
+    label: "风味相似",
+    axisLabel: "Savory-Umami to Sweet-Baked Spectrum",
+    poleA: "Savory Pantry & Umami Staples",
+    poleB: "Sweet Baking & Confectionery",
+    stabilityCosine: "0.576",
+    stabilityJaccard: "0.304",
+    source: "procrustes_sensory.csv",
   },
 ];
 

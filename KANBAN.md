@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 21:26 CST
+Status timestamp: 2026-05-31 21:30 CST
 
 ## Done
 
@@ -108,6 +108,10 @@ Status timestamp: 2026-05-31 21:26 CST
 - Main workbench and Ask skill execution now route recommendation retrieval through async worker-backed engine functions.
 - Added unit coverage for the local fallback path and verified Vite emits a dedicated worker chunk.
 - Full gate passed again: `npm run test:all` with 31 unit tests and 42 E2E checks.
+- `procrustes_sensory.csv` is now converted into a shipped `sensory_axes.json` static asset.
+- About now explains the three model-specific sensory axes and their stability metrics as paper-backed navigation evidence.
+- Added unit/static-asset/E2E coverage for the sensory-axis evidence section.
+- Full gate passed again: `npm run test:all` with 33 unit tests and 42 E2E checks.
 
 ## In Progress
 
@@ -117,4 +121,4 @@ Status timestamp: 2026-05-31 21:26 CST
 
 - Add screenshot snapshots only after the visual baseline is stable enough to avoid noisy review churn.
 - Add worker timing instrumentation for larger future data assets.
-- Add paper-derived sensory-axis evidence from `procrustes_sensory.csv`.
+- Use `direction_arithmetic_full.csv` as benchmark evidence for supported style-shift examples.

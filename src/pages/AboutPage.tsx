@@ -3,6 +3,7 @@ import {
   MODEL_AXIS,
   PRODUCT_LIMITS,
   RESEARCH_FACTS,
+  SENSORY_AXES,
 } from "../research/evidence";
 
 export function AboutPage() {
@@ -38,6 +39,28 @@ export function AboutPage() {
               <div className="model-axis-label">{entry.label}</div>
               <div className="model-axis-signal">{entry.signal}</div>
               <div className="model-axis-detail">{entry.bestFor}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ marginBottom: 24 }} aria-label="主感官轴">
+        <h2 style={{ fontSize: 16 }}>主感官轴</h2>
+        <p style={{ fontSize: 14 }}>
+          Procrustes sensory analysis 把每个 sibling model 中最稳定的一条感官方向抽出来。
+          这些轴不是按钮标签，而是解释模型空间为什么能支持“甜/咸鲜/烘焙”等导航语言的证据。
+        </p>
+        <div className="sensory-axis-grid">
+          {SENSORY_AXES.map((axis) => (
+            <div key={axis.model} className="sensory-axis-card">
+              <div className="sensory-axis-label">{axis.label}</div>
+              <div className="sensory-axis-name">{axis.axisLabel}</div>
+              <div className="sensory-axis-detail">
+                {axis.poleA}{" -> "}{axis.poleB}
+              </div>
+              <div className="sensory-axis-source">
+                cosine {axis.stabilityCosine} · Jaccard {axis.stabilityJaccard} · {axis.source}
+              </div>
             </div>
           ))}
         </div>

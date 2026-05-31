@@ -5,6 +5,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { ModeAtlas } from "../types/mode";
 import type { AliasTable, VocabEntry } from "../types/ingredient";
+import type { ModelName } from "../types/model";
 import { EMBEDDING_DIM, MODEL_NAMES, VOCAB_SIZE } from "../utils/constants";
 
 const DATA_ROOT = join(process.cwd(), "public", "data");
@@ -31,6 +32,14 @@ describe("preprocessed static data assets", () => {
     }
   });
 
+  it("ships paper-derived sensory axes for every sibling model", () => {
+    const axes = readJSON<SensoryAxisAsset[]>("sensory_axes.json");
+
+    expect(axes.map((axis) => axis.model)).toEqual(MODEL_NAMES);
+    expect(axes.every((axis) => axis.axisLabel.length > 0)).toBe(true);
+    expect(axes.every((axis) => axis.poleA.topIngredients.length === 5)).toBe(true);
+  });
+
   it("keeps aliases pointed at canonical vocab names", () => {
     const vocab = new Set(readJSON<VocabEntry[]>("vocab.json").map((entry) => entry.name));
     const aliases = readJSON<AliasTable>("aliases_zh_en.json");
@@ -50,4 +59,10 @@ function readBytes(filename: string): Buffer {
 
 function assetPath(filename: string): string {
   return join(DATA_ROOT, filename);
+}
+
+interface SensoryAxisAsset {
+  model: ModelName;
+  axisLabel: string;
+  poleA: { topIngredients: string[] };
 }

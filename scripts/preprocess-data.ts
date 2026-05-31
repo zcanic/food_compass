@@ -33,6 +33,20 @@ interface ModeRow {
   members_pipe: string;
 }
 
+interface SensoryAxisRow {
+  model: string;
+  model_label: string;
+  axis_label: string;
+  pole_a_label: string;
+  pole_a_coherence: string;
+  pole_a_top5_pipe: string;
+  pole_b_label: string;
+  pole_b_coherence: string;
+  pole_b_top5_pipe: string;
+  stability_jaccard: string;
+  stability_cosine: string;
+}
+
 function readCSV<T>(filepath: string): T[] {
   const raw = fs.readFileSync(filepath, "utf-8").trim();
   const lines = raw.split("\n");
@@ -119,7 +133,29 @@ function main() {
   fs.writeFileSync(path.join(DATA_OUT, "mode_atlas.json"), JSON.stringify(modeAtlas));
   console.log("  mode_atlas.json written");
 
-  // 4. Aliases (placeholder)
+  // 4. Sensory axes
+  const sensoryRows = readCSV<SensoryAxisRow>(path.join(DATA_SRC, "procrustes_sensory.csv"));
+  const sensoryAxes = sensoryRows.map((row) => ({
+    model: row.model,
+    modelLabel: row.model_label,
+    axisLabel: row.axis_label,
+    poleA: {
+      label: row.pole_a_label,
+      coherence: row.pole_a_coherence,
+      topIngredients: row.pole_a_top5_pipe.split("|").map((name) => name.trim()).filter(Boolean),
+    },
+    poleB: {
+      label: row.pole_b_label,
+      coherence: row.pole_b_coherence,
+      topIngredients: row.pole_b_top5_pipe.split("|").map((name) => name.trim()).filter(Boolean),
+    },
+    stabilityJaccard: Number(row.stability_jaccard),
+    stabilityCosine: Number(row.stability_cosine),
+  }));
+  fs.writeFileSync(path.join(DATA_OUT, "sensory_axes.json"), JSON.stringify(sensoryAxes));
+  console.log(`  sensory_axes.json: ${sensoryAxes.length} axes`);
+
+  // 5. Aliases (placeholder)
   const aliases: Record<string, { zh?: string[]; ja?: string[]; en_alt?: string[] }> = {
     soy_sauce: { zh: ["酱油", "生抽", "老抽", "豉油"], ja: ["しょうゆ", "醤油"], en_alt: ["soy sauce"] },
     tomato: { zh: ["番茄", "西红柿", "蕃茄"], ja: ["トマト"], en_alt: ["tomatoes"] },
