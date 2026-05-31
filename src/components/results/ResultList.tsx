@@ -44,14 +44,33 @@ export function ResultList({
 
   return (
     <div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+          marginBottom: 10,
+        }}
+      >
+        <h3 style={{ fontSize: 15 }}>推荐结果</h3>
+        <span style={{ color: "var(--subtle)", fontSize: 12 }}>
+          {results.length} 个候选
+        </span>
+      </div>
       {explanation && (
         <div style={{ fontSize: 13, color: "#888", marginBottom: 12, lineHeight: 1.6 }}>
           {explanation}
         </div>
       )}
-      {results.map((rec, i) => (
-        <ResultCard key={rec.name} rec={rec} rank={i + 1} />
-      ))}
+      <div style={{ color: "var(--subtle)", fontSize: 11, marginBottom: 8 }}>
+        分数为向量余弦相似度，用于排序，不是成功概率或安全保证。
+      </div>
+      <div role="list" aria-label="推荐结果">
+        {results.map((rec, i) => (
+          <ResultCard key={rec.name} rec={rec} rank={i + 1} />
+        ))}
+      </div>
     </div>
   );
 }

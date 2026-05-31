@@ -8,10 +8,11 @@ interface Props {
 }
 
 export function ResultCard({ rec, rank }: Props) {
-  const pct = (rec.score * 100).toFixed(0);
+  const score = rec.score.toFixed(3);
 
   return (
     <div
+      role="listitem"
       style={{
         display: "flex",
         alignItems: "center",
@@ -38,15 +39,17 @@ export function ResultCard({ rec, rank }: Props) {
         )}
       </span>
       <span
+        title="向量余弦相似度，不是成功概率"
         style={{
           fontSize: 13,
           color: "#666",
           background: "#f5f5f5",
           padding: "2px 8px",
           borderRadius: 10,
+          whiteSpace: "nowrap",
         }}
       >
-        {pct}%
+        cos {score}
       </span>
     </div>
   );

@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 17:41 CST
+Status timestamp: 2026-05-31 17:43 CST
 
 ## Done
 
@@ -26,10 +26,13 @@ Status timestamp: 2026-05-31 17:41 CST
 - Added a query summary region with task, ingredients, model, style, and search status.
 - Scoped browser assertions to the summary region to preserve accessibility and avoid duplicate-text ambiguity.
 - Full gate passed again: `npm run test:all`.
+- Result scores now display as cosine similarity instead of misleading percentages.
+- Result lists include candidate counts, score caveats, and accessible list/listitem structure.
+- Full gate passed again: `npm run test:all`.
 
 ## In Progress
 
-- Improve result list readability and score interpretation.
+- Plan the next UX/test improvement round before 19:30.
 
 ## Backlog
 
