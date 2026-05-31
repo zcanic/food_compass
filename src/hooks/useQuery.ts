@@ -9,6 +9,7 @@ import {
 } from "../engine";
 import type { ModelName } from "../types/model";
 import type { AppMode, StyleStrength } from "../types/query";
+import { STYLE_LABELS, STYLE_STRENGTH_LABELS } from "../utils/constants";
 
 export function useQuery() {
   const store = useQueryStore();
@@ -57,7 +58,9 @@ export function useQuery() {
               const results = shiftStyle(ingredients, targetStyle, strength ?? "medium", model);
               if (results) {
                 store.setResults(results);
-                store.setExplanation(`向 ${targetStyle} 风格做了 ${strength ?? "medium"} 强度偏移。目标风格由产品层 seed set 构造，用于早期探索。`);
+                const styleLabel = STYLE_LABELS[targetStyle] ?? targetStyle;
+                const strengthLabel = STYLE_STRENGTH_LABELS[strength ?? "medium"] ?? "中等";
+                store.setExplanation(`向 ${styleLabel} 风格做了${strengthLabel}强度偏移。目标风格由产品层代表食材构造，用于早期探索。`);
               } else {
                 store.setResults([]);
                 store.setExplanation(`暂不支持 ${targetStyle} 风格。请选择面板中已有的风格方向。`);

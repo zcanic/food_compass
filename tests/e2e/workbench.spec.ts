@@ -67,6 +67,31 @@ test("mode lookup shows neighborhood cards without stale explore prompts", async
   await expect(page.getByText("准备好了，点击探索")).toHaveCount(0);
 });
 
+test("style shift uses readable labels and returns experimental results", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /换风格/ }).click();
+  await expect(page.getByRole("button", { name: /日式/ })).toBeVisible();
+  await page.getByPlaceholder(/输入食材/).fill("番茄");
+  await page.keyboard.press("Enter");
+  await page.getByRole("button", { name: "探索" }).click();
+
+  await expect(page.getByText(/向 日式 风格做了中等强度偏移/)).toBeVisible();
+});
+
+test("editing ingredient chips clears stale recommendations", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByPlaceholder(/输入食材/).fill("tomato");
+  await page.keyboard.press("Enter");
+  await page.getByRole("button", { name: "探索" }).click();
+  await expect(page.getByText(/这些结果来自常见搭配模型/)).toBeVisible();
+
+  await page.getByRole("button", { name: "移除 tomato" }).click();
+  await expect(page.getByText("先添加食材")).toBeVisible();
+  await expect(page.getByText(/这些结果来自常见搭配模型/)).toHaveCount(0);
+});
+
 test("ask mode explains when no ingredient can be extracted", async ({ page }) => {
   await page.goto("/");
 

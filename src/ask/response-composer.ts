@@ -65,8 +65,8 @@ function buildSimpleAnswer(
 
   const top = recs.slice(0, 10).map((r) => r.name.replace(/_/g, " ")).join("、");
   const notes = skillResults
-    .filter((s) => s.message)
-    .map((s) => s.message)
+    .map((s) => s.message ?? s.styleSummary)
+    .filter(Boolean)
     .join("；");
 
   let answer = `推荐食材：${top}。`;

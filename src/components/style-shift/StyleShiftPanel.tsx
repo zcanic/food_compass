@@ -1,5 +1,5 @@
 import type { StyleStrength } from "../../types/query";
-import { STYLE_SEED_SETS } from "../../utils/constants";
+import { STYLE_LABELS, STYLE_SEED_SETS, STYLE_STRENGTH_LABELS } from "../../utils/constants";
 
 interface Props {
   selectedStyle: string;
@@ -9,9 +9,9 @@ interface Props {
 }
 
 const STRENGTHS: { value: StyleStrength; label: string }[] = [
-  { value: "light", label: "轻微" },
-  { value: "medium", label: "中等" },
-  { value: "strong", label: "强烈" },
+  { value: "light", label: STYLE_STRENGTH_LABELS.light },
+  { value: "medium", label: STYLE_STRENGTH_LABELS.medium },
+  { value: "strong", label: STYLE_STRENGTH_LABELS.strong },
 ];
 
 export function StyleShiftPanel({
@@ -39,7 +39,10 @@ export function StyleShiftPanel({
               fontSize: 13,
             }}
           >
-            {style.replace(/_/g, " ")}
+            <span style={{ fontWeight: 650 }}>{STYLE_LABELS[style] ?? style}</span>
+            <span style={{ color: "#777", marginLeft: 6, fontSize: 11 }}>
+              {style.replace(/_/g, " ")}
+            </span>
           </button>
         ))}
       </div>

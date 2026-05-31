@@ -21,6 +21,7 @@ export function IngredientChip({ name, onRemove }: Props) {
       {displayName(name)}
       <button
         onClick={onRemove}
+        aria-label={`移除 ${displayName(name)}`}
         style={{
           border: "none",
           background: "transparent",

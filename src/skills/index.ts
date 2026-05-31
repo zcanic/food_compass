@@ -1,5 +1,6 @@
 import type { ModelName } from "../types/model";
 import type { Recommendation, SkillResult } from "../types/result";
+import { STYLE_LABELS, STYLE_STRENGTH_LABELS } from "../utils/constants";
 import {
   findPairings,
   findSubstitutes,
@@ -82,7 +83,7 @@ export async function executeSkill(
         skillName: "shift_style",
         recommendations: results,
         status: "ok",
-        styleSummary: `向 ${targetStyle} 风格做了 ${strength} 强度偏移`,
+        styleSummary: `向 ${STYLE_LABELS[targetStyle] ?? targetStyle} 风格做了 ${STYLE_STRENGTH_LABELS[strength] ?? strength} 强度偏移`,
       };
     }
 

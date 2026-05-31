@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 17:35 CST
+Status timestamp: 2026-05-31 17:37 CST
 
 ## Done
 
@@ -19,10 +19,14 @@ Status timestamp: 2026-05-31 17:35 CST
 - Fixed accessible-name ambiguity across nav, task, model, and action buttons.
 - Added query-state tracking so post-search empty states are accurate.
 - Full gate passed: `npm run test:all`.
+- Added Chinese labels for style-shift directions and strengths while keeping internal keys stable.
+- Added accessible labels for ingredient chip removal.
+- Expanded browser coverage to 16 passed desktop/mobile checks, including style shift and stale-result clearing after chip edits.
+- Full gate passed again: `npm run test:all`.
 
 ## In Progress
 
-- Add QA checklist and repo hygiene for generated test/build artifacts.
+- Capture final screenshots for this round and inspect desktop/mobile layout.
 
 ## Backlog
 

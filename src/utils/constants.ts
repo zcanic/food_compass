@@ -15,8 +15,26 @@ export const STYLE_SEED_SETS: Record<string, string[]> = {
   spicy: ["chili_pepper", "black_pepper", "ginger", "mustard"],
 };
 
+export const STYLE_LABELS: Record<string, string> = {
+  Japanese: "日式",
+  East_Asian: "东亚",
+  South_Asian: "南亚",
+  Mediterranean: "地中海",
+  Latin_American: "拉美",
+  sweet: "甜味",
+  savory_umami: "咸鲜",
+  sour: "酸味",
+  spicy: "辛辣",
+};
+
 export const STYLE_STRENGTH_ALPHA: Record<string, number> = {
   light: 0.2,
   medium: 0.4,
   strong: 0.6,
+};
+
+export const STYLE_STRENGTH_LABELS: Record<string, string> = {
+  light: "轻微",
+  medium: "中等",
+  strong: "强烈",
 };
