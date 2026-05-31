@@ -141,6 +141,12 @@ h1, h2, h3, h4 {
   gap: 16px;
 }
 
+.example-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .primary-button {
   background: var(--accent);
   border: none;

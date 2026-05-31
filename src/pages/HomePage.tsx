@@ -175,36 +175,6 @@ export function HomePage() {
       <div className="workbench-grid">
         <section className="panel control-stack" aria-label="Controls">
           <div>
-            <div className="panel-title">试一个例子</div>
-            <div style={{ display: "grid", gap: 8 }}>
-              {EXAMPLES.map((example) => (
-                <button
-                  key={example.label}
-                  type="button"
-                  onClick={() => runExample(example)}
-                  aria-label={`示例：${example.label}`}
-                  style={{
-                    background: "#fff",
-                    border: "1px solid var(--border)",
-                    borderRadius: 8,
-                    color: "var(--text)",
-                    cursor: "pointer",
-                    padding: "9px 12px",
-                    textAlign: "left",
-                  }}
-                >
-                  <span style={{ display: "block", fontSize: 13, fontWeight: 700 }}>
-                    {example.label}
-                  </span>
-                  <span style={{ color: "var(--subtle)", display: "block", fontSize: 11, marginTop: 2 }}>
-                    {example.hint}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
             <div className="panel-title">1. 选择任务</div>
             <ModeTabs active={store.activeMode} onChange={handleModeChange} />
             <div className="secondary-note">{activeHelp}</div>
@@ -254,6 +224,36 @@ export function HomePage() {
               {store.isLoading ? "检索中..." : "探索"}
             </button>
           )}
+
+          <div>
+            <div className="panel-title">试一个例子</div>
+            <div className="example-grid">
+              {EXAMPLES.map((example) => (
+                <button
+                  key={example.label}
+                  type="button"
+                  onClick={() => runExample(example)}
+                  aria-label={`示例：${example.label}`}
+                  style={{
+                    background: "#fff",
+                    border: "1px solid var(--border)",
+                    borderRadius: 8,
+                    color: "var(--text)",
+                    cursor: "pointer",
+                    padding: "8px 10px",
+                    textAlign: "left",
+                  }}
+                >
+                  <span style={{ display: "block", fontSize: 13, fontWeight: 700 }}>
+                    {example.label}
+                  </span>
+                  <span style={{ color: "var(--subtle)", display: "block", fontSize: 11, marginTop: 2 }}>
+                    {example.hint}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
         </section>
 
         <section className="panel" aria-label="Results">
