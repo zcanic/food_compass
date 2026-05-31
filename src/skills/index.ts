@@ -2,12 +2,12 @@ import type { ModelName } from "../types/model";
 import type { Recommendation, SkillResult } from "../types/result";
 import { STYLE_LABELS, STYLE_STRENGTH_LABELS } from "../utils/constants";
 import {
-  findPairings,
-  findSubstitutes,
-  completeCombination,
-  shiftStyle,
+  findPairingsAsync,
+  findSubstitutesAsync,
+  completeCombinationAsync,
+  shiftStyleAsync,
   lookupModes,
-  compareModels,
+  compareModelsAsync,
   constraintFilter,
   getMatcher,
 } from "../engine";
@@ -36,14 +36,14 @@ export async function executeSkill(
       const ingredient = params.ingredient as string;
       const model = (params.model as ModelName) ?? "cooc";
       const topK = (params.top_k as number) ?? 20;
-      const results = findPairings(ingredient, model, topK);
+      const results = await findPairingsAsync(ingredient, model, topK);
       return { skillName: "find_pairings", recommendations: results, status: "ok" };
     }
 
     case "find_substitutes": {
       const ingredient = params.ingredient as string;
       const topK = (params.top_k as number) ?? 20;
-      const results = findSubstitutes(ingredient, topK);
+      const results = await findSubstitutesAsync(ingredient, topK);
       return { skillName: "find_substitutes", recommendations: results, status: "ok" };
     }
 
@@ -51,7 +51,7 @@ export async function executeSkill(
       const ingredients = params.ingredients as string[];
       const model = (params.model as ModelName) ?? "core";
       const topK = (params.top_k as number) ?? 20;
-      const { recommendations, modes } = completeCombination(ingredients, model, topK);
+      const { recommendations, modes } = await completeCombinationAsync(ingredients, model, topK);
       return {
         skillName: "complete_combination",
         recommendations,
@@ -70,7 +70,7 @@ export async function executeSkill(
       const strength = (params.strength as "light" | "medium" | "strong") ?? "medium";
       const model = (params.model as ModelName) ?? "core";
       const topK = (params.top_k as number) ?? 20;
-      const results = shiftStyle(ingredients, targetStyle, strength, model, topK);
+      const results = await shiftStyleAsync(ingredients, targetStyle, strength, model, topK);
       if (!results) {
         return {
           skillName: "shift_style",
@@ -106,7 +106,7 @@ export async function executeSkill(
     case "compare_models": {
       const ingredient = params.ingredient as string;
       const topK = (params.top_k as number) ?? 10;
-      const compared = compareModels(ingredient, topK);
+      const compared = await compareModelsAsync(ingredient, topK);
       const allRecs: Recommendation[] = [
         ...compared.cooc,
         ...compared.core,

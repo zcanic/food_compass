@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 21:19 CST
+Status timestamp: 2026-05-31 21:26 CST
 
 ## Done
 
@@ -104,6 +104,10 @@ Status timestamp: 2026-05-31 21:19 CST
 - Added browser layout smoke coverage for the workbench, model-comparison overview, and research/limits page.
 - The overflow check runs in desktop and mobile projects without storing brittle screenshot baselines.
 - Full gate passed again: `npm run test:all` with 30 unit tests and 42 E2E checks.
+- Top-K vector retrieval now has a Web Worker protocol with request IDs, errors, and a local fallback.
+- Main workbench and Ask skill execution now route recommendation retrieval through async worker-backed engine functions.
+- Added unit coverage for the local fallback path and verified Vite emits a dedicated worker chunk.
+- Full gate passed again: `npm run test:all` with 31 unit tests and 42 E2E checks.
 
 ## In Progress
 
@@ -112,4 +116,5 @@ Status timestamp: 2026-05-31 21:19 CST
 ## Backlog
 
 - Add screenshot snapshots only after the visual baseline is stable enough to avoid noisy review churn.
-- Continue worker-backed retrieval and performance checks.
+- Add worker timing instrumentation for larger future data assets.
+- Add paper-derived sensory-axis evidence from `procrustes_sensory.csv`.

@@ -1,12 +1,12 @@
 import { useCallback } from "react";
 import { useQueryStore } from "../store/query-store";
 import {
-  findPairings,
-  findSubstitutes,
-  completeCombination,
-  shiftStyle,
+  findPairingsAsync,
+  findSubstitutesAsync,
+  completeCombinationAsync,
+  shiftStyleAsync,
   lookupModes,
-  compareModels,
+  compareModelsAsync,
 } from "../engine";
 import type { ModelName } from "../types/model";
 import type { AppMode, StyleStrength } from "../types/query";
@@ -16,7 +16,7 @@ export function useQuery() {
   const store = useQueryStore();
 
   const runQuery = useCallback(
-    (
+    async (
       mode: AppMode,
       ingredients: string[],
       model: ModelName = "core",
@@ -30,13 +30,13 @@ export function useQuery() {
       try {
         switch (mode) {
           case "pairing": {
-            const results = findPairings(ingredients[0], model);
+            const results = await findPairingsAsync(ingredients[0], model);
             store.setResults(results);
             store.setExplanation("这些结果来自" + (model === "cooc" ? "常见搭配" : model === "chem" ? "风味相似" : "综合推荐") + "模型。");
             break;
           }
           case "substitute": {
-            const results = findSubstitutes(ingredients[0]);
+            const results = await findSubstitutesAsync(ingredients[0]);
             store.setResults(results);
             store.setExplanation("这些是风味相似候选，不保证用量和烹饪方式可以直接等价替换。");
             break;
@@ -48,14 +48,14 @@ export function useQuery() {
             break;
           }
           case "complete_combo": {
-            const { recommendations, modes } = completeCombination(ingredients, model);
+            const { recommendations, modes } = await completeCombinationAsync(ingredients, model);
             store.setResults(recommendations);
             store.setModes(modes);
             store.setExplanation("基于组合向量的最近邻检索结果。");
             break;
           }
           case "compare_models": {
-            const compared = compareModels(ingredients[0], 8);
+            const compared = await compareModelsAsync(ingredients[0], 8);
             store.setResults([
               ...compared.cooc,
               ...compared.core,
@@ -69,7 +69,7 @@ export function useQuery() {
           }
           case "style_shift": {
             if (targetStyle) {
-              const results = shiftStyle(ingredients, targetStyle, strength ?? "medium", model);
+              const results = await shiftStyleAsync(ingredients, targetStyle, strength ?? "medium", model);
               if (results) {
                 store.setResults(results);
                 const styleLabel = STYLE_LABELS[targetStyle] ?? targetStyle;
@@ -87,6 +87,10 @@ export function useQuery() {
             break;
           }
         }
+      } catch (error) {
+        store.setResults([]);
+        store.setModes([]);
+        store.setExplanation(error instanceof Error ? `检索失败：${error.message}` : "检索失败。");
       } finally {
         store.setLoading(false);
       }
