@@ -6,19 +6,23 @@ import type { IntentResult } from "../../types/query";
 import type { SkillResult, AskResponse } from "../../types/result";
 import { getMatcher } from "../../engine";
 import { displayName } from "../../utils/text";
+import { ResultList } from "../results/ResultList";
 
 export function AskPanel() {
   const [question, setQuestion] = useState("");
   const [intent, setIntent] = useState<IntentResult | null>(null);
   const [matchedIngredients, setMatchedIngredients] = useState<string[]>([]);
+  const [toolResults, setToolResults] = useState<SkillResult[]>([]);
   const [response, setResponse] = useState<AskResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const recommendations = toolResults.flatMap((r) => r.recommendations).slice(0, 12);
 
   const handleSubmit = async () => {
     if (!question.trim()) return;
     setLoading(true);
     setIntent(null);
     setMatchedIngredients([]);
+    setToolResults([]);
     setResponse(null);
 
     try {
@@ -111,6 +115,7 @@ export function AskPanel() {
 
       // Step 4: Compose response
       const askResponse = await composeResponse(question, skillResults, false);
+      setToolResults(skillResults);
       setResponse({
         ...askResponse,
         trace: {
@@ -168,6 +173,8 @@ export function AskPanel() {
 
       {intent && (
         <div
+          role="region"
+          aria-label="Ask 解析结果"
           style={{
             marginTop: 12,
             padding: "10px 14px",
@@ -214,6 +221,16 @@ export function AskPanel() {
               调用工具：{response.trace.toolsUsed.join("、")}
             </div>
           )}
+        </div>
+      )}
+
+      {recommendations.length > 0 && (
+        <div style={{ marginTop: 16 }}>
+          <ResultList
+            results={recommendations}
+            explanation="这些是 Ask Mode 调用本地工具得到的结构化候选。"
+            loading={false}
+          />
         </div>
       )}
     </div>

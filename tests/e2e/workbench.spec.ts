@@ -53,6 +53,7 @@ test("ask mode uses one question box and extracts Chinese ingredients", async ({
   await expect(page.getByText(/意图：style_shift/)).toBeVisible();
   await expect(page.getByText(/食材：tomato、egg/)).toBeVisible();
   await expect(page.getByText(/调用工具：shift_style/)).toBeVisible();
+  await expect(page.getByRole("list", { name: "推荐结果" })).toBeVisible();
 });
 
 test("unsupported ingredient input gives an actionable recovery message", async ({ page }) => {
@@ -107,4 +108,17 @@ test("ask mode explains when no ingredient can be extracted", async ({ page }) =
   await page.getByRole("button", { name: "提问" }).click();
 
   await expect(page.getByText(/没有识别到可用食材/)).toBeVisible();
+});
+
+test("ask mode surfaces constraint warnings without pretending to filter", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /Ask/ }).click();
+  await page.getByPlaceholder(/描述你想做什么/).fill("我想要低脂的番茄搭配");
+  await page.getByRole("button", { name: "提问" }).click();
+
+  const parsed = page.getByRole("region", { name: "Ask 解析结果" });
+  await expect(parsed.getByText(/约束：low_fat/)).toBeVisible();
+  await expect(page.getByText(/请求的约束：low_fat/)).toBeVisible();
+  await expect(page.getByText(/结果未做可靠过滤/)).toBeVisible();
 });

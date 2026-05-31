@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 17:43 CST
+Status timestamp: 2026-05-31 20:18 CST
 
 ## Done
 
@@ -29,10 +29,14 @@ Status timestamp: 2026-05-31 17:43 CST
 - Result scores now display as cosine similarity instead of misleading percentages.
 - Result lists include candidate counts, score caveats, and accessible list/listitem structure.
 - Full gate passed again: `npm run test:all`.
+- Ask Mode now renders structured tool recommendations below the natural language answer.
+- Ask parsing output has an accessible `Ask 解析结果` region.
+- Added E2E coverage for Ask constraint warnings so the UI does not pretend to perform reliable filtering.
+- Full gate passed again: `npm run test:all` with 18 E2E checks.
 
 ## In Progress
 
-- Plan the next UX/test improvement round before 19:30.
+- Plan and execute the next UX/test improvement round before 21:30.
 
 ## Backlog
 
