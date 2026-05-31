@@ -48,6 +48,14 @@ describe("preprocessed static data assets", () => {
     expect(benchmarks.every((entry) => entry.totalHits === 5)).toBe(true);
   });
 
+  it("ships orthogonal direction benchmark summaries for supported style controls", () => {
+    const benchmarks = readJSON<OrthogonalBenchmarkAsset[]>("style_orthogonal_benchmarks.json");
+
+    expect(benchmarks).toHaveLength(9);
+    expect(benchmarks.some((entry) => entry.style === "Japanese" && entry.meanSnr > 0.5)).toBe(true);
+    expect(benchmarks.every((entry) => entry.totalHits === 5)).toBe(true);
+  });
+
   it("ships WEAT association checks including skipped limitations", () => {
     const checks = readJSON<WeatCheckAsset[]>("weat_checks.json");
 
@@ -110,6 +118,12 @@ interface SensoryAxisAsset {
 interface StyleBenchmarkAsset {
   style: string;
   targetHits: number;
+  totalHits: number;
+}
+
+interface OrthogonalBenchmarkAsset {
+  style: string;
+  meanSnr: number;
   totalHits: number;
 }
 

@@ -56,6 +56,18 @@ interface DirectionArithmeticRow {
   hit_is_target: string;
 }
 
+interface DirectionOrthogonalRow {
+  test_case: string;
+  seed: string;
+  model: string;
+  hit_name: string;
+  snr: string;
+  parallel: string;
+  orthogonal_norm: string;
+  cos_to_seed: string;
+  hit_is_target: string;
+}
+
 interface WeatRow {
   test: string;
   model: string;
@@ -224,6 +236,13 @@ function main() {
   fs.writeFileSync(path.join(DATA_OUT, "style_direction_benchmarks.json"), JSON.stringify(styleBenchmarks));
   console.log(`  style_direction_benchmarks.json: ${styleBenchmarks.length} styles`);
 
+  const orthogonalRows = readCSV<DirectionOrthogonalRow>(path.join(DATA_SRC, "direction_orthogonal.csv"));
+  const orthogonalBenchmarks = Object.entries(STYLE_BENCHMARK_CASES).map(([style, config]) =>
+    summarizeOrthogonalBenchmark(style, config, orthogonalRows)
+  );
+  fs.writeFileSync(path.join(DATA_OUT, "style_orthogonal_benchmarks.json"), JSON.stringify(orthogonalBenchmarks));
+  console.log(`  style_orthogonal_benchmarks.json: ${orthogonalBenchmarks.length} styles`);
+
   // 6. WEAT checks
   const weatRows = readCSV<WeatRow>(path.join(DATA_SRC, "weat.csv"));
   const weatChecks = weatRows.map((row) => ({
@@ -347,4 +366,50 @@ function summarizeStyleBenchmark(
   );
 
   return summaries[0];
+}
+
+function summarizeOrthogonalBenchmark(
+  style: string,
+  config: { cases: string[]; benchmarkDirection: string },
+  rows: DirectionOrthogonalRow[]
+) {
+  const candidates = new Map<string, DirectionOrthogonalRow[]>();
+  for (const row of rows) {
+    if (!config.cases.includes(row.test_case)) continue;
+
+    const key = `${row.test_case}|${row.model}`;
+    const group = candidates.get(key) ?? [];
+    group.push(row);
+    candidates.set(key, group);
+  }
+
+  const summaries = Array.from(candidates.values()).map((group) => ({
+    style,
+    testCase: group[0].test_case,
+    seed: group[0].seed,
+    benchmarkDirection: config.benchmarkDirection,
+    model: group[0].model,
+    targetHits: group.filter((row) => row.hit_is_target === "True").length,
+    totalHits: group.length,
+    meanSnr: round5(average(group.map((row) => Number(row.snr)))),
+    meanCosToSeed: round5(average(group.map((row) => Number(row.cos_to_seed)))),
+    topHits: group.map((row) => row.hit_name),
+  }));
+
+  summaries.sort((a, b) =>
+    b.targetHits - a.targetHits ||
+    b.meanSnr - a.meanSnr ||
+    a.testCase.localeCompare(b.testCase) ||
+    a.model.localeCompare(b.model)
+  );
+
+  return summaries[0];
+}
+
+function average(values: number[]): number {
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+function round5(value: number): number {
+  return Math.round((value + Number.EPSILON) * 100000) / 100000;
 }

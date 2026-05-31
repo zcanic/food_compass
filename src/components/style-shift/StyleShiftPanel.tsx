@@ -1,5 +1,8 @@
 import type { StyleStrength } from "../../types/query";
-import { STYLE_DIRECTION_BENCHMARKS } from "../../research/style-direction-benchmarks";
+import {
+  STYLE_DIRECTION_BENCHMARKS,
+  STYLE_ORTHOGONAL_BENCHMARKS,
+} from "../../research/style-direction-benchmarks";
 import { STYLE_LABELS, STYLE_SEED_SETS, STYLE_STRENGTH_LABELS } from "../../utils/constants";
 
 interface Props {
@@ -22,6 +25,7 @@ export function StyleShiftPanel({
   onChangeStrength,
 }: Props) {
   const benchmark = STYLE_DIRECTION_BENCHMARKS[selectedStyle];
+  const orthogonal = STYLE_ORTHOGONAL_BENCHMARKS[selectedStyle];
 
   return (
     <div style={{ marginBottom: 16 }}>
@@ -85,7 +89,13 @@ export function StyleShiftPanel({
         <div className="style-benchmark-note" role="region" aria-label="风格迁移证据">
           论文方向算术 benchmark：{benchmark.testCase}，{benchmark.model.toUpperCase()}，
           {benchmark.angleDeg} deg，目标命中 {benchmark.targetHits}/{benchmark.totalHits}。
+          {orthogonal && (
+            <>
+              {" "}orthogonal SNR {orthogonal.meanSnr.toFixed(3)}，目标命中 {orthogonal.targetHits}/{orthogonal.totalHits}。
+            </>
+          )}
           当前功能只把它作为证据提示，不直接读取预计算推荐列表。来源：{benchmark.source}。
+          {orthogonal && <> {orthogonal.source}。</>}
         </div>
       )}
     </div>

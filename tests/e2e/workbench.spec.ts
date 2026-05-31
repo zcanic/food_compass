@@ -116,6 +116,7 @@ test("style example chooses style mode and target direction", async ({ page }) =
   await expect(page.getByRole("button", { name: "移除 egg" })).toBeVisible();
   await expect(page.getByText(/向 日式 风格做了中等强度球面偏移/)).toBeVisible();
   await expect(page.getByRole("region", { name: "风格迁移证据" }).getByText("direction_arithmetic_full.csv")).toBeVisible();
+  await expect(page.getByRole("region", { name: "风格迁移证据" }).getByText("orthogonal SNR 0.538")).toBeVisible();
   await expect(page.getByRole("region", { name: "风格迁移证据" }).getByText("目标命中 5/5")).toBeVisible();
   await expect(page.getByRole("region", { name: "查询摘要" }).getByText("日式 · 中等")).toBeVisible();
 });
