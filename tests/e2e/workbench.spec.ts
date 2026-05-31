@@ -68,7 +68,7 @@ test("typo search offers a selectable correction", async ({ page }) => {
 
   await page.getByPlaceholder(/输入食材/).fill("tomoto");
   await expect(page.getByText("你是不是想找...")).toBeVisible();
-  await page.getByText("tomato", { exact: true }).click();
+  await page.getByRole("button", { name: "tomato" }).click();
   await expect(page.getByRole("button", { name: "移除 tomato" })).toBeVisible();
 });
 

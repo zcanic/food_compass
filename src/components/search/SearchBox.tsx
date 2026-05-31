@@ -177,19 +177,27 @@ export function SearchBox() {
             </div>
           )}
           {suggestions.slice(0, 8).map((s) => (
-            <div
+            <button
               key={s}
+              type="button"
               onClick={() => handleSelect(s)}
               style={{
+                background: "transparent",
+                border: "none",
+                color: "var(--text)",
+                display: "block",
+                font: "inherit",
+                width: "100%",
                 padding: "6px 12px",
                 cursor: "pointer",
                 borderRadius: 4,
+                textAlign: "left",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.background = "#f0f0f0")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
             >
               {displayName(s)}
-            </div>
+            </button>
           ))}
           {match.score < 0.75 && (
             <div style={{ fontSize: 13, color: "#999" }}>

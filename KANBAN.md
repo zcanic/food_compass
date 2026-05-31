@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 20:37 CST
+Status timestamp: 2026-05-31 20:39 CST
 
 ## Done
 
@@ -57,6 +57,9 @@ Status timestamp: 2026-05-31 20:37 CST
 - Model-comparison results are now grouped into separate Cooc/Core/Chem sections instead of one mixed list.
 - Added E2E coverage for grouped comparison result lists.
 - Full gate passed again: `npm run test:all` with 13 unit tests and 30 E2E checks.
+- Fuzzy search suggestions are now real buttons instead of click-only divs.
+- Updated E2E coverage to select typo corrections through button semantics.
+- Full gate passed again: `npm run test:all`.
 
 ## In Progress
 
