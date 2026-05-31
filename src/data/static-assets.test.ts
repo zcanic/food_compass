@@ -6,7 +6,7 @@ import { join } from "node:path";
 import type { ModeAtlas } from "../types/mode";
 import type { AliasTable, VocabEntry } from "../types/ingredient";
 import type { ModelName } from "../types/model";
-import { EMBEDDING_DIM, MODEL_NAMES, VOCAB_SIZE } from "../utils/constants";
+import { EMBEDDING_DIM, MODEL_NAMES, STYLE_SEED_SETS, VOCAB_SIZE } from "../utils/constants";
 
 const DATA_ROOT = join(process.cwd(), "public", "data");
 
@@ -62,6 +62,16 @@ describe("preprocessed static data assets", () => {
     expect(benchmarks).toHaveLength(9);
     expect(benchmarks.some((entry) => entry.style === "Japanese" && entry.meanSnr > 0.5)).toBe(true);
     expect(benchmarks.every((entry) => entry.totalHits === 5)).toBe(true);
+  });
+
+  it("ships product style seed sets with canonical vocab seeds", () => {
+    const vocab = new Set(readJSON<VocabEntry[]>("vocab.json").map((entry) => entry.name));
+    const seedSets = readJSON<Record<string, string[]>>("style_seed_sets.json");
+
+    expect(seedSets).toEqual(STYLE_SEED_SETS);
+    expect(Object.keys(seedSets)).toHaveLength(9);
+    expect(Object.values(seedSets).every((seeds) => seeds.length >= 4)).toBe(true);
+    expect(Object.values(seedSets).flat().every((seed) => vocab.has(seed))).toBe(true);
   });
 
   it("ships WEAT association checks including skipped limitations", () => {

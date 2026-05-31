@@ -6,6 +6,7 @@
  */
 import fs from "fs";
 import path from "path";
+import { STYLE_SEED_SETS } from "../src/utils/constants";
 
 const DATA_SRC = path.resolve("../data");
 const DATA_OUT = path.resolve("public/data");
@@ -160,6 +161,7 @@ function main() {
   }));
   fs.writeFileSync(path.join(DATA_OUT, "vocab.json"), JSON.stringify(vocab));
   console.log(`  vocab.json: ${vocab.length} entries`);
+  const vocabNames = new Set(vocab.map((entry) => entry.name));
 
   // 2. Embeddings -> f32.bin
   for (const model of ["cooc", "core", "chem"] as const) {
@@ -318,7 +320,17 @@ function main() {
   fs.writeFileSync(path.join(DATA_OUT, "continuous_probe_metrics.json"), JSON.stringify(continuousProbeMetrics));
   console.log(`  continuous_probe_metrics.json: ${continuousProbeMetrics.length} metrics`);
 
-  // 10. Aliases (placeholder)
+  // 10. Product style seed sets
+  const missingStyleSeeds = Object.entries(STYLE_SEED_SETS).flatMap(([style, seeds]) =>
+    seeds.filter((seed) => !vocabNames.has(seed)).map((seed) => `${style}:${seed}`)
+  );
+  if (missingStyleSeeds.length > 0) {
+    throw new Error(`Unknown style seed ingredients: ${missingStyleSeeds.join(", ")}`);
+  }
+  fs.writeFileSync(path.join(DATA_OUT, "style_seed_sets.json"), JSON.stringify(STYLE_SEED_SETS));
+  console.log(`  style_seed_sets.json: ${Object.keys(STYLE_SEED_SETS).length} styles`);
+
+  // 11. Aliases (placeholder)
   const aliases: Record<string, { zh?: string[]; ja?: string[]; en_alt?: string[] }> = {
     soy_sauce: { zh: ["酱油", "生抽", "老抽", "豉油"], ja: ["しょうゆ", "醤油"], en_alt: ["soy sauce"] },
     tomato: { zh: ["番茄", "西红柿", "蕃茄"], ja: ["トマト"], en_alt: ["tomatoes"] },

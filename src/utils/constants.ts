@@ -8,7 +8,7 @@ export const STYLE_SEED_SETS: Record<string, string[]> = {
   East_Asian: ["soy_sauce", "scallion", "ginger", "sesame_oil", "tofu"],
   South_Asian: ["cumin", "coriander", "turmeric", "curry_leaf", "garam_masala"],
   Mediterranean: ["olive_oil", "basil", "oregano", "feta_cheese", "lemon"],
-  Latin_American: ["lime", "cilantro", "chili_pepper", "corn", "black_bean"],
+  Latin_American: ["lime", "coriander", "chili_pepper", "corn", "black_bean"],
   sweet: ["sugar", "honey", "vanilla", "chocolate"],
   savory_umami: ["soy_sauce", "miso", "mushroom", "parmesan_cheese"],
   sour: ["lemon", "vinegar", "lime", "yogurt"],

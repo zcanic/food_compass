@@ -10,6 +10,7 @@ import {
   SENSORY_AXES,
   WEAT_CHECKS,
 } from "../research/evidence";
+import { STYLE_LABELS, STYLE_SEED_SETS } from "../utils/constants";
 
 export function AboutPage() {
   return (
@@ -98,6 +99,24 @@ export function AboutPage() {
               <div className="evidence-card-value">{entry.value}</div>
               <div className="evidence-card-source">{entry.source}</div>
               <div className="evidence-card-detail">{entry.detail}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ marginBottom: 24 }} aria-label="实验风格方向">
+        <h2 style={{ fontSize: 16 }}>实验风格方向</h2>
+        <p style={{ fontSize: 14 }}>
+          换风格使用的是产品层 seed set 向量插值：每个方向由少量代表食材平均成目标向量。
+          论文的 SLERP direction arithmetic 只作为方向可行性的参考证据，不作为当前候选列表的预计算来源。
+        </p>
+        <div className="evidence-grid">
+          {Object.entries(STYLE_SEED_SETS).map(([style, seeds]) => (
+            <div key={style} className="evidence-card">
+              <div className="evidence-card-label">{STYLE_LABELS[style] ?? style}</div>
+              <div className="evidence-card-value">{seeds.length} seeds</div>
+              <div className="evidence-card-source">style_seed_sets.json</div>
+              <div className="evidence-card-detail">{seeds.join(" / ")}</div>
             </div>
           ))}
         </div>

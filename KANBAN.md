@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 22:08 CST
+Status timestamp: 2026-05-31 22:10 CST
 
 ## Done
 
@@ -167,6 +167,12 @@ Status timestamp: 2026-05-31 22:08 CST
 - UI, Ask skill summaries, and product limits now describe the operation as vector interpolation while keeping paper direction benchmarks as evidence only.
 - Added unit coverage that locks medium style strength to normalized linear mixing rather than SLERP direction arithmetic.
 - Full gate passed again: `npm run test:all` with 50 unit tests and 42 E2E checks.
+- 2026-05-31 22:10 CST: Product style seed-set asset card completed.
+- `style_seed_sets.json` is now generated as a shipped product-layer data asset and checked against the canonical 1,790-item vocab.
+- Fixed the Latin American seed set from unsupported `cilantro` to canonical `coriander`, making style controls use resolvable ingredient keys.
+- About now separates product seed-set interpolation from paper SLERP direction arithmetic and shows the actual representative seeds.
+- Added static-asset and E2E coverage for the seed-set asset, vocab alignment, and About-page boundary copy.
+- Full gate passed again: `npm run test:all` with 51 unit tests and 42 E2E checks.
 
 ## In Progress
 
@@ -177,5 +183,5 @@ Status timestamp: 2026-05-31 22:08 CST
 - Add screenshot snapshots only after the visual baseline is stable enough to avoid noisy review churn.
 - Add worker timing instrumentation for larger future data assets.
 - Add generated mode-atlas/runtime parity tests for coverage summary copy.
-- Add an About-page note separating product seed-set interpolation from paper SLERP more explicitly.
+- Add generated alias coverage summaries for the product localization layer.
 - Add screenshot snapshots only after stabilizing the expanded About evidence page height.
