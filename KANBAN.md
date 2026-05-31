@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 20:21 CST
+Status timestamp: 2026-05-31 20:23 CST
 
 ## Done
 
@@ -37,10 +37,13 @@ Status timestamp: 2026-05-31 20:21 CST
 - Search now shows recent ingredient shortcuts for quick re-entry.
 - Added unit coverage for recent ingredient storage and E2E coverage for persistence across reload.
 - Full gate passed again: `npm run test:all` with 11 unit tests and 20 E2E checks.
+- Added clear-current-selection and clear-recent-ingredients controls for faster correction.
+- Added unit coverage for clearing recent ingredients and E2E coverage for both clear actions.
+- Full gate passed again: `npm run test:all` with 12 unit tests and 22 E2E checks.
 
 ## In Progress
 
-- Continue improving result interpretation and user correction workflows before 21:30.
+- Continue improving result interpretation and mode-specific guidance before 21:30.
 
 ## Backlog
 

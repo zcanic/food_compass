@@ -6,6 +6,7 @@ import { getMatcher } from "../../engine";
 import { displayName } from "../../utils/text";
 import {
   addRecentIngredients,
+  clearRecentIngredients,
   loadRecentIngredients,
   saveRecentIngredients,
 } from "../../utils/recent-ingredients";
@@ -97,6 +98,19 @@ export function SearchBox() {
     clear();
   };
 
+  const clearSelection = () => {
+    setMatchedIngredients([]);
+    setResults([]);
+    setModes([]);
+    setExplanation("");
+    setHasSearched(false);
+  };
+
+  const clearRecent = () => {
+    setRecentIngredients([]);
+    clearRecentIngredients();
+  };
+
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -185,26 +199,67 @@ export function SearchBox() {
         </div>
       )}
       {matchedIngredients.length > 0 && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
-          {matchedIngredients.map((name) => (
-            <IngredientChip
-              key={name}
-              name={name}
-              onRemove={() => {
-                setMatchedIngredients(matchedIngredients.filter((n) => n !== name));
-                setResults([]);
-                setModes([]);
-                setExplanation("");
-                setHasSearched(false);
-              }}
-            />
-          ))}
+        <div style={{ marginTop: 8 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {matchedIngredients.map((name) => (
+              <IngredientChip
+                key={name}
+                name={name}
+                onRemove={() => {
+                  setMatchedIngredients(matchedIngredients.filter((n) => n !== name));
+                  setResults([]);
+                  setModes([]);
+                  setExplanation("");
+                  setHasSearched(false);
+                }}
+              />
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={clearSelection}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "var(--muted)",
+              cursor: "pointer",
+              fontSize: 12,
+              marginTop: 6,
+              padding: 0,
+            }}
+          >
+            清空当前选择
+          </button>
         </div>
       )}
       {recentIngredients.length > 0 && (
         <div style={{ marginTop: 10 }}>
-          <div style={{ color: "var(--subtle)", fontSize: 11, marginBottom: 6 }}>
-            最近食材
+          <div
+            style={{
+              alignItems: "center",
+              display: "flex",
+              justifyContent: "space-between",
+              gap: 8,
+              marginBottom: 6,
+            }}
+          >
+            <div style={{ color: "var(--subtle)", fontSize: 11 }}>
+              最近食材
+            </div>
+            <button
+              type="button"
+              onClick={clearRecent}
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "var(--subtle)",
+                cursor: "pointer",
+                fontSize: 11,
+                padding: 0,
+              }}
+            >
+              清空最近
+            </button>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
             {recentIngredients.map((name) => (

@@ -113,6 +113,23 @@ test("editing ingredient chips clears stale recommendations", async ({ page }) =
   await expect(page.getByText(/这些结果来自常见搭配模型/)).toHaveCount(0);
 });
 
+test("ingredient and recent lists can be cleared intentionally", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByPlaceholder(/输入食材/).fill("番茄、鸡蛋");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("button", { name: "移除 tomato" })).toBeVisible();
+  await page.getByRole("button", { name: "探索" }).click();
+  await expect(page.getByText(/这些结果来自常见搭配模型/)).toBeVisible();
+
+  await page.getByRole("button", { name: "清空当前选择" }).click();
+  await expect(page.getByText("先添加食材")).toBeVisible();
+  await expect(page.getByRole("button", { name: "移除 tomato" })).toHaveCount(0);
+
+  await page.getByRole("button", { name: "清空最近" }).click();
+  await expect(page.getByText("最近食材")).toHaveCount(0);
+});
+
 test("ask mode explains when no ingredient can be extracted", async ({ page }) => {
   await page.goto("/");
 

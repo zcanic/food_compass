@@ -27,6 +27,11 @@ export function saveRecentIngredients(items: string[]) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
 }
 
+export function clearRecentIngredients() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(STORAGE_KEY);
+}
+
 export function addRecentIngredients(current: string[], additions: string[]): string[] {
   return dedupe([...additions, ...current]).slice(0, MAX_RECENT);
 }

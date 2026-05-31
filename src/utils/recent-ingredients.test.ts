@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   addRecentIngredients,
+  clearRecentIngredients,
   loadRecentIngredients,
   saveRecentIngredients,
 } from "./recent-ingredients";
@@ -24,6 +25,13 @@ describe("recent ingredients storage", () => {
 
   it("ignores malformed storage payloads", () => {
     window.localStorage.setItem("food_compass.recent_ingredients.v1", "{bad json");
+
+    expect(loadRecentIngredients()).toEqual([]);
+  });
+
+  it("clears saved recent ingredients", () => {
+    saveRecentIngredients(["tomato"]);
+    clearRecentIngredients();
 
     expect(loadRecentIngredients()).toEqual([]);
   });
