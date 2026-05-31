@@ -63,6 +63,19 @@ test("unsupported ingredient input gives an actionable recovery message", async 
   await expect(page.getByText(/当前词表暂未覆盖该食材/)).toBeVisible();
 });
 
+test("recent ingredients persist and can be re-added quickly", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByPlaceholder(/输入食材/).fill("番茄、鸡蛋");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("button", { name: "添加最近食材 tomato" })).toBeVisible();
+
+  await page.reload();
+  await expect(page.getByRole("button", { name: "添加最近食材 tomato" })).toBeVisible();
+  await page.getByRole("button", { name: "添加最近食材 tomato" }).click();
+  await expect(page.getByRole("button", { name: "移除 tomato" })).toBeVisible();
+});
+
 test("mode lookup shows neighborhood cards without stale explore prompts", async ({ page }) => {
   await page.goto("/");
 

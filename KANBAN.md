@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 20:18 CST
+Status timestamp: 2026-05-31 20:21 CST
 
 ## Done
 
@@ -33,15 +33,18 @@ Status timestamp: 2026-05-31 20:18 CST
 - Ask parsing output has an accessible `Ask 解析结果` region.
 - Added E2E coverage for Ask constraint warnings so the UI does not pretend to perform reliable filtering.
 - Full gate passed again: `npm run test:all` with 18 E2E checks.
+- Added versioned localStorage-backed recent ingredients.
+- Search now shows recent ingredient shortcuts for quick re-entry.
+- Added unit coverage for recent ingredient storage and E2E coverage for persistence across reload.
+- Full gate passed again: `npm run test:all` with 11 unit tests and 20 E2E checks.
 
 ## In Progress
 
-- Plan and execute the next UX/test improvement round before 21:30.
+- Continue improving result interpretation and user correction workflows before 21:30.
 
 ## Backlog
 
 - Expand style-shift tests and UI copy around experimental directions.
 - Add result grouping and clearer model-comparison affordances.
 - Add mode lookup empty-state examples.
-- Add a persistent local recent-ingredients list.
 - Add visual regression snapshots for key viewport states.

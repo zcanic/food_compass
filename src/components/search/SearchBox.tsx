@@ -1,12 +1,19 @@
+import { useState } from "react";
 import { useSearch } from "../../hooks/useSearch";
 import { useQueryStore } from "../../store/query-store";
 import { IngredientChip } from "./IngredientChip";
 import { getMatcher } from "../../engine";
 import { displayName } from "../../utils/text";
+import {
+  addRecentIngredients,
+  loadRecentIngredients,
+  saveRecentIngredients,
+} from "../../utils/recent-ingredients";
 
 const SPLIT_RE = /[,\n，、;；]+/;
 
 export function SearchBox() {
+  const [recentIngredients, setRecentIngredients] = useState(() => loadRecentIngredients());
   const { query, match, suggestions, search, clear } = useSearch();
   const matchedIngredients = useQueryStore((s) => s.matchedIngredients);
   const setMatchedIngredients = useQueryStore((s) => s.setMatchedIngredients);
@@ -21,13 +28,20 @@ export function SearchBox() {
   const mergeIngredients = (names: string[]) => {
     const seen = new Set(matchedIngredients);
     const next = [...matchedIngredients];
+    const added: string[] = [];
     for (const name of names) {
       if (!seen.has(name)) {
         seen.add(name);
         next.push(name);
+        added.push(name);
       }
     }
     setMatchedIngredients(next);
+    if (added.length > 0) {
+      const nextRecent = addRecentIngredients(recentIngredients, added);
+      setRecentIngredients(nextRecent);
+      saveRecentIngredients(nextRecent);
+    }
     setResults([]);
     setModes([]);
     setExplanation("");
@@ -185,6 +199,34 @@ export function SearchBox() {
               }}
             />
           ))}
+        </div>
+      )}
+      {recentIngredients.length > 0 && (
+        <div style={{ marginTop: 10 }}>
+          <div style={{ color: "var(--subtle)", fontSize: 11, marginBottom: 6 }}>
+            最近食材
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {recentIngredients.map((name) => (
+              <button
+                key={name}
+                type="button"
+                onClick={() => handleSelect(name)}
+                aria-label={`添加最近食材 ${displayName(name)}`}
+                style={{
+                  background: "#f8faf7",
+                  border: "1px solid var(--border)",
+                  borderRadius: 999,
+                  color: "var(--muted)",
+                  cursor: "pointer",
+                  fontSize: 12,
+                  padding: "4px 9px",
+                }}
+              >
+                {displayName(name)}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>
