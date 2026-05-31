@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 21:11 CST
+Status timestamp: 2026-05-31 21:14 CST
 
 ## Done
 
@@ -94,6 +94,10 @@ Status timestamp: 2026-05-31 21:11 CST
 - Mode-only Ask results now produce a useful food-neighborhood answer instead of saying no recommendation was found.
 - Added unit coverage for grouped response composition and E2E coverage for Ask explain/mode-only answers.
 - Full gate passed again: `npm run test:all` with 27 unit tests and 38 E2E checks.
+- Mode lookup empty states now explain mode-atlas coverage limits instead of implying the ingredient has no flavor relationships.
+- Empty mode lookups offer real example buttons that re-run the same lookup pipeline with covered ingredients.
+- Added E2E coverage using `sea_urchin` as a real uncovered Core mode-atlas case.
+- Full gate passed again: `npm run test:all` with 27 unit tests and 40 E2E checks.
 
 ## In Progress
 
@@ -101,5 +105,4 @@ Status timestamp: 2026-05-31 21:11 CST
 
 ## Backlog
 
-- Add mode lookup empty-state examples and model-bias explanations.
 - Add visual regression snapshots for key viewport states.

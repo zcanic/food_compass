@@ -169,6 +169,21 @@ test("mode lookup shows neighborhood cards without stale explore prompts", async
   await expect(page.getByText("准备好了，点击探索")).toHaveCount(0);
 });
 
+test("mode lookup empty states explain atlas coverage and offer examples", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "任务：查街区" }).click();
+  await page.getByPlaceholder(/输入食材/).fill("sea_urchin");
+  await page.keyboard.press("Enter");
+  await page.getByRole("button", { name: "探索" }).click();
+
+  await expect(page.getByText("没有找到街区")).toBeVisible();
+  await expect(page.getByRole("region", { name: "街区空态说明" }).getByText(/mode atlas 未覆盖/)).toBeVisible();
+  await page.getByRole("button", { name: "查街区示例 soy sauce" }).click();
+
+  await expect(page.getByRole("region", { name: "食材街区" })).toBeVisible();
+});
+
 test("complete combo uses the full ingredient set for neighborhood context", async ({ page }) => {
   await page.goto("/");
 

@@ -133,6 +133,16 @@ export function HomePage() {
     );
   };
 
+  const runModeLookupExample = (ingredient: string) => {
+    store.setActiveMode("lookup_mode");
+    store.setActiveModel("core");
+    store.setResults([]);
+    store.setModes([]);
+    store.setExplanation("");
+    store.setHasSearched(false);
+    runQuery("lookup_mode", [ingredient], "core");
+  };
+
   const addRecommendationToQuery = (name: string) => {
     if (store.matchedIngredients.includes(name)) return;
 
@@ -150,6 +160,12 @@ export function HomePage() {
     : "先输入至少 1 个食材";
   const showResultList = store.activeMode !== "lookup_mode" || store.modes.length === 0;
   const showModelToggle = store.activeMode !== "ask" && store.activeMode !== "compare_models";
+  const showModeLookupEmptyHint =
+    store.activeMode === "lookup_mode" &&
+    store.hasSearched &&
+    !store.isLoading &&
+    store.modes.length === 0 &&
+    store.matchedIngredients.length > 0;
   const emptyTitle = (() => {
     if (store.matchedIngredients.length === 0) return "先添加食材";
     if (!store.hasSearched) return "准备好了，点击探索";
@@ -289,6 +305,49 @@ export function HomePage() {
                   groupByModel={store.activeMode === "compare_models"}
                   onAddIngredient={addRecommendationToQuery}
                 />
+              )}
+              {showModeLookupEmptyHint && (
+                <section
+                  aria-label="街区空态说明"
+                  style={{
+                    background: "#fffaf0",
+                    border: "1px solid #efd5b9",
+                    borderRadius: 8,
+                    color: "var(--muted)",
+                    fontSize: 12,
+                    lineHeight: 1.6,
+                    marginTop: 12,
+                    padding: "10px 12px",
+                  }}
+                >
+                  <div style={{ color: "var(--text)", fontWeight: 700, marginBottom: 4 }}>
+                    mode atlas 未覆盖当前食材
+                  </div>
+                  <div>
+                    这不代表食材没有风味关系，只表示它没有落入当前模型公开的命名街区成员列表。不同模型的街区覆盖和命名会不同。
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+                    {["soy_sauce", "tomato", "tofu"].map((name) => (
+                      <button
+                        key={name}
+                        type="button"
+                        onClick={() => runModeLookupExample(name)}
+                        aria-label={`查街区示例 ${name.replace(/_/g, " ")}`}
+                        style={{
+                          background: "#fff",
+                          border: "1px solid var(--border)",
+                          borderRadius: 999,
+                          color: "var(--accent-strong)",
+                          cursor: "pointer",
+                          fontSize: 12,
+                          padding: "4px 9px",
+                        }}
+                      >
+                        {name.replace(/_/g, " ")}
+                      </button>
+                    ))}
+                  </div>
+                </section>
               )}
               <ModePanel modes={store.modes} />
             </>
