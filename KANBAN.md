@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 21:16 CST
+Status timestamp: 2026-05-31 21:19 CST
 
 ## Done
 
@@ -101,6 +101,9 @@ Status timestamp: 2026-05-31 21:16 CST
 - Added static data asset tests for vocab cardinality, embedding binary sizes, mode-atlas presence, and alias canonical targets.
 - The test suite now verifies the shipped public data artifacts, not just runtime UI behavior.
 - Full gate passed again: `npm run test:all` with 30 unit tests and 40 E2E checks.
+- Added browser layout smoke coverage for the workbench, model-comparison overview, and research/limits page.
+- The overflow check runs in desktop and mobile projects without storing brittle screenshot baselines.
+- Full gate passed again: `npm run test:all` with 30 unit tests and 42 E2E checks.
 
 ## In Progress
 
@@ -108,4 +111,5 @@ Status timestamp: 2026-05-31 21:16 CST
 
 ## Backlog
 
-- Add visual regression snapshots for key viewport states.
+- Add screenshot snapshots only after the visual baseline is stable enough to avoid noisy review churn.
+- Continue worker-backed retrieval and performance checks.

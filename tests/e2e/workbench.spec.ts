@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 test("bulk ingredient entry runs the default pairing workflow", async ({ page }) => {
   await page.goto("/");
@@ -286,3 +286,27 @@ test("about page explains research basis and product limits", async ({ page }) =
   await expect(page.getByRole("region", { name: "证据指标" }).getByText("linear_probe.csv")).toBeVisible();
   await expect(page.getByRole("region", { name: "功能限制" }).getByText(/不是官方 Epicure App/)).toBeVisible();
 });
+
+test("key screens avoid horizontal overflow", async ({ page }) => {
+  await page.goto("/");
+  await expectNoHorizontalOverflow(page);
+
+  await page.getByRole("button", { name: "任务：模型对比" }).click();
+  await page.getByPlaceholder(/输入食材/).fill("番茄");
+  await page.keyboard.press("Enter");
+  await page.getByRole("button", { name: "探索" }).click();
+  await expect(page.getByRole("region", { name: "模型对比概览" })).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+
+  await page.getByRole("button", { name: "关于" }).click();
+  await expect(page.getByRole("heading", { name: "关于 Flavor Compass" })).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+});
+
+async function expectNoHorizontalOverflow(page: Page) {
+  const overflow = await page.evaluate(() => {
+    const root = document.documentElement;
+    return root.scrollWidth - root.clientWidth;
+  });
+  expect(overflow).toBeLessThanOrEqual(1);
+}
