@@ -4,6 +4,7 @@ import {
   PRODUCT_LIMITS,
   RESEARCH_FACTS,
   SENSORY_AXES,
+  WEAT_CHECKS,
 } from "../research/evidence";
 
 export function AboutPage() {
@@ -75,6 +76,24 @@ export function AboutPage() {
               <div className="evidence-card-value">{metric.value}</div>
               <div className="evidence-card-source">{metric.source}</div>
               <div className="evidence-card-detail">{metric.detail}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ marginBottom: 24 }} aria-label="WEAT 关联检查">
+        <h2 style={{ fontSize: 16 }}>WEAT 关联检查</h2>
+        <p style={{ fontSize: 14 }}>
+          论文补充数据里的 WEAT 检查显示了 embedding 中的语义关联和潜在偏差。
+          这些结果用于限制产品表达，不用于生成推荐。
+        </p>
+        <div className="evidence-grid">
+          {WEAT_CHECKS.map((check) => (
+            <div key={check.label} className="evidence-card">
+              <div className="evidence-card-label">{check.label}</div>
+              <div className="evidence-card-value">{check.value}</div>
+              <div className="evidence-card-source">{check.source}</div>
+              <div className="evidence-card-detail">{check.detail}</div>
             </div>
           ))}
         </div>

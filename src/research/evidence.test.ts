@@ -7,6 +7,7 @@ import {
   PRODUCT_LIMITS,
   RESEARCH_FACTS,
   SENSORY_AXES,
+  WEAT_CHECKS,
 } from "./evidence";
 
 describe("research evidence copy", () => {
@@ -18,6 +19,7 @@ describe("research evidence copy", () => {
     expect(EVIDENCE_METRICS.every((metric) => metric.source.length > 0)).toBe(true);
     expect(EVIDENCE_METRICS.some((metric) => metric.source.includes("linear_probe"))).toBe(true);
     expect(EVIDENCE_METRICS.some((metric) => metric.source.includes("cross_modal"))).toBe(true);
+    expect(WEAT_CHECKS.every((check) => check.source === "weat.csv")).toBe(true);
   });
 
   it("summarizes the Procrustes sensory axis for every model", () => {
@@ -48,6 +50,7 @@ describe("research evidence copy", () => {
 
   it("states corpus scale and avoids unsupported product claims", () => {
     expect(RESEARCH_FACTS.some((fact) => fact.value === "1,790")).toBe(true);
+    expect(WEAT_CHECKS.some((check) => check.value === "skipped")).toBe(true);
     expect(PRODUCT_LIMITS.join(" ")).toContain("不是官方 Epicure App");
     expect(PRODUCT_LIMITS.join(" ")).toContain("没有声称重新训练");
   });

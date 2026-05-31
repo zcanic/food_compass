@@ -48,6 +48,14 @@ describe("preprocessed static data assets", () => {
     expect(benchmarks.every((entry) => entry.totalHits === 5)).toBe(true);
   });
 
+  it("ships WEAT association checks including skipped limitations", () => {
+    const checks = readJSON<WeatCheckAsset[]>("weat_checks.json");
+
+    expect(checks.length).toBeGreaterThan(5);
+    expect(checks.some((entry) => entry.test === "Health Halo" && entry.skipped)).toBe(true);
+    expect(checks.some((entry) => entry.test === "Sweet vs Savory" && entry.effectSizeD !== null)).toBe(true);
+  });
+
   it("keeps aliases pointed at canonical vocab names", () => {
     const vocab = new Set(readJSON<VocabEntry[]>("vocab.json").map((entry) => entry.name));
     const aliases = readJSON<AliasTable>("aliases_zh_en.json");
@@ -79,4 +87,10 @@ interface StyleBenchmarkAsset {
   style: string;
   targetHits: number;
   totalHits: number;
+}
+
+interface WeatCheckAsset {
+  test: string;
+  effectSizeD: number | null;
+  skipped: boolean;
 }

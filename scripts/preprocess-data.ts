@@ -56,6 +56,16 @@ interface DirectionArithmeticRow {
   hit_is_target: string;
 }
 
+interface WeatRow {
+  test: string;
+  model: string;
+  effect_size_d: string;
+  test_stat: string;
+  p_value: string;
+  significance: string;
+  skipped: string;
+}
+
 const STYLE_BENCHMARK_CASES: Record<string, { cases: string[]; benchmarkDirection: string }> = {
   Japanese: { cases: ["chicken + Japanese"], benchmarkDirection: "Japanese" },
   East_Asian: { cases: ["beef + East_Asian"], benchmarkDirection: "East_Asian" },
@@ -184,7 +194,21 @@ function main() {
   fs.writeFileSync(path.join(DATA_OUT, "style_direction_benchmarks.json"), JSON.stringify(styleBenchmarks));
   console.log(`  style_direction_benchmarks.json: ${styleBenchmarks.length} styles`);
 
-  // 6. Aliases (placeholder)
+  // 6. WEAT checks
+  const weatRows = readCSV<WeatRow>(path.join(DATA_SRC, "weat.csv"));
+  const weatChecks = weatRows.map((row) => ({
+    test: row.test,
+    model: row.model,
+    effectSizeD: row.effect_size_d ? Number(row.effect_size_d) : null,
+    testStat: row.test_stat ? Number(row.test_stat) : null,
+    pValue: row.p_value ? Number(row.p_value) : null,
+    significance: row.significance,
+    skipped: row.skipped === "True",
+  }));
+  fs.writeFileSync(path.join(DATA_OUT, "weat_checks.json"), JSON.stringify(weatChecks));
+  console.log(`  weat_checks.json: ${weatChecks.length} checks`);
+
+  // 7. Aliases (placeholder)
   const aliases: Record<string, { zh?: string[]; ja?: string[]; en_alt?: string[] }> = {
     soy_sauce: { zh: ["酱油", "生抽", "老抽", "豉油"], ja: ["しょうゆ", "醤油"], en_alt: ["soy sauce"] },
     tomato: { zh: ["番茄", "西红柿", "蕃茄"], ja: ["トマト"], en_alt: ["tomatoes"] },

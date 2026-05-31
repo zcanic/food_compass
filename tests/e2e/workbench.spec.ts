@@ -290,6 +290,8 @@ test("about page explains research basis and product limits", async ({ page }) =
   await expect(page.getByRole("region", { name: "主感官轴" }).getByText("Savory-Umami to Sweet-Floral Confection")).toBeVisible();
   await expect(page.getByRole("region", { name: "主感官轴" }).getByText("procrustes_sensory.csv").first()).toBeVisible();
   await expect(page.getByRole("region", { name: "证据指标" }).getByText("linear_probe.csv")).toBeVisible();
+  await expect(page.getByRole("region", { name: "WEAT 关联检查" }).getByText("Health Halo")).toBeVisible();
+  await expect(page.getByRole("region", { name: "WEAT 关联检查" }).getByText("skipped")).toBeVisible();
   await expect(page.getByRole("region", { name: "功能限制" }).getByText(/不是官方 Epicure App/)).toBeVisible();
 });
 

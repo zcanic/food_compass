@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 21:40 CST
+Status timestamp: 2026-05-31 21:42 CST
 
 ## Done
 
@@ -126,6 +126,10 @@ Status timestamp: 2026-05-31 21:40 CST
 - Ask Mode now reports multi-tool execution count, retrieval channel, and elapsed milliseconds in the response trace.
 - Added E2E coverage for Ask execution diagnostics on a style-shift + pairing + combo query.
 - Full gate passed again: `npm run test:all` with 38 unit tests and 42 E2E checks.
+- `weat.csv` is now converted into a shipped `weat_checks.json` static asset with skipped checks preserved.
+- About now includes a WEAT association/boundary section so the product exposes bias and limitation evidence, not only positive metrics.
+- Added unit/static-asset/E2E coverage for WEAT checks, including the skipped Health Halo case.
+- Full gate passed again: `npm run test:all` with 39 unit tests and 42 E2E checks.
 
 ## In Progress
 
@@ -136,3 +140,4 @@ Status timestamp: 2026-05-31 21:40 CST
 - Add screenshot snapshots only after the visual baseline is stable enough to avoid noisy review churn.
 - Add worker timing instrumentation for larger future data assets.
 - Expand Ask diagnostics to distinguish vector retrieval, mode lookup, and constraint-only tools.
+- Convert `cross_modal.csv` into source-backed evidence instead of hardcoded summary copy.

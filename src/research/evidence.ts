@@ -31,6 +31,13 @@ export interface SensoryAxisEntry {
   source: string;
 }
 
+export interface WeatCheckEntry {
+  label: string;
+  value: string;
+  source: string;
+  detail: string;
+}
+
 export const RESEARCH_FACTS: ResearchFact[] = [
   {
     label: "规范食材",
@@ -137,6 +144,33 @@ export const SENSORY_AXES: SensoryAxisEntry[] = [
     stabilityCosine: "0.576",
     stabilityJaccard: "0.304",
     source: "procrustes_sensory.csv",
+  },
+];
+
+export const WEAT_CHECKS: WeatCheckEntry[] = [
+  {
+    label: "European vs Asian",
+    value: "d 1.65 / 1.85",
+    source: "weat.csv",
+    detail: "Cooc/Core 都显示显著关联；这是语料和嵌入空间里的文化关联信号，不应包装成价值判断。",
+  },
+  {
+    label: "Sweet vs Savory",
+    value: "d 1.87 / 1.80",
+    source: "weat.csv",
+    detail: "甜/咸语义轴很强，说明模型可用于风味导航，也说明推荐解释需要避免把轴当成绝对分类。",
+  },
+  {
+    label: "Land vs Sea Protein",
+    value: "d 1.37 / 1.35",
+    source: "weat.csv",
+    detail: "蛋白来源存在稳定分离，适合解释相似性差异，但不等同于营养或可持续性判断。",
+  },
+  {
+    label: "Health Halo",
+    value: "skipped",
+    source: "weat.csv",
+    detail: "补充数据中该项被跳过；当前产品不能声称可以可靠判断健康光环、减脂或医疗饮食。",
   },
 ];
 
