@@ -13,6 +13,9 @@ interface AskDiagnostics {
   backend: RetrievalBackend;
   elapsedMs: number;
   toolCount: number;
+  vectorToolCount: number;
+  modeToolCount: number;
+  constraintToolCount: number;
 }
 
 const BACKEND_LABELS: Record<RetrievalBackend, string> = {
@@ -66,10 +69,13 @@ export function AskPanel() {
       // Step 3: Execute skills based on intent
       const plan = buildSkillPlan(parsed, ingredients);
       const toolStart = readNow();
+      const vectorToolCount = plan.filter((step) => isVectorSkill(step.name)).length;
+      const modeToolCount = plan.filter((step) => step.name === "lookup_mode").length;
       const skillResults: SkillResult[] = await Promise.all(
         plan.map((step) => executeSkill(step.name, step.params))
       );
       let executedToolCount = skillResults.length;
+      let constraintToolCount = 0;
 
       const recommendationNames = skillResults.flatMap((r) =>
         r.recommendations.map((rec) => rec.name)
@@ -82,11 +88,15 @@ export function AskPanel() {
           })
         );
         executedToolCount += 1;
+        constraintToolCount += 1;
       }
       setDiagnostics({
-        backend: plan.some((step) => step.name !== "lookup_mode") ? getSearchBackend() : "mode-atlas",
+        backend: vectorToolCount > 0 ? getSearchBackend() : "mode-atlas",
         elapsedMs: Math.max(0, Math.round(readNow() - toolStart)),
         toolCount: executedToolCount,
+        vectorToolCount,
+        modeToolCount,
+        constraintToolCount,
       });
 
       // Step 4: Compose response
@@ -209,6 +219,7 @@ export function AskPanel() {
               style={{ marginTop: 6, fontSize: 11, color: "#aaa" }}
             >
               工具执行：{diagnostics.toolCount} 个 · {BACKEND_LABELS[diagnostics.backend]} · {diagnostics.elapsedMs} ms
+              {" "}向量工具 {diagnostics.vectorToolCount} · 街区 {diagnostics.modeToolCount} · 约束 {diagnostics.constraintToolCount}
             </div>
           )}
         </div>
@@ -250,6 +261,16 @@ export function AskPanel() {
 
 function readNow(): number {
   return typeof performance === "undefined" ? Date.now() : performance.now();
+}
+
+function isVectorSkill(skillName: string): boolean {
+  return [
+    "find_pairings",
+    "find_substitutes",
+    "shift_style",
+    "complete_combination",
+    "compare_models",
+  ].includes(skillName);
 }
 
 function toolLabel(skillName: string) {

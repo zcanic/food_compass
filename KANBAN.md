@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 21:57 CST
+Status timestamp: 2026-05-31 21:59 CST
 
 ## Done
 
@@ -151,6 +151,9 @@ Status timestamp: 2026-05-31 21:57 CST
 - Style-shift evidence now shows orthogonal SNR alongside direction-arithmetic target-hit counts, without using either benchmark as recommendation output.
 - Added unit/static-asset/E2E coverage and asset parity checks for orthogonal direction evidence.
 - Full gate passed again: `npm run test:all` with 48 unit tests and 42 E2E checks.
+- Ask execution diagnostics now distinguish vector retrieval tools, mode lookup tools, and constraint-only tools.
+- Added E2E coverage for the tool-type breakdown on the multi-tool Ask flow.
+- Full gate passed again: `npm run test:all` with 48 unit tests and 42 E2E checks.
 
 ## In Progress
 
@@ -160,5 +163,5 @@ Status timestamp: 2026-05-31 21:57 CST
 
 - Add screenshot snapshots only after the visual baseline is stable enough to avoid noisy review churn.
 - Add worker timing instrumentation for larger future data assets.
-- Expand Ask diagnostics to distinguish vector retrieval, mode lookup, and constraint-only tools.
 - Add generated evidence for factor alignment or mode-atlas quality metrics if present.
+- Add screenshot snapshots only after stabilizing the expanded About evidence page height.
