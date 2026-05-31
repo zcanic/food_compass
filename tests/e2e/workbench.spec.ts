@@ -26,7 +26,7 @@ test("bulk ingredient entry runs the default pairing workflow", async ({ page })
 test("switching modes changes the default model and clears stale result state", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByRole("button", { name: /找替代/ }).click();
+  await page.getByRole("button", { name: "任务：找替代" }).click();
   await expect(page.getByText("当前使用：风味相似。")).toBeVisible();
 
   await page.getByPlaceholder(/输入食材/).fill("basil");
@@ -63,6 +63,28 @@ test("unsupported ingredient input gives an actionable recovery message", async 
   await expect(page.getByText(/当前词表暂未覆盖该食材/)).toBeVisible();
 });
 
+test("example buttons set up and run a complete workflow", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "示例：番茄找搭配" }).click();
+
+  await expect(page.getByRole("button", { name: "移除 tomato" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "查询摘要" }).getByText("已检索")).toBeVisible();
+  await expect(page.getByText(/这些结果来自常见搭配模型/)).toBeVisible();
+  await expect(page.getByRole("list", { name: "推荐结果" })).toBeVisible();
+});
+
+test("style example chooses style mode and target direction", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "示例：番茄鸡蛋做日式" }).click();
+
+  await expect(page.getByRole("button", { name: "移除 tomato" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "移除 egg" })).toBeVisible();
+  await expect(page.getByText(/向 日式 风格做了中等强度偏移/)).toBeVisible();
+  await expect(page.getByRole("region", { name: "查询摘要" }).getByText("日式 · 中等")).toBeVisible();
+});
+
 test("recent ingredients persist and can be re-added quickly", async ({ page }) => {
   await page.goto("/");
 
@@ -79,7 +101,7 @@ test("recent ingredients persist and can be re-added quickly", async ({ page }) 
 test("mode lookup shows neighborhood cards without stale explore prompts", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByRole("button", { name: /查街区/ }).click();
+  await page.getByRole("button", { name: "任务：查街区" }).click();
   await page.getByPlaceholder(/输入食材/).fill("酱油");
   await page.keyboard.press("Enter");
   await page.getByRole("button", { name: "探索" }).click();
@@ -91,8 +113,8 @@ test("mode lookup shows neighborhood cards without stale explore prompts", async
 test("style shift uses readable labels and returns experimental results", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByRole("button", { name: /换风格/ }).click();
-  await expect(page.getByRole("button", { name: /日式/ })).toBeVisible();
+  await page.getByRole("button", { name: "任务：换风格" }).click();
+  await expect(page.getByRole("button", { name: "风格：日式" })).toBeVisible();
   await page.getByPlaceholder(/输入食材/).fill("番茄");
   await page.keyboard.press("Enter");
   await page.getByRole("button", { name: "探索" }).click();

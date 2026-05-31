@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 20:23 CST
+Status timestamp: 2026-05-31 20:27 CST
 
 ## Done
 
@@ -40,10 +40,14 @@ Status timestamp: 2026-05-31 20:23 CST
 - Added clear-current-selection and clear-recent-ingredients controls for faster correction.
 - Added unit coverage for clearing recent ingredients and E2E coverage for both clear actions.
 - Full gate passed again: `npm run test:all` with 12 unit tests and 22 E2E checks.
+- Added first-run example buttons for pairing, substitute, style shift, and mode lookup workflows.
+- Example buttons set mode, model, ingredients, optional style, and immediately run retrieval.
+- Added E2E coverage for example pairing and example style-shift flows.
+- Full gate passed again: `npm run test:all` with 12 unit tests and 26 E2E checks.
 
 ## In Progress
 
-- Continue improving result interpretation and mode-specific guidance before 21:30.
+- Continue high-impact UX and test improvements before 21:30.
 
 ## Backlog
 

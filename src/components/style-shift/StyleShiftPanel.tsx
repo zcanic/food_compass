@@ -30,6 +30,7 @@ export function StyleShiftPanel({
           <button
             key={style}
             onClick={() => onChangeStyle(style)}
+            aria-label={`风格：${STYLE_LABELS[style] ?? style}`}
             style={{
               padding: "6px 12px",
               border: selectedStyle === style ? "2px solid #2a7" : "1px solid #ddd",

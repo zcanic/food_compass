@@ -9,8 +9,19 @@ import { AskPanel } from "../components/ask-panel/AskPanel";
 import { useQueryStore } from "../store/query-store";
 import { useQuery } from "../hooks/useQuery";
 import type { AppMode } from "../types/query";
+import type { StyleStrength } from "../types/query";
 import type { ModelName } from "../types/model";
 import { MODEL_LABELS } from "../types/model";
+
+interface ExampleQuery {
+  label: string;
+  hint: string;
+  mode: AppMode;
+  ingredients: string[];
+  model: ModelName;
+  targetStyle?: string;
+  strength?: StyleStrength;
+}
 
 const MODE_DEFAULT_MODEL: Record<AppMode, ModelName> = {
   pairing: "cooc",
@@ -29,6 +40,39 @@ const MODE_HELP: Record<AppMode, string> = {
   complete_combo: "把多个食材平均成组合向量，找还可以补什么。",
   ask: "用一句话提问，系统会先解析意图，再调用本地工具。",
 };
+
+const EXAMPLES: ExampleQuery[] = [
+  {
+    label: "番茄找搭配",
+    hint: "看它常和什么一起出现",
+    mode: "pairing",
+    ingredients: ["tomato"],
+    model: "cooc",
+  },
+  {
+    label: "罗勒找替代",
+    hint: "缺少罗勒时找风味近邻",
+    mode: "substitute",
+    ingredients: ["basil"],
+    model: "chem",
+  },
+  {
+    label: "番茄鸡蛋做日式",
+    hint: "把组合推向日式风格",
+    mode: "style_shift",
+    ingredients: ["tomato", "egg"],
+    model: "core",
+    targetStyle: "Japanese",
+    strength: "medium",
+  },
+  {
+    label: "酱油查街区",
+    hint: "看它属于哪个食材街区",
+    mode: "lookup_mode",
+    ingredients: ["soy_sauce"],
+    model: "core",
+  },
+];
 
 export function HomePage() {
   const store = useQueryStore();
@@ -59,6 +103,25 @@ export function HomePage() {
     if (mode === "style_shift") {
       store.setTargetStyle("Japanese");
     }
+  };
+
+  const runExample = (example: ExampleQuery) => {
+    store.setActiveMode(example.mode);
+    store.setActiveModel(example.model);
+    store.setTargetStyle(example.targetStyle ?? "");
+    store.setStrength(example.strength ?? "medium");
+    store.setResults([]);
+    store.setModes([]);
+    store.setExplanation("");
+    store.setHasSearched(false);
+
+    runQuery(
+      example.mode,
+      example.ingredients,
+      example.model,
+      example.targetStyle,
+      example.strength
+    );
   };
 
   const canExplore = store.matchedIngredients.length > 0 && !store.isLoading;
@@ -101,6 +164,36 @@ export function HomePage() {
 
       <div className="workbench-grid">
         <section className="panel control-stack" aria-label="Controls">
+          <div>
+            <div className="panel-title">试一个例子</div>
+            <div style={{ display: "grid", gap: 8 }}>
+              {EXAMPLES.map((example) => (
+                <button
+                  key={example.label}
+                  type="button"
+                  onClick={() => runExample(example)}
+                  aria-label={`示例：${example.label}`}
+                  style={{
+                    background: "#fff",
+                    border: "1px solid var(--border)",
+                    borderRadius: 8,
+                    color: "var(--text)",
+                    cursor: "pointer",
+                    padding: "9px 12px",
+                    textAlign: "left",
+                  }}
+                >
+                  <span style={{ display: "block", fontSize: 13, fontWeight: 700 }}>
+                    {example.label}
+                  </span>
+                  <span style={{ color: "var(--subtle)", display: "block", fontSize: 11, marginTop: 2 }}>
+                    {example.hint}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div>
             <div className="panel-title">1. 选择任务</div>
             <ModeTabs active={store.activeMode} onChange={handleModeChange} />
