@@ -1,9 +1,63 @@
+import {
+  EVIDENCE_METRICS,
+  MODEL_AXIS,
+  PRODUCT_LIMITS,
+  RESEARCH_FACTS,
+} from "../research/evidence";
+
 export function AboutPage() {
   return (
-    <div style={{ maxWidth: 700, margin: "40px auto", padding: "0 24px", lineHeight: 1.8 }}>
+    <div style={{ maxWidth: 860, margin: "32px auto", padding: "0 24px 24px", lineHeight: 1.75 }}>
       <h1 style={{ fontSize: 20, marginBottom: 24 }}>关于 Flavor Compass</h1>
 
-      <section style={{ marginBottom: 24 }}>
+      <section style={{ marginBottom: 24 }} aria-label="研究依据">
+        <h2 style={{ fontSize: 16 }}>研究依据</h2>
+        <p style={{ fontSize: 14 }}>
+          Flavor Compass 把 Epicure 论文里的食材 embedding 产品化为一个食材语义地图。
+          核心不是生成菜谱，而是在同一个 300 维空间里做最近邻、组合、mode lookup 和实验性方向移动。
+        </p>
+        <div className="research-fact-grid">
+          {RESEARCH_FACTS.map((fact) => (
+            <div key={fact.label} className="research-fact">
+              <div className="research-fact-value">{fact.value}</div>
+              <div className="research-fact-label">{fact.label}</div>
+              <div className="research-fact-detail">{fact.detail}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ marginBottom: 24 }} aria-label="三模型设计轴">
+        <h2 style={{ fontSize: 16 }}>三模型设计轴</h2>
+        <p style={{ fontSize: 14 }}>
+          Cooc、Core、Chem 不是三个随机按钮，而是论文中 recipe-context 到 flavor-chemistry 的可控设计轴。
+        </p>
+        <div className="model-axis-grid">
+          {MODEL_AXIS.map((entry) => (
+            <div key={entry.model} className="model-axis-card">
+              <div className="model-axis-label">{entry.label}</div>
+              <div className="model-axis-signal">{entry.signal}</div>
+              <div className="model-axis-detail">{entry.bestFor}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ marginBottom: 24 }} aria-label="证据指标">
+        <h2 style={{ fontSize: 16 }}>证据指标</h2>
+        <div className="evidence-grid">
+          {EVIDENCE_METRICS.map((metric) => (
+            <div key={metric.label} className="evidence-card">
+              <div className="evidence-card-label">{metric.label}</div>
+              <div className="evidence-card-value">{metric.value}</div>
+              <div className="evidence-card-source">{metric.source}</div>
+              <div className="evidence-card-detail">{metric.detail}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ marginBottom: 24 }} aria-label="数据来源">
         <h2 style={{ fontSize: 16 }}>数据来源</h2>
         <p style={{ fontSize: 14 }}>
           This product uses ingredient embeddings and related artifacts from:
@@ -19,7 +73,7 @@ export function AboutPage() {
         </p>
       </section>
 
-      <section style={{ marginBottom: 24 }}>
+      <section style={{ marginBottom: 24 }} aria-label="独立性声明">
         <h2 style={{ fontSize: 16 }}>独立性声明</h2>
         <p style={{ fontSize: 14 }}>
           This product is independent and is not affiliated with, sponsored by,
@@ -27,18 +81,16 @@ export function AboutPage() {
         </p>
       </section>
 
-      <section style={{ marginBottom: 24 }}>
+      <section style={{ marginBottom: 24 }} aria-label="功能限制">
         <h2 style={{ fontSize: 16 }}>功能限制</h2>
         <ul style={{ fontSize: 14, paddingLeft: 20 }}>
-          <li>当前版本基于 1,790 种规范食材的嵌入向量，不覆盖所有食材。</li>
-          <li>风味相似推荐不等于 1:1 可替换，用量和烹饪方式需自行调整。</li>
-          <li>风格迁移为实验功能，方向由产品层代表食材构造。</li>
-          <li>不提供过敏源判断、医疗建议或安全性保证。</li>
-          <li>没有完整营养数据库，饮食约束过滤尚未启用。</li>
+          {PRODUCT_LIMITS.map((limit) => (
+            <li key={limit}>{limit}</li>
+          ))}
         </ul>
       </section>
 
-      <section>
+      <section aria-label="技术栈">
         <h2 style={{ fontSize: 16 }}>技术栈</h2>
         <p style={{ fontSize: 14 }}>
           Vite · React · TypeScript · Capacitor · Zustand · Web Worker

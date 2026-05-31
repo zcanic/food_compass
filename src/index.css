@@ -227,6 +227,57 @@ h1, h2, h3, h4 {
   line-height: 1.45;
 }
 
+.research-fact-grid,
+.model-axis-grid,
+.evidence-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.research-fact,
+.model-axis-card,
+.evidence-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 12px;
+}
+
+.research-fact-value,
+.evidence-card-value {
+  color: var(--accent-strong);
+  font-size: 18px;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.research-fact-label,
+.model-axis-label,
+.evidence-card-label {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 3px;
+}
+
+.research-fact-detail,
+.model-axis-detail,
+.evidence-card-detail {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 5px;
+}
+
+.model-axis-signal,
+.evidence-card-source {
+  color: var(--amber);
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 3px;
+}
+
 .secondary-note {
   color: var(--subtle);
   font-size: 12px;
@@ -244,6 +295,12 @@ h1, h2, h3, h4 {
   }
 
   .workbench-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .research-fact-grid,
+  .model-axis-grid,
+  .evidence-grid {
     grid-template-columns: 1fr;
   }
 }

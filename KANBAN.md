@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 20:49 CST
+Status timestamp: 2026-05-31 20:52 CST
 
 ## Done
 
@@ -73,6 +73,11 @@ Status timestamp: 2026-05-31 20:49 CST
 - Mode cards now expose model source, mode kind, member count, and mode-level z summary without implying member-level scores.
 - Added unit coverage for canonical-to-atlas mode lookup and E2E coverage for model-comparison mode neighborhoods.
 - Full gate passed again: `npm run test:all` with 17 unit tests and 32 E2E checks.
+- About page now explains the paper-backed product core: canonical vocabulary, 300D embeddings, corpus scale, co-occurrence edges, and chemistry edges.
+- Added a three-model design-axis section that explains Cooc/Core/Chem as recipe-context vs chemistry tradeoffs.
+- Added evidence metrics tied to the paper and local supplementary CSVs, plus explicit product limitations.
+- Added unit coverage that keeps research metrics tied to sources and E2E coverage for the research/limits page.
+- Full gate passed again: `npm run test:all` with 20 unit tests and 34 E2E checks.
 
 ## In Progress
 
@@ -80,8 +85,6 @@ Status timestamp: 2026-05-31 20:49 CST
 
 ## Backlog
 
-- Add a research-grounded data/source page using the paper, CC BY attribution, and explicit model limitations.
-- Add a paper-evidence panel that explains Cooc/Core/Chem as recipe-context vs chemistry tradeoffs using local supplementary metrics.
 - Revisit style shift against the paper's SLERP/angle framing while keeping it clearly experimental.
 - Add mode lookup empty-state examples and model-bias explanations.
 - Add visual regression snapshots for key viewport states.
