@@ -10,6 +10,7 @@ const MODE_LABELS: Record<AppMode, string> = {
   style_shift: "换风格",
   lookup_mode: "查街区",
   complete_combo: "组菜",
+  compare_models: "模型对比",
   ask: "Ask",
 };
 

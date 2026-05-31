@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 20:29 CST
+Status timestamp: 2026-05-31 20:31 CST
 
 ## Done
 
@@ -48,6 +48,10 @@ Status timestamp: 2026-05-31 20:29 CST
 - Added unit coverage for typo suggestions and unrelated-word rejection.
 - Added E2E coverage for selecting a typo correction.
 - Full gate passed again: `npm run test:all` with 13 unit tests and 28 E2E checks.
+- Added a model-comparison mode that runs Cooc, Core, and Chem perspectives together.
+- Model comparison hides the single-model selector and explains the three simultaneous views.
+- Added E2E coverage for model-comparison results and labels.
+- Full gate passed again: `npm run test:all` with 13 unit tests and 30 E2E checks.
 
 ## In Progress
 

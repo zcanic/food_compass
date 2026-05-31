@@ -94,6 +94,22 @@ test("style example chooses style mode and target direction", async ({ page }) =
   await expect(page.getByRole("region", { name: "查询摘要" }).getByText("日式 · 中等")).toBeVisible();
 });
 
+test("model comparison runs all three model perspectives", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "任务：模型对比" }).click();
+  await expect(page.getByText(/同时运行常见搭配、综合推荐和风味相似/)).toBeVisible();
+  await page.getByPlaceholder(/输入食材/).fill("番茄");
+  await page.keyboard.press("Enter");
+  await page.getByRole("button", { name: "探索" }).click();
+
+  await expect(page.getByText(/三模型对比/)).toBeVisible();
+  await expect(page.getByRole("region", { name: "查询摘要" }).getByText("模型对比")).toBeVisible();
+  await expect(page.getByText("常见搭配").first()).toBeVisible();
+  await expect(page.getByText("综合推荐").first()).toBeVisible();
+  await expect(page.getByText("风味相似").first()).toBeVisible();
+});
+
 test("recent ingredients persist and can be re-added quickly", async ({ page }) => {
   await page.goto("/");
 

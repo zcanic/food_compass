@@ -68,7 +68,7 @@ export function ResultList({
       </div>
       <div role="list" aria-label="推荐结果">
         {results.map((rec, i) => (
-          <ResultCard key={rec.name} rec={rec} rank={i + 1} />
+          <ResultCard key={`${rec.model}-${rec.name}-${i}`} rec={rec} rank={i + 1} />
         ))}
       </div>
     </div>

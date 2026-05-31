@@ -6,6 +6,7 @@ const MODES: { mode: AppMode; label: string; short: string }[] = [
   { mode: "style_shift", label: "换风格", short: "推向目标风味" },
   { mode: "lookup_mode", label: "查街区", short: "它属于哪里" },
   { mode: "complete_combo", label: "组菜", short: "已有食材补全" },
+  { mode: "compare_models", label: "模型对比", short: "三种视角差异" },
   { mode: "ask", label: "Ask", short: "一句话提问" },
 ];
 

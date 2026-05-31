@@ -29,6 +29,7 @@ const MODE_DEFAULT_MODEL: Record<AppMode, ModelName> = {
   style_shift: "core",
   lookup_mode: "core",
   complete_combo: "core",
+  compare_models: "core",
   ask: "core",
 };
 
@@ -38,6 +39,7 @@ const MODE_HELP: Record<AppMode, string> = {
   style_shift: "把当前食材组合轻度推向一个目标风格，属于实验功能。",
   lookup_mode: "查看食材在 Epicure 空间中靠近哪些食材街区。",
   complete_combo: "把多个食材平均成组合向量，找还可以补什么。",
+  compare_models: "同时查看常见搭配、综合推荐和风味相似三种视角的差异。",
   ask: "用一句话提问，系统会先解析意图，再调用本地工具。",
 };
 
@@ -70,6 +72,13 @@ const EXAMPLES: ExampleQuery[] = [
     hint: "看它属于哪个食材街区",
     mode: "lookup_mode",
     ingredients: ["soy_sauce"],
+    model: "core",
+  },
+  {
+    label: "番茄模型对比",
+    hint: "看三种模型的差异",
+    mode: "compare_models",
+    ingredients: ["tomato"],
     model: "core",
   },
 ];
@@ -130,6 +139,7 @@ export function HomePage() {
     ? `已选择 ${store.matchedIngredients.length} 个食材`
     : "先输入至少 1 个食材";
   const showResultList = store.activeMode !== "lookup_mode" || store.modes.length === 0;
+  const showModelToggle = store.activeMode !== "ask" && store.activeMode !== "compare_models";
   const emptyTitle = (() => {
     if (store.matchedIngredients.length === 0) return "先添加食材";
     if (!store.hasSearched) return "准备好了，点击探索";
@@ -207,16 +217,22 @@ export function HomePage() {
                 <SearchBox />
               </div>
 
-              <div>
-                <div className="panel-title">3. 选择模型视角</div>
-                <ModelToggle
-                  active={store.activeModel}
-                  onChange={(m: ModelName) => store.setActiveModel(m)}
-                />
-                <div className="secondary-note">
-                  当前使用：{MODEL_LABELS[store.activeModel]}。
+              {showModelToggle ? (
+                <div>
+                  <div className="panel-title">3. 选择模型视角</div>
+                  <ModelToggle
+                    active={store.activeModel}
+                    onChange={(m: ModelName) => store.setActiveModel(m)}
+                  />
+                  <div className="secondary-note">
+                    当前使用：{MODEL_LABELS[store.activeModel]}。
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="secondary-note">
+                  模型对比会同时运行常见搭配、综合推荐和风味相似，不需要单独选择模型。
+                </div>
+              )}
             </>
           )}
 

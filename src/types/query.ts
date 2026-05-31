@@ -6,6 +6,7 @@ export type AppMode =
   | "style_shift"
   | "lookup_mode"
   | "complete_combo"
+  | "compare_models"
   | "ask";
 
 export type AskIntent =

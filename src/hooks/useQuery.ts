@@ -6,6 +6,7 @@ import {
   completeCombination,
   shiftStyle,
   lookupModes,
+  compareModels,
 } from "../engine";
 import type { ModelName } from "../types/model";
 import type { AppMode, StyleStrength } from "../types/query";
@@ -51,6 +52,17 @@ export function useQuery() {
             store.setResults(recommendations);
             store.setModes(modes);
             store.setExplanation("基于组合向量的最近邻检索结果。");
+            break;
+          }
+          case "compare_models": {
+            const compared = compareModels(ingredients[0], 8);
+            store.setResults([
+              ...compared.cooc,
+              ...compared.core,
+              ...compared.chem,
+            ]);
+            store.setModes([]);
+            store.setExplanation("三模型对比：常见搭配看菜谱共现，综合推荐混合共现和化学信号，风味相似看风味化学近邻。");
             break;
           }
           case "style_shift": {
