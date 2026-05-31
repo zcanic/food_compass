@@ -60,6 +60,14 @@ export interface ContinuousProbeEvidenceEntry {
   detail: string;
 }
 
+export interface ModeAtlasSummaryEntry {
+  model: ModelName;
+  label: string;
+  value: string;
+  source: string;
+  detail: string;
+}
+
 export const RESEARCH_FACTS: ResearchFact[] = [
   {
     label: "规范食材",
@@ -259,6 +267,30 @@ export const CONTINUOUS_PROBE_EVIDENCE: ContinuousProbeEvidenceEntry[] = [
     value: "rho 0.392",
     source: "linear_probe_continuous.csv",
     detail: "Cooc 中蛋白/脂肪比例可被弱到中等程度读出，但仍不足以作为可靠营养过滤器。",
+  },
+];
+
+export const MODE_ATLAS_SUMMARY: ModeAtlasSummaryEntry[] = [
+  {
+    model: "cooc",
+    label: "Cooc mode atlas",
+    value: "150 modes",
+    source: "mode_atlas_cooc.csv",
+    detail: "17 binary / 73 continuous / 60 factor；最大街区是 Mediterranean savory herbs and cheeses，243 个成员。",
+  },
+  {
+    model: "core",
+    label: "Core mode atlas",
+    value: "193 modes",
+    source: "mode_atlas_core.csv",
+    detail: "24 binary / 82 continuous / 87 factor；最大街区是 Mediterranean savory pantry staples，218 个成员。",
+  },
+  {
+    model: "chem",
+    label: "Chem mode atlas",
+    value: "200 modes",
+    source: "mode_atlas_chem.csv",
+    detail: "19 binary / 94 continuous / 87 factor；最大街区是 Processed deli meats cheeses and condiments，254 个成员。",
   },
 ];
 

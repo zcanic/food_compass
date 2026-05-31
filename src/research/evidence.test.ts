@@ -7,6 +7,7 @@ import {
   EVIDENCE_METRICS,
   LINEAR_PROBE_EVIDENCE,
   MODEL_AXIS,
+  MODE_ATLAS_SUMMARY,
   PRODUCT_LIMITS,
   RESEARCH_FACTS,
   SENSORY_AXES,
@@ -23,6 +24,7 @@ describe("research evidence copy", () => {
     expect(EVIDENCE_METRICS.some((metric) => metric.source.includes("linear_probe"))).toBe(true);
     expect(LINEAR_PROBE_EVIDENCE.every((entry) => entry.source === "linear_probe.csv")).toBe(true);
     expect(CONTINUOUS_PROBE_EVIDENCE.every((entry) => entry.source === "linear_probe_continuous.csv")).toBe(true);
+    expect(MODE_ATLAS_SUMMARY.every((entry) => entry.source.startsWith("mode_atlas_"))).toBe(true);
     expect(EVIDENCE_METRICS.some((metric) => metric.source.includes("cross_modal"))).toBe(true);
     expect(CROSS_MODAL_EVIDENCE.every((entry) => entry.source === "cross_modal.csv")).toBe(true);
     expect(WEAT_CHECKS.every((check) => check.source === "weat.csv")).toBe(true);

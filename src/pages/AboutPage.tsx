@@ -3,6 +3,7 @@ import {
   CROSS_MODAL_EVIDENCE,
   EVIDENCE_METRICS,
   LINEAR_PROBE_EVIDENCE,
+  MODE_ATLAS_SUMMARY,
   MODEL_AXIS,
   PRODUCT_LIMITS,
   RESEARCH_FACTS,
@@ -79,6 +80,24 @@ export function AboutPage() {
               <div className="evidence-card-value">{metric.value}</div>
               <div className="evidence-card-source">{metric.source}</div>
               <div className="evidence-card-detail">{metric.detail}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ marginBottom: 24 }} aria-label="Mode atlas 覆盖">
+        <h2 style={{ fontSize: 16 }}>Mode atlas 覆盖</h2>
+        <p style={{ fontSize: 14 }}>
+          mode atlas 是离线抽取出的食材街区，不是全集分类表。不同模型的覆盖数量和最大街区不同，
+          所以查不到街区时不能说明食材没有风味关系。
+        </p>
+        <div className="evidence-grid">
+          {MODE_ATLAS_SUMMARY.map((entry) => (
+            <div key={entry.model} className="evidence-card">
+              <div className="evidence-card-label">{entry.label}</div>
+              <div className="evidence-card-value">{entry.value}</div>
+              <div className="evidence-card-source">{entry.source}</div>
+              <div className="evidence-card-detail">{entry.detail}</div>
             </div>
           ))}
         </div>

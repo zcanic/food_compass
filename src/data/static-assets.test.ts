@@ -32,6 +32,14 @@ describe("preprocessed static data assets", () => {
     }
   });
 
+  it("ships mode atlas coverage summaries for product limits", () => {
+    const summaries = readJSON<ModeAtlasSummaryAsset[]>("mode_atlas_summary.json");
+
+    expect(summaries.map((entry) => entry.model)).toEqual(MODEL_NAMES);
+    expect(summaries.every((entry) => entry.totalModes > 100)).toBe(true);
+    expect(summaries.some((entry) => entry.model === "chem" && entry.largestMode.nMembers > 250)).toBe(true);
+  });
+
   it("ships paper-derived sensory axes for every sibling model", () => {
     const axes = readJSON<SensoryAxisAsset[]>("sensory_axes.json");
 
@@ -113,6 +121,12 @@ interface SensoryAxisAsset {
   model: ModelName;
   axisLabel: string;
   poleA: { topIngredients: string[] };
+}
+
+interface ModeAtlasSummaryAsset {
+  model: ModelName;
+  totalModes: number;
+  largestMode: { nMembers: number };
 }
 
 interface StyleBenchmarkAsset {

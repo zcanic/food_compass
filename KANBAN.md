@@ -157,6 +157,11 @@ Status timestamp: 2026-05-31 22:01 CST
 - Pairing, substitute, and model-comparison retrieval now return exactly the requested topK count after excluding the input ingredient.
 - Added E2E coverage that locks the default pairing result count to 20 candidates.
 - Full gate passed again: `npm run test:all` with 48 unit tests and 42 E2E checks.
+- 2026-05-31 22:04 CST: Mode atlas coverage evidence card completed.
+- `mode_atlas_summary.json` is now generated and shipped with per-model mode counts, kind distribution, and largest-neighborhood metadata.
+- About now explains mode-atlas coverage and limits using source CSV labels instead of leaving coverage as an implicit implementation detail.
+- Added unit/static-asset/E2E coverage for the coverage summary and source-backed About copy.
+- Full gate passed again: `npm run test:all` with 49 unit tests and 42 E2E checks.
 
 ## In Progress
 
@@ -166,5 +171,5 @@ Status timestamp: 2026-05-31 22:01 CST
 
 - Add screenshot snapshots only after the visual baseline is stable enough to avoid noisy review churn.
 - Add worker timing instrumentation for larger future data assets.
-- Add generated evidence for factor alignment or mode-atlas quality metrics if present.
+- Add generated mode-atlas/runtime parity tests for coverage summary copy.
 - Add screenshot snapshots only after stabilizing the expanded About evidence page height.

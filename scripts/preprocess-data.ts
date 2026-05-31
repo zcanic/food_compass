@@ -189,6 +189,7 @@ function main() {
 
   // 3. Mode atlas
   const modeAtlas: Record<string, unknown[]> = {};
+  const modeAtlasSummary: unknown[] = [];
   for (const model of ["cooc", "core", "chem"] as const) {
     const fileName = `mode_atlas_${model}.csv`;
     const rows = readCSV<ModeRow>(path.join(DATA_SRC, fileName));
@@ -201,10 +202,28 @@ function main() {
       propZMean: Number(r.prop_z_mean),
       members: r.members_pipe.split("|").map((m) => m.trim()).filter(Boolean),
     }));
+    const kindCounts = rows.reduce<Record<string, number>>((counts, row) => {
+      counts[row.kind] = (counts[row.kind] ?? 0) + 1;
+      return counts;
+    }, {});
+    const largest = [...rows].sort((a, b) => Number(b.n_members) - Number(a.n_members))[0];
+    modeAtlasSummary.push({
+      model,
+      totalModes: rows.length,
+      kindCounts,
+      largestMode: {
+        label: largest.label,
+        nMembers: Number(largest.n_members),
+        kind: largest.kind,
+        property: largest.property,
+      },
+    });
     console.log(`  mode_atlas.${model}: ${rows.length} modes`);
   }
   fs.writeFileSync(path.join(DATA_OUT, "mode_atlas.json"), JSON.stringify(modeAtlas));
   console.log("  mode_atlas.json written");
+  fs.writeFileSync(path.join(DATA_OUT, "mode_atlas_summary.json"), JSON.stringify(modeAtlasSummary));
+  console.log("  mode_atlas_summary.json written");
 
   // 4. Sensory axes
   const sensoryRows = readCSV<SensoryAxisRow>(path.join(DATA_SRC, "procrustes_sensory.csv"));

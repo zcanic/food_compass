@@ -290,6 +290,8 @@ test("about page explains research basis and product limits", async ({ page }) =
   await expect(page.getByRole("region", { name: "研究依据" }).getByText("1,790")).toBeVisible();
   await expect(page.getByRole("region", { name: "三模型设计轴" }).getByText("常见搭配", { exact: true })).toBeVisible();
   await expect(page.getByRole("region", { name: "三模型设计轴" }).getByText("风味相似", { exact: true })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Mode atlas 覆盖" }).getByText("193 modes")).toBeVisible();
+  await expect(page.getByRole("region", { name: "Mode atlas 覆盖" }).getByText("mode_atlas_core.csv")).toBeVisible();
   await expect(page.getByRole("region", { name: "主感官轴" }).getByText("Savory-Umami to Sweet-Floral Confection")).toBeVisible();
   await expect(page.getByRole("region", { name: "主感官轴" }).getByText("procrustes_sensory.csv").first()).toBeVisible();
   await expect(page.getByRole("region", { name: "证据指标" }).getByText("linear_probe.csv")).toBeVisible();
