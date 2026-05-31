@@ -64,6 +64,14 @@ describe("preprocessed static data assets", () => {
     expect(metrics.some((entry) => entry.source === "CF" && entry.dimension === "cf_bitter")).toBe(true);
   });
 
+  it("ships linear probe metrics for cuisine and product-boundary evidence", () => {
+    const metrics = readJSON<LinearProbeAsset[]>("linear_probe_metrics.json");
+
+    expect(metrics).toHaveLength(20);
+    expect(metrics.some((entry) => entry.model === "core" && entry.dimension === "cuisine_South_Asian" && entry.f1Mean > 0.95)).toBe(true);
+    expect(metrics.some((entry) => entry.dimension === "nova_level" && entry.f1Mean < 0.7)).toBe(true);
+  });
+
   it("keeps aliases pointed at canonical vocab names", () => {
     const vocab = new Set(readJSON<VocabEntry[]>("vocab.json").map((entry) => entry.name));
     const aliases = readJSON<AliasTable>("aliases_zh_en.json");
@@ -106,4 +114,10 @@ interface WeatCheckAsset {
 interface CrossModalAsset {
   dimension: string;
   source: string;
+}
+
+interface LinearProbeAsset {
+  model: ModelName;
+  dimension: string;
+  f1Mean: number;
 }

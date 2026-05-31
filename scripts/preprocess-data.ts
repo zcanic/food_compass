@@ -76,6 +76,17 @@ interface CrossModalRow {
   n_outliers: string;
 }
 
+interface LinearProbeRow {
+  model: string;
+  dimension: string;
+  accuracy_mean: string;
+  accuracy_std: string;
+  f1_mean: string;
+  f1_std: string;
+  n_nonzero_weights: string;
+  sparsity: string;
+}
+
 const STYLE_BENCHMARK_CASES: Record<string, { cases: string[]; benchmarkDirection: string }> = {
   Japanese: { cases: ["chicken + Japanese"], benchmarkDirection: "Japanese" },
   East_Asian: { cases: ["beef + East_Asian"], benchmarkDirection: "East_Asian" },
@@ -232,7 +243,22 @@ function main() {
   fs.writeFileSync(path.join(DATA_OUT, "cross_modal_evidence.json"), JSON.stringify(crossModal));
   console.log(`  cross_modal_evidence.json: ${crossModal.length} metrics`);
 
-  // 8. Aliases (placeholder)
+  // 8. Linear probe metrics
+  const linearProbeRows = readCSV<LinearProbeRow>(path.join(DATA_SRC, "linear_probe.csv"));
+  const linearProbeMetrics = linearProbeRows.map((row) => ({
+    model: row.model,
+    dimension: row.dimension,
+    accuracyMean: Number(row.accuracy_mean),
+    accuracyStd: Number(row.accuracy_std),
+    f1Mean: Number(row.f1_mean),
+    f1Std: Number(row.f1_std),
+    nNonzeroWeights: Number(row.n_nonzero_weights),
+    sparsity: Number(row.sparsity),
+  }));
+  fs.writeFileSync(path.join(DATA_OUT, "linear_probe_metrics.json"), JSON.stringify(linearProbeMetrics));
+  console.log(`  linear_probe_metrics.json: ${linearProbeMetrics.length} metrics`);
+
+  // 9. Aliases (placeholder)
   const aliases: Record<string, { zh?: string[]; ja?: string[]; en_alt?: string[] }> = {
     soy_sauce: { zh: ["酱油", "生抽", "老抽", "豉油"], ja: ["しょうゆ", "醤油"], en_alt: ["soy sauce"] },
     tomato: { zh: ["番茄", "西红柿", "蕃茄"], ja: ["トマト"], en_alt: ["tomatoes"] },

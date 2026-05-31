@@ -1,6 +1,7 @@
 import {
   CROSS_MODAL_EVIDENCE,
   EVIDENCE_METRICS,
+  LINEAR_PROBE_EVIDENCE,
   MODEL_AXIS,
   PRODUCT_LIMITS,
   RESEARCH_FACTS,
@@ -77,6 +78,24 @@ export function AboutPage() {
               <div className="evidence-card-value">{metric.value}</div>
               <div className="evidence-card-source">{metric.source}</div>
               <div className="evidence-card-detail">{metric.detail}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ marginBottom: 24 }} aria-label="线性探针">
+        <h2 style={{ fontSize: 16 }}>线性探针</h2>
+        <p style={{ fontSize: 14 }}>
+          linear probes 检查简单线性模型能否从 embedding 中读出外部标签。
+          高 F1 支持可解释导航，低一些的维度则提醒产品不要过度承诺。
+        </p>
+        <div className="evidence-grid">
+          {LINEAR_PROBE_EVIDENCE.map((entry) => (
+            <div key={entry.label} className="evidence-card">
+              <div className="evidence-card-label">{entry.label}</div>
+              <div className="evidence-card-value">{entry.value}</div>
+              <div className="evidence-card-source">{entry.source}</div>
+              <div className="evidence-card-detail">{entry.detail}</div>
             </div>
           ))}
         </div>

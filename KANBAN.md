@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 21:45 CST
+Status timestamp: 2026-05-31 21:47 CST
 
 ## Done
 
@@ -134,6 +134,10 @@ Status timestamp: 2026-05-31 21:45 CST
 - About now includes source-backed USDA/ChemFlavor cross-modal validation instead of relying only on hardcoded summary copy.
 - Added unit/static-asset/E2E coverage for cross-modal evidence rows and source labels.
 - Full gate passed again: `npm run test:all` with 40 unit tests and 42 E2E checks.
+- `linear_probe.csv` is now converted into a shipped `linear_probe_metrics.json` static asset.
+- About now includes a linear-probe section that separates strong cuisine navigation evidence from weaker product-boundary signals like NOVA level.
+- Added unit/static-asset/E2E coverage for linear probe metrics.
+- Full gate passed again: `npm run test:all` with 41 unit tests and 42 E2E checks.
 
 ## In Progress
 
@@ -144,4 +148,4 @@ Status timestamp: 2026-05-31 21:45 CST
 - Add screenshot snapshots only after the visual baseline is stable enough to avoid noisy review churn.
 - Add worker timing instrumentation for larger future data assets.
 - Expand Ask diagnostics to distinguish vector retrieval, mode lookup, and constraint-only tools.
-- Convert linear probe metrics into generated evidence assets.
+- Add parity tests between generated linear/cross-modal assets and runtime evidence copy.

@@ -4,6 +4,7 @@ import { join } from "node:path";
 import {
   CROSS_MODAL_EVIDENCE,
   EVIDENCE_METRICS,
+  LINEAR_PROBE_EVIDENCE,
   MODEL_AXIS,
   PRODUCT_LIMITS,
   RESEARCH_FACTS,
@@ -19,6 +20,7 @@ describe("research evidence copy", () => {
   it("keeps metrics tied to explicit sources", () => {
     expect(EVIDENCE_METRICS.every((metric) => metric.source.length > 0)).toBe(true);
     expect(EVIDENCE_METRICS.some((metric) => metric.source.includes("linear_probe"))).toBe(true);
+    expect(LINEAR_PROBE_EVIDENCE.every((entry) => entry.source === "linear_probe.csv")).toBe(true);
     expect(EVIDENCE_METRICS.some((metric) => metric.source.includes("cross_modal"))).toBe(true);
     expect(CROSS_MODAL_EVIDENCE.every((entry) => entry.source === "cross_modal.csv")).toBe(true);
     expect(WEAT_CHECKS.every((check) => check.source === "weat.csv")).toBe(true);

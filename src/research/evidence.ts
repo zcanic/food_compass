@@ -46,6 +46,13 @@ export interface CrossModalEvidenceEntry {
   detail: string;
 }
 
+export interface LinearProbeEvidenceEntry {
+  label: string;
+  value: string;
+  source: string;
+  detail: string;
+}
+
 export const RESEARCH_FACTS: ResearchFact[] = [
   {
     label: "规范食材",
@@ -203,6 +210,27 @@ export const CROSS_MODAL_EVIDENCE: CrossModalEvidenceEntry[] = [
     value: "rho 0.553",
     source: "cross_modal.csv",
     detail: "外部营养维度也会在嵌入空间中显现，但当前产品没有把它实现为可靠营养过滤。",
+  },
+];
+
+export const LINEAR_PROBE_EVIDENCE: LinearProbeEvidenceEntry[] = [
+  {
+    label: "Cooc South Asian",
+    value: "F1 0.952",
+    source: "linear_probe.csv",
+    detail: "Cooc 的 South Asian cuisine probe 很强，适合解释 recipe-context 风格邻近。",
+  },
+  {
+    label: "Core South Asian",
+    value: "F1 0.962",
+    source: "linear_probe.csv",
+    detail: "Core 在同一 probe 上更高，但这仍是离线线性可分性，不是严格菜系判定器。",
+  },
+  {
+    label: "Core NOVA level",
+    value: "F1 0.621",
+    source: "linear_probe.csv",
+    detail: "加工度信号弱于 cuisine probes，当前产品不应把它包装成可靠健康或加工度过滤。",
   },
 ];
 
