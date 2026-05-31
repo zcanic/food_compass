@@ -39,6 +39,11 @@ export function ModePanel({ modes }: Props) {
               <div style={{ fontSize: 11, color: "var(--subtle)", marginTop: 3 }}>
                 {MODEL_LABELS[m.model]} · {KIND_LABELS[m.mode.kind] ?? m.mode.kind} · {formatProperty(m.mode.property)} · {m.mode.nMembers} 个成员
               </div>
+              {m.matchedIngredients && m.matchedIngredients.length > 0 && (
+                <div style={{ fontSize: 11, color: "var(--accent-strong)", marginTop: 3 }}>
+                  命中：{m.matchedIngredients.map(displayName).join(" · ")}
+                </div>
+              )}
             </div>
             <span
               title="mode 级平均属性强度，不是单个食材得分"

@@ -163,6 +163,19 @@ test("mode lookup shows neighborhood cards without stale explore prompts", async
   await expect(page.getByText("准备好了，点击探索")).toHaveCount(0);
 });
 
+test("complete combo uses the full ingredient set for neighborhood context", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "任务：组菜" }).click();
+  await page.getByPlaceholder(/输入食材/).fill("酱油、豆腐");
+  await page.keyboard.press("Enter");
+  await page.getByRole("button", { name: "探索" }).click();
+
+  await expect(page.getByText(/基于组合向量/)).toBeVisible();
+  const modes = page.getByRole("region", { name: "食材街区" });
+  await expect(modes.getByText(/命中：soy sauce · tofu/).first()).toBeVisible();
+});
+
 test("style shift uses readable labels and returns experimental results", async ({ page }) => {
   await page.goto("/");
 

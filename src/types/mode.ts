@@ -21,4 +21,5 @@ export interface ModeMatch {
   mode: Mode;
   model: "cooc" | "core" | "chem";
   neighborsInMode: string[];
+  matchedIngredients?: string[];
 }

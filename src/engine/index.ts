@@ -107,8 +107,7 @@ export function completeCombination(
     model,
   }));
 
-  const firstIngredient = ingredients[0];
-  const modes = modeLookup.lookup(firstIngredient, model);
+  const modes = modeLookup.lookupForIngredients(ingredients, model);
 
   return { recommendations: recipes, modes };
 }

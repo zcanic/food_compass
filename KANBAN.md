@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 20:54 CST
+Status timestamp: 2026-05-31 20:57 CST
 
 ## Done
 
@@ -82,6 +82,10 @@ Status timestamp: 2026-05-31 20:54 CST
 - Style-shift explanation now states the operation is experimental and not the paper's complete direction system.
 - Added math unit coverage for SLERP endpoints, normalization, and halfway travel between orthogonal vectors.
 - Full gate passed again: `npm run test:all` with 22 unit tests and 34 E2E checks.
+- Combination mode now ranks mode neighborhoods using the full selected ingredient set instead of only the first ingredient.
+- Mode cards show which selected ingredients each neighborhood matched, making recipe-vector context easier to inspect.
+- Added unit coverage for multi-ingredient mode ranking and E2E coverage for `soy sauce + tofu` combo neighborhood context.
+- Full gate passed again: `npm run test:all` with 23 unit tests and 36 E2E checks.
 
 ## In Progress
 
