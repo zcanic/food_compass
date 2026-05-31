@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { routeIntent } from "../../ask/intent-router";
+import { buildSkillPlan } from "../../ask/skill-plan";
 import { executeSkill } from "../../skills";
 import { composeResponse } from "../../ask/response-composer";
 import type { IntentResult } from "../../types/query";
@@ -15,7 +16,7 @@ export function AskPanel() {
   const [toolResults, setToolResults] = useState<SkillResult[]>([]);
   const [response, setResponse] = useState<AskResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const recommendations = toolResults.flatMap((r) => r.recommendations).slice(0, 12);
+  const recommendationGroups = toolResults.filter((r) => r.recommendations.length > 0);
 
   const handleSubmit = async () => {
     if (!question.trim()) return;
@@ -49,57 +50,10 @@ export function AskPanel() {
       }
 
       // Step 3: Execute skills based on intent
-      const skillResults: SkillResult[] = [];
-
-      if (parsed.intent === "pairing" && ingredients.length > 0) {
-        skillResults.push(
-          await executeSkill("find_pairings", {
-            ingredient: ingredients[0],
-            model: "cooc",
-            top_k: 12,
-          })
-        );
-      } else if (parsed.intent === "substitute" && ingredients.length > 0) {
-        skillResults.push(
-          await executeSkill("find_substitutes", {
-            ingredient: ingredients[0],
-            top_k: 12,
-          })
-        );
-      } else if (parsed.intent === "style_shift" && ingredients.length > 0) {
-        skillResults.push(
-          await executeSkill("shift_style", {
-            ingredients,
-            target_style: parsed.targetStyle ?? "Japanese",
-            strength: "medium",
-            top_k: 12,
-          })
-        );
-      } else if (parsed.intent === "complete_combo" && ingredients.length > 0) {
-        skillResults.push(
-          await executeSkill("complete_combination", {
-            ingredients,
-            model: "core",
-            top_k: 12,
-          })
-        );
-      } else if (parsed.intent === "explain" && ingredients.length > 0) {
-        skillResults.push(
-          await executeSkill("lookup_mode", {
-            ingredient: ingredients[0],
-            model: "core",
-          })
-        );
-      } else if (ingredients.length > 0) {
-        // Fallback: run pairings
-        skillResults.push(
-          await executeSkill("find_pairings", {
-            ingredient: ingredients[0],
-            model: "core",
-            top_k: 12,
-          })
-        );
-      }
+      const plan = buildSkillPlan(parsed, ingredients);
+      const skillResults: SkillResult[] = await Promise.all(
+        plan.map((step) => executeSkill(step.name, step.params))
+      );
 
       const recommendationNames = skillResults.flatMap((r) =>
         r.recommendations.map((rec) => rec.name)
@@ -189,6 +143,11 @@ export function AskPanel() {
             {intent.targetStyle && <> · 风格：{intent.targetStyle}</>}
             {intent.multiIntent && " · 多意图"}
           </div>
+          {intent.matchedIntents && intent.matchedIntents.length > 1 && (
+            <div style={{ marginTop: 6 }}>
+              意图链：{intent.matchedIntents.join("、")}
+            </div>
+          )}
           <div style={{ marginTop: 6 }}>
             食材：
             {matchedIngredients.length > 0
@@ -224,15 +183,53 @@ export function AskPanel() {
         </div>
       )}
 
-      {recommendations.length > 0 && (
+      {recommendationGroups.length === 1 && (
         <div style={{ marginTop: 16 }}>
           <ResultList
-            results={recommendations}
+            results={recommendationGroups[0].recommendations}
             explanation="这些是 Ask Mode 调用本地工具得到的结构化候选。"
             loading={false}
           />
         </div>
       )}
+
+      {recommendationGroups.length > 1 && (
+        <section style={{ marginTop: 16 }} aria-label="Ask 工具结果">
+          {recommendationGroups.map((group) => {
+            const label = toolLabel(group.skillName);
+            return (
+              <div key={group.skillName} style={{ marginTop: 14 }}>
+                <h4 style={{ color: "var(--text)", fontSize: 13, marginBottom: 6 }}>
+                  {label}
+                </h4>
+                <ResultList
+                  results={group.recommendations}
+                  explanation="这些是 Ask Mode 调用本地工具得到的结构化候选。"
+                  loading={false}
+                  listLabel={`${label}推荐结果`}
+                />
+              </div>
+            );
+          })}
+        </section>
+      )}
     </div>
   );
+}
+
+function toolLabel(skillName: string) {
+  switch (skillName) {
+    case "shift_style":
+      return "风格偏移";
+    case "find_pairings":
+      return "常见搭配";
+    case "find_substitutes":
+      return "风味替代";
+    case "complete_combination":
+      return "组合补全";
+    case "compare_models":
+      return "模型对比";
+    default:
+      return skillName;
+  }
 }

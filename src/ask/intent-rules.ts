@@ -1,8 +1,8 @@
-import type { IntentResult } from "../types/query";
+import type { AskIntent, IntentResult } from "../types/query";
 
 interface Rule {
   pattern: RegExp;
-  intent: IntentResult["intent"];
+  intent: AskIntent;
 }
 
 const rules: Rule[] = [
@@ -23,7 +23,7 @@ const styleKeywords: Record<string, string> = {
 };
 
 export function ruleBasedIntent(query: string): IntentResult | null {
-  const matchedIntents: IntentResult["intent"][] = [];
+  const matchedIntents: AskIntent[] = [];
   for (const rule of rules) {
     if (rule.pattern.test(query)) {
       matchedIntents.push(rule.intent);
@@ -47,6 +47,7 @@ export function ruleBasedIntent(query: string): IntentResult | null {
 
   return {
     intent,
+    matchedIntents,
     ingredients: [],
     targetStyle,
     constraints,

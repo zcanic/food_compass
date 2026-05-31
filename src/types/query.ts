@@ -20,6 +20,7 @@ export type StyleStrength = "light" | "medium" | "strong";
 
 export interface IntentResult {
   intent: AskIntent | null;
+  matchedIntents?: AskIntent[];
   ingredients: string[];
   targetStyle?: string;
   constraints: string[];

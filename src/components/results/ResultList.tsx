@@ -16,6 +16,7 @@ interface Props {
   emptyDetail?: string;
   groupByModel?: boolean;
   onAddIngredient?: (name: string) => void;
+  listLabel?: string;
 }
 
 export function ResultList({
@@ -26,6 +27,7 @@ export function ResultList({
   emptyDetail = "选择任务后点击探索，推荐结果会显示在这里。",
   groupByModel = false,
   onAddIngredient,
+  listLabel = "推荐结果",
 }: Props) {
   if (loading) {
     return <div style={{ padding: 24, textAlign: "center", color: "#999" }}>检索中...</div>;
@@ -80,7 +82,7 @@ export function ResultList({
       {groupByModel ? (
         <GroupedResults results={results} onAddIngredient={onAddIngredient} />
       ) : (
-        <div role="list" aria-label="推荐结果">
+        <div role="list" aria-label={listLabel}>
           {results.map((rec, i) => (
             <ResultCard
               key={`${rec.model}-${rec.name}-${i}`}

@@ -14,6 +14,7 @@ describe("ruleBasedIntent", () => {
     expect(result?.intent).toBe("style_shift");
     expect(result?.targetStyle).toBe("Japanese");
     expect(result?.multiIntent).toBe(true);
+    expect(result?.matchedIntents).toEqual(["pairing", "style_shift", "complete_combo"]);
   });
 
   it("captures dietary constraints as warnings instead of hard filters", () => {

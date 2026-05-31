@@ -83,7 +83,7 @@ export async function executeSkill(
         skillName: "shift_style",
         recommendations: results,
         status: "ok",
-        styleSummary: `向 ${STYLE_LABELS[targetStyle] ?? targetStyle} 风格做了 ${STYLE_STRENGTH_LABELS[strength] ?? strength} 强度偏移`,
+        styleSummary: `向 ${STYLE_LABELS[targetStyle] ?? targetStyle} 风格做了 ${STYLE_STRENGTH_LABELS[strength] ?? strength} 强度球面偏移`,
       };
     }
 

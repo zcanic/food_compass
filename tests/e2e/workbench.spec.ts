@@ -51,9 +51,12 @@ test("ask mode uses one question box and extracts Chinese ingredients", async ({
   await page.getByRole("button", { name: "提问" }).click();
 
   await expect(page.getByText(/意图：style_shift/)).toBeVisible();
+  await expect(page.getByText(/意图链：pairing、style_shift、complete_combo/)).toBeVisible();
   await expect(page.getByText(/食材：tomato、egg/)).toBeVisible();
   await expect(page.getByText(/调用工具：shift_style/)).toBeVisible();
-  await expect(page.getByRole("list", { name: "推荐结果" })).toBeVisible();
+  await expect(page.getByRole("list", { name: "风格偏移推荐结果" })).toBeVisible();
+  await expect(page.getByRole("list", { name: "常见搭配推荐结果" })).toBeVisible();
+  await expect(page.getByRole("list", { name: "组合补全推荐结果" })).toBeVisible();
 });
 
 test("unsupported ingredient input gives an actionable recovery message", async ({ page }) => {

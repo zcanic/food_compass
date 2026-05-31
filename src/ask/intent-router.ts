@@ -10,6 +10,7 @@ export async function routeIntent(query: string): Promise<IntentResult> {
   // Fallback: return low-confidence, rely on LLM if available
   return {
     intent: null,
+    matchedIntents: [],
     ingredients: [],
     constraints: [],
     confidence: 0.3,

@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 20:57 CST
+Status timestamp: 2026-05-31 21:09 CST
 
 ## Done
 
@@ -86,6 +86,10 @@ Status timestamp: 2026-05-31 20:57 CST
 - Mode cards show which selected ingredients each neighborhood matched, making recipe-vector context easier to inspect.
 - Added unit coverage for multi-ingredient mode ranking and E2E coverage for `soy sauce + tofu` combo neighborhood context.
 - Full gate passed again: `npm run test:all` with 23 unit tests and 36 E2E checks.
+- Ask Mode now preserves matched intent chains and builds an executable multi-tool plan instead of dropping secondary intents.
+- Multi-intent Ask queries execute local tools in primary-intent-first order and render grouped tool result lists.
+- Added unit coverage for skill-plan ordering/fallback and E2E coverage for a style-shift + pairing + combo Ask query.
+- Full gate passed again: `npm run test:all` with 25 unit tests and 36 E2E checks.
 
 ## In Progress
 
