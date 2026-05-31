@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 20:27 CST
+Status timestamp: 2026-05-31 20:29 CST
 
 ## Done
 
@@ -44,6 +44,10 @@ Status timestamp: 2026-05-31 20:27 CST
 - Example buttons set mode, model, ingredients, optional style, and immediately run retrieval.
 - Added E2E coverage for example pairing and example style-shift flows.
 - Full gate passed again: `npm run test:all` with 12 unit tests and 26 E2E checks.
+- Added typo-tolerant ingredient suggestions using bounded edit distance.
+- Added unit coverage for typo suggestions and unrelated-word rejection.
+- Added E2E coverage for selecting a typo correction.
+- Full gate passed again: `npm run test:all` with 13 unit tests and 28 E2E checks.
 
 ## In Progress
 

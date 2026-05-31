@@ -41,6 +41,21 @@ describe("IngredientMatcher", () => {
     expect(matcher.match("生抽")).toMatchObject({ kind: "exact", name: "soy_sauce" });
   });
 
+  it("suggests close typo candidates without accepting unrelated words", () => {
+    const matcher = createMatcher();
+
+    expect(matcher.match("tomoto")).toMatchObject({
+      kind: "fuzzy",
+      name: "tomato",
+      candidates: ["tomato"],
+    });
+    expect(matcher.match("priceless")).toMatchObject({
+      kind: "fuzzy",
+      name: "",
+      score: 0,
+    });
+  });
+
   it("extracts ingredients from continuous Chinese Ask prompts", () => {
     const matcher = createMatcher();
     const extracted = matcher.extractFromText("我有番茄和鸡蛋，想做得更日式一点，可以加什么？");

@@ -77,7 +77,42 @@ export class IngredientMatcher {
       }
     }
 
+    const typoCandidates = this.findTypoCandidates(normalized, underscored);
+    if (typoCandidates.length > 0) {
+      return {
+        kind: "fuzzy",
+        name: typoCandidates[0].name,
+        score: typoCandidates[0].score,
+        candidates: typoCandidates.map((c) => c.name),
+      };
+    }
+
     return { kind: "fuzzy", name: "", score: 0, candidates };
+  }
+
+  private findTypoCandidates(normalized: string, underscored: string) {
+    if (normalized.length < 4) return [];
+    const scored: { name: string; score: number }[] = [];
+
+    for (const v of this.vocab) {
+      const display = v.name.replace(/_/g, " ");
+      const distance = Math.min(
+        editDistance(normalized, display),
+        editDistance(underscored, v.name)
+      );
+      const maxLen = Math.max(normalized.length, display.length);
+      const allowedDistance = maxLen <= 6 ? 1 : 2;
+      if (distance <= allowedDistance) {
+        scored.push({
+          name: v.name,
+          score: 1 - distance / (maxLen + 1),
+        });
+      }
+    }
+
+    return scored
+      .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))
+      .slice(0, 6);
   }
 
   extractFromText(text: string, max = 8): TextIngredientMatch[] {
@@ -144,4 +179,31 @@ function containsTerm(text: string, term: string): boolean {
     return pattern.test(text);
   }
   return text.includes(term);
+}
+
+function editDistance(a: string, b: string): number {
+  if (a === b) return 0;
+  if (Math.abs(a.length - b.length) > 2) return 3;
+
+  const prev = new Array<number>(b.length + 1);
+  const curr = new Array<number>(b.length + 1);
+  for (let j = 0; j <= b.length; j++) prev[j] = j;
+
+  for (let i = 1; i <= a.length; i++) {
+    curr[0] = i;
+    let rowMin = curr[0];
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      curr[j] = Math.min(
+        prev[j] + 1,
+        curr[j - 1] + 1,
+        prev[j - 1] + cost
+      );
+      rowMin = Math.min(rowMin, curr[j]);
+    }
+    if (rowMin > 2) return 3;
+    for (let j = 0; j <= b.length; j++) prev[j] = curr[j];
+  }
+
+  return prev[b.length];
 }

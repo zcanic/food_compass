@@ -63,6 +63,15 @@ test("unsupported ingredient input gives an actionable recovery message", async 
   await expect(page.getByText(/当前词表暂未覆盖该食材/)).toBeVisible();
 });
 
+test("typo search offers a selectable correction", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByPlaceholder(/输入食材/).fill("tomoto");
+  await expect(page.getByText("你是不是想找...")).toBeVisible();
+  await page.getByText("tomato", { exact: true }).click();
+  await expect(page.getByRole("button", { name: "移除 tomato" })).toBeVisible();
+});
+
 test("example buttons set up and run a complete workflow", async ({ page }) => {
   await page.goto("/");
 
