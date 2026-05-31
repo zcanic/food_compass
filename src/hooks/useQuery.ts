@@ -61,7 +61,9 @@ export function useQuery() {
               ...compared.core,
               ...compared.chem,
             ]);
-            store.setModes([]);
+            store.setModes((["cooc", "core", "chem"] as ModelName[]).flatMap((m) =>
+              lookupModes(ingredients[0], m).slice(0, 2)
+            ));
             store.setExplanation("三模型对比：常见搭配看菜谱共现，综合推荐混合共现和化学信号，风味相似看风味化学近邻。");
             break;
           }

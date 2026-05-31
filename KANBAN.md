@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 20:43 CST
+Status timestamp: 2026-05-31 20:49 CST
 
 ## Done
 
@@ -68,6 +68,11 @@ Status timestamp: 2026-05-31 20:43 CST
 - Added unit coverage for the model-comparison summary logic.
 - Expanded model-comparison E2E assertions to verify the comparison overview in desktop and mobile runs.
 - Full gate passed again: `npm run test:all` with 15 unit tests and 32 E2E checks.
+- Re-read the final design doc and Epicure paper to refocus improvements on model choice, closest-mode lookup, and navigation operators.
+- Model comparison now includes closest-mode lookup from Cooc/Core/Chem so users see each sibling model's semantic neighborhood.
+- Mode cards now expose model source, mode kind, member count, and mode-level z summary without implying member-level scores.
+- Added unit coverage for canonical-to-atlas mode lookup and E2E coverage for model-comparison mode neighborhoods.
+- Full gate passed again: `npm run test:all` with 17 unit tests and 32 E2E checks.
 
 ## In Progress
 
@@ -75,7 +80,8 @@ Status timestamp: 2026-05-31 20:43 CST
 
 ## Backlog
 
-- Expand style-shift tests and UI copy around experimental directions.
-- Add clearer model-comparison affordances.
-- Add mode lookup empty-state examples.
+- Add a research-grounded data/source page using the paper, CC BY attribution, and explicit model limitations.
+- Add a paper-evidence panel that explains Cooc/Core/Chem as recipe-context vs chemistry tradeoffs using local supplementary metrics.
+- Revisit style shift against the paper's SLERP/angle framing while keeping it clearly experimental.
+- Add mode lookup empty-state examples and model-bias explanations.
 - Add visual regression snapshots for key viewport states.

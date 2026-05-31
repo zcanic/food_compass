@@ -129,6 +129,11 @@ test("model comparison runs all three model perspectives", async ({ page }) => {
   await expect(page.getByRole("list", { name: "常见搭配推荐结果" })).toBeVisible();
   await expect(page.getByRole("list", { name: "综合推荐推荐结果" })).toBeVisible();
   await expect(page.getByRole("list", { name: "风味相似推荐结果" })).toBeVisible();
+  const modes = page.getByRole("region", { name: "食材街区" });
+  await expect(modes.getByRole("heading", { name: "食材街区" })).toBeVisible();
+  await expect(modes.getByText(/常见搭配/).first()).toBeVisible();
+  await expect(modes.getByText(/综合推荐/).first()).toBeVisible();
+  await expect(modes.getByText(/风味相似/).first()).toBeVisible();
 });
 
 test("recent ingredients persist and can be re-added quickly", async ({ page }) => {
@@ -153,6 +158,8 @@ test("mode lookup shows neighborhood cards without stale explore prompts", async
   await page.getByRole("button", { name: "探索" }).click();
 
   await expect(page.getByRole("heading", { name: "食材街区" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "食材街区" }).getByText(/个成员/).first()).toBeVisible();
+  await expect(page.getByRole("region", { name: "食材街区" }).getByText(/z /).first()).toBeVisible();
   await expect(page.getByText("准备好了，点击探索")).toHaveCount(0);
 });
 
