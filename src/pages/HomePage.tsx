@@ -276,6 +276,7 @@ export function HomePage() {
                   loading={store.isLoading}
                   emptyTitle={emptyTitle}
                   emptyDetail={emptyDetail}
+                  groupByModel={store.activeMode === "compare_models"}
                 />
               )}
               <ModePanel modes={store.modes} />

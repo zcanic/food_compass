@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 20:33 CST
+Status timestamp: 2026-05-31 20:37 CST
 
 ## Done
 
@@ -54,6 +54,9 @@ Status timestamp: 2026-05-31 20:33 CST
 - Full gate passed again: `npm run test:all` with 13 unit tests and 30 E2E checks.
 - Moved examples below the primary task/input/model controls and compacted them into a two-column grid.
 - Desktop/mobile screenshot review confirms the mobile first screen now keeps task, input, and model controls visible.
+- Model-comparison results are now grouped into separate Cooc/Core/Chem sections instead of one mixed list.
+- Added E2E coverage for grouped comparison result lists.
+- Full gate passed again: `npm run test:all` with 13 unit tests and 30 E2E checks.
 
 ## In Progress
 

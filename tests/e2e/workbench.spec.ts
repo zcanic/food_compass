@@ -105,9 +105,9 @@ test("model comparison runs all three model perspectives", async ({ page }) => {
 
   await expect(page.getByText(/三模型对比/)).toBeVisible();
   await expect(page.getByRole("region", { name: "查询摘要" }).getByText("模型对比")).toBeVisible();
-  await expect(page.getByText("常见搭配").first()).toBeVisible();
-  await expect(page.getByText("综合推荐").first()).toBeVisible();
-  await expect(page.getByText("风味相似").first()).toBeVisible();
+  await expect(page.getByRole("list", { name: "常见搭配推荐结果" })).toBeVisible();
+  await expect(page.getByRole("list", { name: "综合推荐推荐结果" })).toBeVisible();
+  await expect(page.getByRole("list", { name: "风味相似推荐结果" })).toBeVisible();
 });
 
 test("recent ingredients persist and can be re-added quickly", async ({ page }) => {

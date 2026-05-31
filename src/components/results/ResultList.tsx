@@ -1,4 +1,6 @@
 import type { Recommendation } from "../../types/result";
+import type { ModelName } from "../../types/model";
+import { MODEL_LABELS } from "../../types/model";
 import { ResultCard } from "./ResultCard";
 
 interface Props {
@@ -7,6 +9,7 @@ interface Props {
   loading: boolean;
   emptyTitle?: string;
   emptyDetail?: string;
+  groupByModel?: boolean;
 }
 
 export function ResultList({
@@ -15,6 +18,7 @@ export function ResultList({
   loading,
   emptyTitle = "输入食材开始探索",
   emptyDetail = "选择任务后点击探索，推荐结果会显示在这里。",
+  groupByModel = false,
 }: Props) {
   if (loading) {
     return <div style={{ padding: 24, textAlign: "center", color: "#999" }}>检索中...</div>;
@@ -66,11 +70,38 @@ export function ResultList({
       <div style={{ color: "var(--subtle)", fontSize: 11, marginBottom: 8 }}>
         分数为向量余弦相似度，用于排序，不是成功概率或安全保证。
       </div>
-      <div role="list" aria-label="推荐结果">
-        {results.map((rec, i) => (
-          <ResultCard key={`${rec.model}-${rec.name}-${i}`} rec={rec} rank={i + 1} />
-        ))}
-      </div>
+      {groupByModel ? (
+        <GroupedResults results={results} />
+      ) : (
+        <div role="list" aria-label="推荐结果">
+          {results.map((rec, i) => (
+            <ResultCard key={`${rec.model}-${rec.name}-${i}`} rec={rec} rank={i + 1} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function GroupedResults({ results }: { results: Recommendation[] }) {
+  const models: ModelName[] = ["cooc", "core", "chem"];
+  return (
+    <div style={{ display: "grid", gap: 14 }}>
+      {models.map((model) => {
+        const modelResults = results.filter((rec) => rec.model === model);
+        if (modelResults.length === 0) return null;
+        const label = MODEL_LABELS[model];
+        return (
+          <section key={model} aria-label={`${label}结果`}>
+            <h4 style={{ fontSize: 13, marginBottom: 6 }}>{label}</h4>
+            <div role="list" aria-label={`${label}推荐结果`}>
+              {modelResults.map((rec, i) => (
+                <ResultCard key={`${rec.model}-${rec.name}-${i}`} rec={rec} rank={i + 1} />
+              ))}
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }
