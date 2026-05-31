@@ -3,11 +3,23 @@ import { routeIntent } from "../../ask/intent-router";
 import { buildSkillPlan } from "../../ask/skill-plan";
 import { executeSkill } from "../../skills";
 import { composeResponse } from "../../ask/response-composer";
-import type { IntentResult } from "../../types/query";
+import type { IntentResult, RetrievalBackend } from "../../types/query";
 import type { SkillResult, AskResponse } from "../../types/result";
-import { getMatcher } from "../../engine";
+import { getMatcher, getSearchBackend } from "../../engine";
 import { displayName } from "../../utils/text";
 import { ResultList } from "../results/ResultList";
+
+interface AskDiagnostics {
+  backend: RetrievalBackend;
+  elapsedMs: number;
+  toolCount: number;
+}
+
+const BACKEND_LABELS: Record<RetrievalBackend, string> = {
+  worker: "Worker",
+  local: "本地 fallback",
+  "mode-atlas": "Mode atlas",
+};
 
 export function AskPanel() {
   const [question, setQuestion] = useState("");
@@ -15,6 +27,7 @@ export function AskPanel() {
   const [matchedIngredients, setMatchedIngredients] = useState<string[]>([]);
   const [toolResults, setToolResults] = useState<SkillResult[]>([]);
   const [response, setResponse] = useState<AskResponse | null>(null);
+  const [diagnostics, setDiagnostics] = useState<AskDiagnostics | null>(null);
   const [loading, setLoading] = useState(false);
   const recommendationGroups = toolResults.filter((r) => r.recommendations.length > 0);
 
@@ -25,6 +38,7 @@ export function AskPanel() {
     setMatchedIngredients([]);
     setToolResults([]);
     setResponse(null);
+    setDiagnostics(null);
 
     try {
       // Step 1: Intent routing
@@ -51,9 +65,11 @@ export function AskPanel() {
 
       // Step 3: Execute skills based on intent
       const plan = buildSkillPlan(parsed, ingredients);
+      const toolStart = readNow();
       const skillResults: SkillResult[] = await Promise.all(
         plan.map((step) => executeSkill(step.name, step.params))
       );
+      let executedToolCount = skillResults.length;
 
       const recommendationNames = skillResults.flatMap((r) =>
         r.recommendations.map((rec) => rec.name)
@@ -65,7 +81,13 @@ export function AskPanel() {
             constraints: parsed.constraints,
           })
         );
+        executedToolCount += 1;
       }
+      setDiagnostics({
+        backend: plan.some((step) => step.name !== "lookup_mode") ? getSearchBackend() : "mode-atlas",
+        elapsedMs: Math.max(0, Math.round(readNow() - toolStart)),
+        toolCount: executedToolCount,
+      });
 
       // Step 4: Compose response
       const askResponse = await composeResponse(question, skillResults, false);
@@ -180,6 +202,15 @@ export function AskPanel() {
               调用工具：{response.trace.toolsUsed.join("、")}
             </div>
           )}
+          {diagnostics && (
+            <div
+              role="region"
+              aria-label="Ask 执行诊断"
+              style={{ marginTop: 6, fontSize: 11, color: "#aaa" }}
+            >
+              工具执行：{diagnostics.toolCount} 个 · {BACKEND_LABELS[diagnostics.backend]} · {diagnostics.elapsedMs} ms
+            </div>
+          )}
         </div>
       )}
 
@@ -215,6 +246,10 @@ export function AskPanel() {
       )}
     </div>
   );
+}
+
+function readNow(): number {
+  return typeof performance === "undefined" ? Date.now() : performance.now();
 }
 
 function toolLabel(skillName: string) {

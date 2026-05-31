@@ -58,6 +58,7 @@ test("ask mode uses one question box and extracts Chinese ingredients", async ({
   await expect(page.getByText(/风格偏移：/)).toBeVisible();
   await expect(page.getByText(/常见搭配：/)).toBeVisible();
   await expect(page.getByText(/组合补全：/)).toBeVisible();
+  await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText(/工具执行：3 个 · (Worker|本地 fallback) · \d+ ms/)).toBeVisible();
   await expect(page.getByRole("list", { name: "风格偏移推荐结果" })).toBeVisible();
   await expect(page.getByRole("list", { name: "常见搭配推荐结果" })).toBeVisible();
   await expect(page.getByRole("list", { name: "组合补全推荐结果" })).toBeVisible();

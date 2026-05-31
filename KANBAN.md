@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 21:38 CST
+Status timestamp: 2026-05-31 21:40 CST
 
 ## Done
 
@@ -123,6 +123,9 @@ Status timestamp: 2026-05-31 21:38 CST
 - Worker-backed searches report `Worker`; lookup-only searches can report `Mode atlas`; fallback paths report local execution.
 - Added E2E coverage that verifies retrieval diagnostics appear after a standard pairing query.
 - Full gate passed again: `npm run test:all` with 38 unit tests and 42 E2E checks.
+- Ask Mode now reports multi-tool execution count, retrieval channel, and elapsed milliseconds in the response trace.
+- Added E2E coverage for Ask execution diagnostics on a style-shift + pairing + combo query.
+- Full gate passed again: `npm run test:all` with 38 unit tests and 42 E2E checks.
 
 ## In Progress
 
@@ -132,4 +135,4 @@ Status timestamp: 2026-05-31 21:38 CST
 
 - Add screenshot snapshots only after the visual baseline is stable enough to avoid noisy review churn.
 - Add worker timing instrumentation for larger future data assets.
-- Add Ask-mode retrieval diagnostics for multi-tool skill execution.
+- Expand Ask diagnostics to distinguish vector retrieval, mode lookup, and constraint-only tools.
