@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 21:14 CST
+Status timestamp: 2026-05-31 21:16 CST
 
 ## Done
 
@@ -98,6 +98,9 @@ Status timestamp: 2026-05-31 21:14 CST
 - Empty mode lookups offer real example buttons that re-run the same lookup pipeline with covered ingredients.
 - Added E2E coverage using `sea_urchin` as a real uncovered Core mode-atlas case.
 - Full gate passed again: `npm run test:all` with 27 unit tests and 40 E2E checks.
+- Added static data asset tests for vocab cardinality, embedding binary sizes, mode-atlas presence, and alias canonical targets.
+- The test suite now verifies the shipped public data artifacts, not just runtime UI behavior.
+- Full gate passed again: `npm run test:all` with 30 unit tests and 40 E2E checks.
 
 ## In Progress
 
