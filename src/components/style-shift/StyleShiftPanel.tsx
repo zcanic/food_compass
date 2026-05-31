@@ -1,4 +1,5 @@
 import type { StyleStrength } from "../../types/query";
+import { STYLE_DIRECTION_BENCHMARKS } from "../../research/style-direction-benchmarks";
 import { STYLE_LABELS, STYLE_SEED_SETS, STYLE_STRENGTH_LABELS } from "../../utils/constants";
 
 interface Props {
@@ -20,6 +21,8 @@ export function StyleShiftPanel({
   onChangeStyle,
   onChangeStrength,
 }: Props) {
+  const benchmark = STYLE_DIRECTION_BENCHMARKS[selectedStyle];
+
   return (
     <div style={{ marginBottom: 16 }}>
       <div style={{ fontSize: 13, color: "#666", marginBottom: 8 }}>
@@ -78,6 +81,13 @@ export function StyleShiftPanel({
       >
         [实验功能] 强度控制当前组合向量向目标 seed-set 的球面行进距离；目标风格不代表严格菜系定义。
       </div>
+      {benchmark && (
+        <div className="style-benchmark-note" role="region" aria-label="风格迁移证据">
+          论文方向算术 benchmark：{benchmark.testCase}，{benchmark.model.toUpperCase()}，
+          {benchmark.angleDeg} deg，目标命中 {benchmark.targetHits}/{benchmark.totalHits}。
+          当前功能只把它作为证据提示，不直接读取预计算推荐列表。来源：{benchmark.source}。
+        </div>
+      )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 21:30 CST
+Status timestamp: 2026-05-31 21:34 CST
 
 ## Done
 
@@ -112,6 +112,10 @@ Status timestamp: 2026-05-31 21:30 CST
 - About now explains the three model-specific sensory axes and their stability metrics as paper-backed navigation evidence.
 - Added unit/static-asset/E2E coverage for the sensory-axis evidence section.
 - Full gate passed again: `npm run test:all` with 33 unit tests and 42 E2E checks.
+- `direction_arithmetic_full.csv` is now summarized into style-specific benchmark evidence for every exposed style control.
+- Style shift now shows the closest paper benchmark case, model, angle, and target-hit count without using those rows as recommendation output.
+- Added unit/static-asset/E2E coverage for the style benchmark evidence.
+- Full gate passed again: `npm run test:all` with 36 unit tests and 42 E2E checks.
 
 ## In Progress
 
@@ -121,4 +125,4 @@ Status timestamp: 2026-05-31 21:30 CST
 
 - Add screenshot snapshots only after the visual baseline is stable enough to avoid noisy review churn.
 - Add worker timing instrumentation for larger future data assets.
-- Use `direction_arithmetic_full.csv` as benchmark evidence for supported style-shift examples.
+- Add deterministic parity checks between generated benchmark assets and runtime benchmark constants.

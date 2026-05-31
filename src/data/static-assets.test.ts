@@ -40,6 +40,14 @@ describe("preprocessed static data assets", () => {
     expect(axes.every((axis) => axis.poleA.topIngredients.length === 5)).toBe(true);
   });
 
+  it("ships direction arithmetic benchmark summaries for supported style controls", () => {
+    const benchmarks = readJSON<StyleBenchmarkAsset[]>("style_direction_benchmarks.json");
+
+    expect(benchmarks).toHaveLength(9);
+    expect(benchmarks.some((entry) => entry.style === "Japanese" && entry.targetHits === 5)).toBe(true);
+    expect(benchmarks.every((entry) => entry.totalHits === 5)).toBe(true);
+  });
+
   it("keeps aliases pointed at canonical vocab names", () => {
     const vocab = new Set(readJSON<VocabEntry[]>("vocab.json").map((entry) => entry.name));
     const aliases = readJSON<AliasTable>("aliases_zh_en.json");
@@ -65,4 +73,10 @@ interface SensoryAxisAsset {
   model: ModelName;
   axisLabel: string;
   poleA: { topIngredients: string[] };
+}
+
+interface StyleBenchmarkAsset {
+  style: string;
+  targetHits: number;
+  totalHits: number;
 }

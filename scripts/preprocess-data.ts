@@ -47,6 +47,27 @@ interface SensoryAxisRow {
   stability_cosine: string;
 }
 
+interface DirectionArithmeticRow {
+  test_case: string;
+  seed: string;
+  model: string;
+  angle_deg: string;
+  hit_name: string;
+  hit_is_target: string;
+}
+
+const STYLE_BENCHMARK_CASES: Record<string, { cases: string[]; benchmarkDirection: string }> = {
+  Japanese: { cases: ["chicken + Japanese"], benchmarkDirection: "Japanese" },
+  East_Asian: { cases: ["beef + East_Asian"], benchmarkDirection: "East_Asian" },
+  South_Asian: { cases: ["rice + South_Asian"], benchmarkDirection: "South_Asian" },
+  Mediterranean: { cases: ["salmon + Mediterranean"], benchmarkDirection: "Mediterranean" },
+  Latin_American: { cases: ["corn + Latin_American"], benchmarkDirection: "Latin_American" },
+  sweet: { cases: ["chicken + sweet", "beef + sweet", "salmon + sweet"], benchmarkDirection: "sweet" },
+  savory_umami: { cases: ["chocolate + savory", "bread + savory", "potato + savory"], benchmarkDirection: "savory proxy" },
+  sour: { cases: ["butter + sour", "chicken + sour", "rice + sour"], benchmarkDirection: "sour" },
+  spicy: { cases: ["salmon + pungent", "egg + pungent", "chicken + pungent"], benchmarkDirection: "pungent proxy" },
+};
+
 function readCSV<T>(filepath: string): T[] {
   const raw = fs.readFileSync(filepath, "utf-8").trim();
   const lines = raw.split("\n");
@@ -155,7 +176,15 @@ function main() {
   fs.writeFileSync(path.join(DATA_OUT, "sensory_axes.json"), JSON.stringify(sensoryAxes));
   console.log(`  sensory_axes.json: ${sensoryAxes.length} axes`);
 
-  // 5. Aliases (placeholder)
+  // 5. Direction arithmetic benchmark summaries
+  const directionRows = readCSV<DirectionArithmeticRow>(path.join(DATA_SRC, "direction_arithmetic_full.csv"));
+  const styleBenchmarks = Object.entries(STYLE_BENCHMARK_CASES).map(([style, config]) =>
+    summarizeStyleBenchmark(style, config, directionRows)
+  );
+  fs.writeFileSync(path.join(DATA_OUT, "style_direction_benchmarks.json"), JSON.stringify(styleBenchmarks));
+  console.log(`  style_direction_benchmarks.json: ${styleBenchmarks.length} styles`);
+
+  // 6. Aliases (placeholder)
   const aliases: Record<string, { zh?: string[]; ja?: string[]; en_alt?: string[] }> = {
     soy_sauce: { zh: ["酱油", "生抽", "老抽", "豉油"], ja: ["しょうゆ", "醤油"], en_alt: ["soy sauce"] },
     tomato: { zh: ["番茄", "西红柿", "蕃茄"], ja: ["トマト"], en_alt: ["tomatoes"] },
@@ -185,3 +214,41 @@ function main() {
 }
 
 main();
+
+function summarizeStyleBenchmark(
+  style: string,
+  config: { cases: string[]; benchmarkDirection: string },
+  rows: DirectionArithmeticRow[]
+) {
+  const candidates = new Map<string, DirectionArithmeticRow[]>();
+  for (const row of rows) {
+    if (!config.cases.includes(row.test_case)) continue;
+    if (Number(row.angle_deg) === 0) continue;
+
+    const key = `${row.test_case}|${row.model}|${row.angle_deg}`;
+    const group = candidates.get(key) ?? [];
+    group.push(row);
+    candidates.set(key, group);
+  }
+
+  const summaries = Array.from(candidates.values()).map((group) => ({
+    style,
+    testCase: group[0].test_case,
+    seed: group[0].seed,
+    benchmarkDirection: config.benchmarkDirection,
+    model: group[0].model,
+    angleDeg: Number(group[0].angle_deg),
+    targetHits: group.filter((row) => row.hit_is_target === "True").length,
+    totalHits: group.length,
+    topHits: group.map((row) => row.hit_name),
+  }));
+
+  summaries.sort((a, b) =>
+    b.targetHits - a.targetHits ||
+    a.angleDeg - b.angleDeg ||
+    a.testCase.localeCompare(b.testCase) ||
+    a.model.localeCompare(b.model)
+  );
+
+  return summaries[0];
+}

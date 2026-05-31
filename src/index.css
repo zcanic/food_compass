@@ -297,6 +297,17 @@ h1, h2, h3, h4 {
   line-height: 1.5;
 }
 
+.style-benchmark-note {
+  background: #eef7f2;
+  border: 1px solid #cfe4d9;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.55;
+  margin-top: 8px;
+  padding: 6px 10px;
+}
+
 @media (max-width: 820px) {
   .app-shell {
     padding: 14px 14px 32px;
