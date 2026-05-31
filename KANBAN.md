@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 21:52 CST
+Status timestamp: 2026-05-31 21:53 CST
 
 ## Done
 
@@ -145,6 +145,8 @@ Status timestamp: 2026-05-31 21:52 CST
 - About now includes continuous-probe evidence for flavor/nutrition interpretability while explicitly warning against hard filtering.
 - Added unit/static-asset/E2E coverage for continuous probe metrics.
 - Full gate passed again: `npm run test:all` with 44 unit tests and 42 E2E checks.
+- Runtime continuous-probe evidence copy now has parity tests against the generated `continuous_probe_metrics.json` asset.
+- Full gate passed again: `npm run test:all` with 45 unit tests and 42 E2E checks.
 
 ## In Progress
 
@@ -155,4 +157,4 @@ Status timestamp: 2026-05-31 21:52 CST
 - Add screenshot snapshots only after the visual baseline is stable enough to avoid noisy review churn.
 - Add worker timing instrumentation for larger future data assets.
 - Expand Ask diagnostics to distinguish vector retrieval, mode lookup, and constraint-only tools.
-- Add parity tests between generated continuous-probe assets and runtime evidence copy.
+- Add source-backed evidence for `direction_orthogonal.csv`.

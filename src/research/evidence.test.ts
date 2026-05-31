@@ -82,6 +82,20 @@ describe("research evidence copy", () => {
       .toBe(`rho ${format3(coreSodium.spearmanRho)}`);
   });
 
+  it("keeps continuous-probe copy aligned with the generated static asset", () => {
+    const generated = readJSON<ContinuousProbeAsset[]>("continuous_probe_metrics.json");
+    const coreSweet = findContinuousProbe(generated, "core", "cf_sweet");
+    const coreBitter = findContinuousProbe(generated, "core", "cf_bitter");
+    const coocProteinFat = findContinuousProbe(generated, "cooc", "usda_protein_fat_ratio");
+
+    expect(CONTINUOUS_PROBE_EVIDENCE.find((entry) => entry.label === "Core sweet")?.value)
+      .toBe(`rho ${format3(coreSweet.rhoCvMean)}`);
+    expect(CONTINUOUS_PROBE_EVIDENCE.find((entry) => entry.label === "Core bitter")?.value)
+      .toBe(`rho ${format3(coreBitter.rhoCvMean)}`);
+    expect(CONTINUOUS_PROBE_EVIDENCE.find((entry) => entry.label === "Cooc protein/fat")?.value)
+      .toBe(`rho ${format3(coocProteinFat.rhoCvMean)}`);
+  });
+
   it("states corpus scale and avoids unsupported product claims", () => {
     expect(RESEARCH_FACTS.some((fact) => fact.value === "1,790")).toBe(true);
     expect(WEAT_CHECKS.some((check) => check.value === "skipped")).toBe(true);
@@ -119,6 +133,12 @@ interface CrossModalAsset {
   spearmanRho: number;
 }
 
+interface ContinuousProbeAsset {
+  model: "cooc" | "core";
+  dimension: string;
+  rhoCvMean: number;
+}
+
 function findLinearProbe(
   metrics: LinearProbeAsset[],
   model: "cooc" | "core",
@@ -136,5 +156,15 @@ function findCrossModal(
 ): CrossModalAsset {
   const metric = metrics.find((entry) => entry.model === model && entry.dimension === dimension);
   if (!metric) throw new Error(`Missing cross-modal metric: ${model} ${dimension}`);
+  return metric;
+}
+
+function findContinuousProbe(
+  metrics: ContinuousProbeAsset[],
+  model: "cooc" | "core",
+  dimension: string
+): ContinuousProbeAsset {
+  const metric = metrics.find((entry) => entry.model === model && entry.dimension === dimension);
+  if (!metric) throw new Error(`Missing continuous probe metric: ${model} ${dimension}`);
   return metric;
 }
