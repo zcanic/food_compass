@@ -16,12 +16,11 @@ export async function composeResponse(
   skillResults: SkillResult[],
   useLLM = false
 ): Promise<AskResponse> {
-  const allRecs = skillResults.flatMap((s) => s.recommendations);
   const toolsUsed = skillResults.map((s) => s.skillName);
 
   if (!useLLM) {
     return {
-      answer: buildSimpleAnswer(allRecs, skillResults),
+      answer: buildSimpleAnswer(skillResults),
       trace: {
         intent: "",
         ingredients: [],
@@ -49,28 +48,72 @@ ${JSON.stringify(skillResults, null, 2)}
     };
   } catch {
     return {
-      answer: buildSimpleAnswer(allRecs, skillResults),
+      answer: buildSimpleAnswer(skillResults),
       trace: { intent: "", ingredients: [], toolsUsed },
     };
   }
 }
 
-function buildSimpleAnswer(
-  recs: { name: string; score: number }[],
-  skillResults: SkillResult[]
-): string {
-  if (recs.length === 0) {
+function buildSimpleAnswer(skillResults: SkillResult[]): string {
+  const recommendationSections = skillResults
+    .filter((skill) => skill.recommendations.length > 0)
+    .map((skill) => {
+      const names = skill.recommendations
+        .slice(0, 8)
+        .map((r) => r.name.replace(/_/g, " "))
+        .join("、");
+      return `${toolLabel(skill.skillName)}：${names}`;
+    });
+  const modeSections = skillResults
+    .filter((skill) => skill.modes && skill.modes.length > 0)
+    .map((skill) => {
+      const names = skill.modes
+        ?.slice(0, 3)
+        .map((mode) => `${mode.label}（${mode.model}）`)
+        .join("、");
+      return `${toolLabel(skill.skillName)}：${names}`;
+    });
+
+  if (recommendationSections.length === 0 && modeSections.length === 0) {
     return "当前数据暂未找到匹配的食材推荐。请尝试输入其他食材或更具体的描述。";
   }
 
-  const top = recs.slice(0, 10).map((r) => r.name.replace(/_/g, " ")).join("、");
   const notes = skillResults
     .map((s) => s.message ?? s.styleSummary)
     .filter(Boolean)
     .join("；");
 
-  let answer = `推荐食材：${top}。`;
-  if (notes) answer += `\n注意：${notes}`;
+  const blocks: string[] = [];
+  if (recommendationSections.length > 0) {
+    blocks.push(`推荐结果：\n${recommendationSections.join("\n")}`);
+  }
+  if (modeSections.length > 0) {
+    blocks.push(`食材街区：\n${modeSections.join("\n")}`);
+  }
+
+  let answer = blocks.join("\n\n");
+  if (notes) answer += `\n\n注意：${notes}`;
   answer += "\n注意：当前版本没有完整营养和过敏源数据库，不能保证满足特殊饮食限制。";
   return answer;
+}
+
+function toolLabel(skillName: string) {
+  switch (skillName) {
+    case "find_pairings":
+      return "常见搭配";
+    case "find_substitutes":
+      return "风味替代";
+    case "complete_combination":
+      return "组合补全";
+    case "shift_style":
+      return "风格偏移";
+    case "lookup_mode":
+      return "食材街区";
+    case "compare_models":
+      return "模型对比";
+    case "constraint_filter":
+      return "约束提示";
+    default:
+      return skillName;
+  }
 }

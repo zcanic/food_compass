@@ -54,6 +54,9 @@ test("ask mode uses one question box and extracts Chinese ingredients", async ({
   await expect(page.getByText(/意图链：pairing、style_shift、complete_combo/)).toBeVisible();
   await expect(page.getByText(/食材：tomato、egg/)).toBeVisible();
   await expect(page.getByText(/调用工具：shift_style/)).toBeVisible();
+  await expect(page.getByText(/风格偏移：/)).toBeVisible();
+  await expect(page.getByText(/常见搭配：/)).toBeVisible();
+  await expect(page.getByText(/组合补全：/)).toBeVisible();
   await expect(page.getByRole("list", { name: "风格偏移推荐结果" })).toBeVisible();
   await expect(page.getByRole("list", { name: "常见搭配推荐结果" })).toBeVisible();
   await expect(page.getByRole("list", { name: "组合补全推荐结果" })).toBeVisible();
@@ -229,6 +232,18 @@ test("ask mode explains when no ingredient can be extracted", async ({ page }) =
   await page.getByRole("button", { name: "提问" }).click();
 
   await expect(page.getByText(/没有识别到可用食材/)).toBeVisible();
+});
+
+test("ask explain mode returns mode-only answers", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /Ask/ }).click();
+  await page.getByPlaceholder(/描述你想做什么/).fill("酱油属于什么食材街区？");
+  await page.getByRole("button", { name: "提问" }).click();
+
+  await expect(page.getByText(/意图：explain/)).toBeVisible();
+  await expect(page.getByText(/食材街区：/)).toBeVisible();
+  await expect(page.getByText(/调用工具：lookup_mode/)).toBeVisible();
 });
 
 test("ask mode surfaces constraint warnings without pretending to filter", async ({ page }) => {

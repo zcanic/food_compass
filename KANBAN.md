@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 21:09 CST
+Status timestamp: 2026-05-31 21:11 CST
 
 ## Done
 
@@ -90,6 +90,10 @@ Status timestamp: 2026-05-31 21:09 CST
 - Multi-intent Ask queries execute local tools in primary-intent-first order and render grouped tool result lists.
 - Added unit coverage for skill-plan ordering/fallback and E2E coverage for a style-shift + pairing + combo Ask query.
 - Full gate passed again: `npm run test:all` with 25 unit tests and 36 E2E checks.
+- Ask response composition now groups natural-language recommendations by tool source instead of flattening all candidates.
+- Mode-only Ask results now produce a useful food-neighborhood answer instead of saying no recommendation was found.
+- Added unit coverage for grouped response composition and E2E coverage for Ask explain/mode-only answers.
+- Full gate passed again: `npm run test:all` with 27 unit tests and 38 E2E checks.
 
 ## In Progress
 
