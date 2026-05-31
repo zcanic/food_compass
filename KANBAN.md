@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 20:39 CST
+Status timestamp: 2026-05-31 20:41 CST
 
 ## Done
 
@@ -60,14 +60,18 @@ Status timestamp: 2026-05-31 20:39 CST
 - Fuzzy search suggestions are now real buttons instead of click-only divs.
 - Updated E2E coverage to select typo corrections through button semantics.
 - Full gate passed again: `npm run test:all`.
+- Recommendation rows now expose an accessible add-to-query action.
+- Adding a recommendation clears stale result state so the user can intentionally re-run the expanded query.
+- Added desktop/mobile E2E coverage for recommendation-driven exploration.
+- Full gate passed again: `npm run test:all` with 13 unit tests and 32 E2E checks.
 
 ## In Progress
 
-- Continue high-impact UX and test improvements before 21:30.
+- Continue high-impact UX and test improvements before 22:30.
 
 ## Backlog
 
 - Expand style-shift tests and UI copy around experimental directions.
-- Add result grouping and clearer model-comparison affordances.
+- Add clearer model-comparison affordances.
 - Add mode lookup empty-state examples.
 - Add visual regression snapshots for key viewport states.

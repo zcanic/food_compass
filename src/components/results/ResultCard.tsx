@@ -5,10 +5,12 @@ import { displayName } from "../../utils/text";
 interface Props {
   rec: Recommendation;
   rank: number;
+  onAddIngredient?: (name: string) => void;
 }
 
-export function ResultCard({ rec, rank }: Props) {
+export function ResultCard({ rec, rank, onAddIngredient }: Props) {
   const score = rec.score.toFixed(3);
+  const name = displayName(rec.name);
 
   return (
     <div
@@ -23,7 +25,7 @@ export function ResultCard({ rec, rank }: Props) {
     >
       <span style={{ color: "#999", fontSize: 13, minWidth: 20 }}>{rank}</span>
       <span style={{ flex: 1, fontSize: 15 }}>
-        {displayName(rec.name)}
+        {name}
         <span style={{ fontSize: 11, color: "#777", marginLeft: 8 }}>
           {MODEL_LABELS[rec.model]}
         </span>
@@ -49,8 +51,19 @@ export function ResultCard({ rec, rank }: Props) {
           whiteSpace: "nowrap",
         }}
       >
-        cos {score}
+          cos {score}
       </span>
+      {onAddIngredient && (
+        <button
+          type="button"
+          className="result-action-button"
+          onClick={() => onAddIngredient(rec.name)}
+          aria-label={`加入 ${name}`}
+          title="加入当前查询"
+        >
+          +
+        </button>
+      )}
     </div>
   );
 }

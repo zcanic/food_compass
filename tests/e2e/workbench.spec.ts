@@ -83,6 +83,22 @@ test("example buttons set up and run a complete workflow", async ({ page }) => {
   await expect(page.getByRole("list", { name: "推荐结果" })).toBeVisible();
 });
 
+test("recommendations can be added back into the current query", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByPlaceholder(/输入食材/).fill("tomato");
+  await page.keyboard.press("Enter");
+  await page.getByRole("button", { name: "探索" }).click();
+  await expect(page.getByRole("list", { name: "推荐结果" })).toBeVisible();
+
+  await page.getByRole("button", { name: /^加入 / }).first().click();
+
+  await expect(page.getByRole("button", { name: /^移除 / })).toHaveCount(2);
+  await expect(page.getByText("准备好了，点击探索")).toBeVisible();
+  await expect(page.getByRole("region", { name: "查询摘要" }).getByText("待检索")).toBeVisible();
+  await expect(page.getByRole("list", { name: "推荐结果" })).toHaveCount(0);
+});
+
 test("style example chooses style mode and target direction", async ({ page }) => {
   await page.goto("/");
 

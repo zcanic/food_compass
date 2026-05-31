@@ -10,6 +10,7 @@ interface Props {
   emptyTitle?: string;
   emptyDetail?: string;
   groupByModel?: boolean;
+  onAddIngredient?: (name: string) => void;
 }
 
 export function ResultList({
@@ -19,6 +20,7 @@ export function ResultList({
   emptyTitle = "输入食材开始探索",
   emptyDetail = "选择任务后点击探索，推荐结果会显示在这里。",
   groupByModel = false,
+  onAddIngredient,
 }: Props) {
   if (loading) {
     return <div style={{ padding: 24, textAlign: "center", color: "#999" }}>检索中...</div>;
@@ -71,11 +73,16 @@ export function ResultList({
         分数为向量余弦相似度，用于排序，不是成功概率或安全保证。
       </div>
       {groupByModel ? (
-        <GroupedResults results={results} />
+        <GroupedResults results={results} onAddIngredient={onAddIngredient} />
       ) : (
         <div role="list" aria-label="推荐结果">
           {results.map((rec, i) => (
-            <ResultCard key={`${rec.model}-${rec.name}-${i}`} rec={rec} rank={i + 1} />
+            <ResultCard
+              key={`${rec.model}-${rec.name}-${i}`}
+              rec={rec}
+              rank={i + 1}
+              onAddIngredient={onAddIngredient}
+            />
           ))}
         </div>
       )}
@@ -83,7 +90,13 @@ export function ResultList({
   );
 }
 
-function GroupedResults({ results }: { results: Recommendation[] }) {
+function GroupedResults({
+  results,
+  onAddIngredient,
+}: {
+  results: Recommendation[];
+  onAddIngredient?: (name: string) => void;
+}) {
   const models: ModelName[] = ["cooc", "core", "chem"];
   return (
     <div style={{ display: "grid", gap: 14 }}>
@@ -96,7 +109,12 @@ function GroupedResults({ results }: { results: Recommendation[] }) {
             <h4 style={{ fontSize: 13, marginBottom: 6 }}>{label}</h4>
             <div role="list" aria-label={`${label}推荐结果`}>
               {modelResults.map((rec, i) => (
-                <ResultCard key={`${rec.model}-${rec.name}-${i}`} rec={rec} rank={i + 1} />
+                <ResultCard
+                  key={`${rec.model}-${rec.name}-${i}`}
+                  rec={rec}
+                  rank={i + 1}
+                  onAddIngredient={onAddIngredient}
+                />
               ))}
             </div>
           </section>

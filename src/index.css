@@ -165,6 +165,33 @@ h1, h2, h3, h4 {
   cursor: default;
 }
 
+.result-action-button {
+  align-items: center;
+  background: #f8faf7;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--accent-strong);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 16px;
+  font-weight: 700;
+  height: 30px;
+  justify-content: center;
+  line-height: 1;
+  width: 30px;
+}
+
+.result-action-button:hover {
+  background: var(--panel-soft);
+  border-color: #b9c8b5;
+}
+
+.result-action-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .secondary-note {
   color: var(--subtle);
   font-size: 12px;

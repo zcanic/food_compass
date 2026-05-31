@@ -133,6 +133,16 @@ export function HomePage() {
     );
   };
 
+  const addRecommendationToQuery = (name: string) => {
+    if (store.matchedIngredients.includes(name)) return;
+
+    store.setMatchedIngredients([...store.matchedIngredients, name]);
+    store.setResults([]);
+    store.setModes([]);
+    store.setExplanation("");
+    store.setHasSearched(false);
+  };
+
   const canExplore = store.matchedIngredients.length > 0 && !store.isLoading;
   const activeHelp = MODE_HELP[store.activeMode];
   const selectedText = store.matchedIngredients.length > 0
@@ -277,6 +287,7 @@ export function HomePage() {
                   emptyTitle={emptyTitle}
                   emptyDetail={emptyDetail}
                   groupByModel={store.activeMode === "compare_models"}
+                  onAddIngredient={addRecommendationToQuery}
                 />
               )}
               <ModePanel modes={store.modes} />
