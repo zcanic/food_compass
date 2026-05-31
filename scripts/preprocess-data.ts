@@ -87,6 +87,15 @@ interface LinearProbeRow {
   sparsity: string;
 }
 
+interface ContinuousProbeRow {
+  model: string;
+  dimension: string;
+  rho_cv_mean: string;
+  n_nonzero_weights: string;
+  sparsity: string;
+  contrast_cosine: string;
+}
+
 const STYLE_BENCHMARK_CASES: Record<string, { cases: string[]; benchmarkDirection: string }> = {
   Japanese: { cases: ["chicken + Japanese"], benchmarkDirection: "Japanese" },
   East_Asian: { cases: ["beef + East_Asian"], benchmarkDirection: "East_Asian" },
@@ -258,7 +267,20 @@ function main() {
   fs.writeFileSync(path.join(DATA_OUT, "linear_probe_metrics.json"), JSON.stringify(linearProbeMetrics));
   console.log(`  linear_probe_metrics.json: ${linearProbeMetrics.length} metrics`);
 
-  // 9. Aliases (placeholder)
+  // 9. Continuous probe metrics
+  const continuousProbeRows = readCSV<ContinuousProbeRow>(path.join(DATA_SRC, "linear_probe_continuous.csv"));
+  const continuousProbeMetrics = continuousProbeRows.map((row) => ({
+    model: row.model,
+    dimension: row.dimension,
+    rhoCvMean: Number(row.rho_cv_mean),
+    nNonzeroWeights: Number(row.n_nonzero_weights),
+    sparsity: Number(row.sparsity),
+    contrastCosine: Number(row.contrast_cosine),
+  }));
+  fs.writeFileSync(path.join(DATA_OUT, "continuous_probe_metrics.json"), JSON.stringify(continuousProbeMetrics));
+  console.log(`  continuous_probe_metrics.json: ${continuousProbeMetrics.length} metrics`);
+
+  // 10. Aliases (placeholder)
   const aliases: Record<string, { zh?: string[]; ja?: string[]; en_alt?: string[] }> = {
     soy_sauce: { zh: ["酱油", "生抽", "老抽", "豉油"], ja: ["しょうゆ", "醤油"], en_alt: ["soy sauce"] },
     tomato: { zh: ["番茄", "西红柿", "蕃茄"], ja: ["トマト"], en_alt: ["tomatoes"] },

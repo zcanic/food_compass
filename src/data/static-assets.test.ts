@@ -72,6 +72,14 @@ describe("preprocessed static data assets", () => {
     expect(metrics.some((entry) => entry.dimension === "nova_level" && entry.f1Mean < 0.7)).toBe(true);
   });
 
+  it("ships continuous probe metrics for flavor and nutrition interpretability", () => {
+    const metrics = readJSON<ContinuousProbeAsset[]>("continuous_probe_metrics.json");
+
+    expect(metrics.length).toBeGreaterThan(50);
+    expect(metrics.some((entry) => entry.model === "core" && entry.dimension === "cf_sweet" && entry.rhoCvMean > 0.45)).toBe(true);
+    expect(metrics.some((entry) => entry.model === "cooc" && entry.dimension === "usda_protein_fat_ratio")).toBe(true);
+  });
+
   it("keeps aliases pointed at canonical vocab names", () => {
     const vocab = new Set(readJSON<VocabEntry[]>("vocab.json").map((entry) => entry.name));
     const aliases = readJSON<AliasTable>("aliases_zh_en.json");
@@ -120,4 +128,10 @@ interface LinearProbeAsset {
   model: ModelName;
   dimension: string;
   f1Mean: number;
+}
+
+interface ContinuousProbeAsset {
+  model: ModelName;
+  dimension: string;
+  rhoCvMean: number;
 }

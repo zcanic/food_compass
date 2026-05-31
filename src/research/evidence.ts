@@ -53,6 +53,13 @@ export interface LinearProbeEvidenceEntry {
   detail: string;
 }
 
+export interface ContinuousProbeEvidenceEntry {
+  label: string;
+  value: string;
+  source: string;
+  detail: string;
+}
+
 export const RESEARCH_FACTS: ResearchFact[] = [
   {
     label: "规范食材",
@@ -231,6 +238,27 @@ export const LINEAR_PROBE_EVIDENCE: LinearProbeEvidenceEntry[] = [
     value: "F1 0.621",
     source: "linear_probe.csv",
     detail: "加工度信号弱于 cuisine probes，当前产品不应把它包装成可靠健康或加工度过滤。",
+  },
+];
+
+export const CONTINUOUS_PROBE_EVIDENCE: ContinuousProbeEvidenceEntry[] = [
+  {
+    label: "Core sweet",
+    value: "rho 0.468",
+    source: "linear_probe_continuous.csv",
+    detail: "Core 中甜味连续维度可读性最高，适合作为风味解释证据，而不是甜度数值预测。",
+  },
+  {
+    label: "Core bitter",
+    value: "rho 0.461",
+    source: "linear_probe_continuous.csv",
+    detail: "苦味也有较强连续信号，和 cross-modal 的 CF bitter 结果互相支撑。",
+  },
+  {
+    label: "Cooc protein/fat",
+    value: "rho 0.392",
+    source: "linear_probe_continuous.csv",
+    detail: "Cooc 中蛋白/脂肪比例可被弱到中等程度读出，但仍不足以作为可靠营养过滤器。",
   },
 ];
 

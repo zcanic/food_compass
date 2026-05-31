@@ -1,4 +1,5 @@
 import {
+  CONTINUOUS_PROBE_EVIDENCE,
   CROSS_MODAL_EVIDENCE,
   EVIDENCE_METRICS,
   LINEAR_PROBE_EVIDENCE,
@@ -91,6 +92,24 @@ export function AboutPage() {
         </p>
         <div className="evidence-grid">
           {LINEAR_PROBE_EVIDENCE.map((entry) => (
+            <div key={entry.label} className="evidence-card">
+              <div className="evidence-card-label">{entry.label}</div>
+              <div className="evidence-card-value">{entry.value}</div>
+              <div className="evidence-card-source">{entry.source}</div>
+              <div className="evidence-card-detail">{entry.detail}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ marginBottom: 24 }} aria-label="连续探针">
+        <h2 style={{ fontSize: 16 }}>连续探针</h2>
+        <p style={{ fontSize: 14 }}>
+          continuous probes 检查风味和营养连续维度能否从 embedding 中被线性读出。
+          它更适合做解释和边界判断，不适合作为硬过滤。
+        </p>
+        <div className="evidence-grid">
+          {CONTINUOUS_PROBE_EVIDENCE.map((entry) => (
             <div key={entry.label} className="evidence-card">
               <div className="evidence-card-label">{entry.label}</div>
               <div className="evidence-card-value">{entry.value}</div>

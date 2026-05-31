@@ -292,6 +292,8 @@ test("about page explains research basis and product limits", async ({ page }) =
   await expect(page.getByRole("region", { name: "证据指标" }).getByText("linear_probe.csv")).toBeVisible();
   await expect(page.getByRole("region", { name: "线性探针" }).getByText("F1 0.962")).toBeVisible();
   await expect(page.getByRole("region", { name: "线性探针" }).getByText("NOVA level")).toBeVisible();
+  await expect(page.getByRole("region", { name: "连续探针" }).getByText("rho 0.468")).toBeVisible();
+  await expect(page.getByRole("region", { name: "连续探针" }).getByText("linear_probe_continuous.csv").first()).toBeVisible();
   await expect(page.getByRole("region", { name: "跨模态验证" }).getByText("rho 0.570")).toBeVisible();
   await expect(page.getByRole("region", { name: "跨模态验证" }).getByText("cross_modal.csv").first()).toBeVisible();
   await expect(page.getByRole("region", { name: "WEAT 关联检查" }).getByText("Health Halo")).toBeVisible();
