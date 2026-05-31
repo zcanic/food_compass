@@ -23,6 +23,7 @@ export function useQuery() {
     ) => {
       store.setLoading(true);
       store.setMatchedIngredients(ingredients);
+      store.setHasSearched(true);
 
       try {
         switch (mode) {
@@ -57,6 +58,9 @@ export function useQuery() {
               if (results) {
                 store.setResults(results);
                 store.setExplanation(`向 ${targetStyle} 风格做了 ${strength ?? "medium"} 强度偏移。目标风格由产品层 seed set 构造，用于早期探索。`);
+              } else {
+                store.setResults([]);
+                store.setExplanation(`暂不支持 ${targetStyle} 风格。请选择面板中已有的风格方向。`);
               }
             }
             break;

@@ -43,12 +43,26 @@ export function ruleBasedIntent(query: string): IntentResult | null {
   if (/高蛋白/.test(query)) constraints.push("high_protein");
   if (/清真|halal/.test(query)) constraints.push("halal");
 
+  const intent = chooseIntent(matchedIntents, Boolean(targetStyle));
+
   return {
-    intent: matchedIntents[0],
+    intent,
     ingredients: [],
     targetStyle,
     constraints,
     confidence: 0.7,
     multiIntent: matchedIntents.length > 1,
   };
+}
+
+function chooseIntent(
+  matchedIntents: IntentResult["intent"][],
+  hasTargetStyle: boolean
+): IntentResult["intent"] {
+  if (matchedIntents.includes("substitute")) return "substitute";
+  if (hasTargetStyle && matchedIntents.includes("style_shift")) return "style_shift";
+  if (matchedIntents.includes("explain")) return "explain";
+  if (matchedIntents.includes("complete_combo")) return "complete_combo";
+  if (matchedIntents.includes("style_shift")) return "style_shift";
+  return matchedIntents[0];
 }

@@ -15,6 +15,7 @@ interface QueryStore {
   modes: ModeMatch[];
   explanation: string;
   isLoading: boolean;
+  hasSearched: boolean;
 
   setRawInput: (s: string) => void;
   setMatchedIngredients: (ingredients: string[]) => void;
@@ -26,6 +27,7 @@ interface QueryStore {
   setModes: (m: ModeMatch[]) => void;
   setExplanation: (e: string) => void;
   setLoading: (l: boolean) => void;
+  setHasSearched: (v: boolean) => void;
   reset: () => void;
 }
 
@@ -33,13 +35,14 @@ export const useQueryStore = create<QueryStore>((set) => ({
   rawInput: "",
   matchedIngredients: [],
   activeMode: "pairing",
-  activeModel: "core",
+  activeModel: "cooc",
   targetStyle: "",
   strength: "medium",
   results: [],
   modes: [],
   explanation: "",
   isLoading: false,
+  hasSearched: false,
 
   setRawInput: (s) => set({ rawInput: s }),
   setMatchedIngredients: (ingredients) => set({ matchedIngredients: ingredients }),
@@ -51,6 +54,7 @@ export const useQueryStore = create<QueryStore>((set) => ({
   setModes: (m) => set({ modes: m }),
   setExplanation: (e) => set({ explanation: e }),
   setLoading: (l) => set({ isLoading: l }),
+  setHasSearched: (v) => set({ hasSearched: v }),
   reset: () =>
     set({
       rawInput: "",
@@ -59,5 +63,6 @@ export const useQueryStore = create<QueryStore>((set) => ({
       modes: [],
       explanation: "",
       isLoading: false,
+      hasSearched: false,
     }),
 }));

@@ -33,30 +33,16 @@ export default function App() {
 
   return (
     <AppShell>
-      <nav style={{ display: "flex", gap: 16, marginBottom: 20 }}>
+      <nav className="top-nav" aria-label="Primary">
         <button
           onClick={() => setPage("home")}
-          style={{
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            fontSize: 14,
-            color: page === "home" ? "#2a7" : "#666",
-            fontWeight: page === "home" ? 600 : 400,
-          }}
+          className={`nav-button ${page === "home" ? "active" : ""}`}
         >
-          探索
+          工作台
         </button>
         <button
           onClick={() => setPage("about")}
-          style={{
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            fontSize: 14,
-            color: page === "about" ? "#2a7" : "#666",
-            fontWeight: page === "about" ? 600 : 400,
-          }}
+          className={`nav-button ${page === "about" ? "active" : ""}`}
         >
           关于
         </button>

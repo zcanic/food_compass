@@ -1,4 +1,5 @@
 import type { Recommendation } from "../../types/result";
+import { MODEL_LABELS } from "../../types/model";
 import { displayName } from "../../utils/text";
 
 interface Props {
@@ -22,6 +23,9 @@ export function ResultCard({ rec, rank }: Props) {
       <span style={{ color: "#999", fontSize: 13, minWidth: 20 }}>{rank}</span>
       <span style={{ flex: 1, fontSize: 15 }}>
         {displayName(rec.name)}
+        <span style={{ fontSize: 11, color: "#777", marginLeft: 8 }}>
+          {MODEL_LABELS[rec.model]}
+        </span>
         {rec.crossLabel === "chem-only" && (
           <span style={{ fontSize: 11, color: "#888", marginLeft: 8 }}>
             风味近·菜谱不常见

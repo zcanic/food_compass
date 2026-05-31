@@ -5,10 +5,12 @@ import { composeResponse } from "../../ask/response-composer";
 import type { IntentResult } from "../../types/query";
 import type { SkillResult, AskResponse } from "../../types/result";
 import { getMatcher } from "../../engine";
+import { displayName } from "../../utils/text";
 
 export function AskPanel() {
   const [question, setQuestion] = useState("");
   const [intent, setIntent] = useState<IntentResult | null>(null);
+  const [matchedIngredients, setMatchedIngredients] = useState<string[]>([]);
   const [response, setResponse] = useState<AskResponse | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -16,6 +18,7 @@ export function AskPanel() {
     if (!question.trim()) return;
     setLoading(true);
     setIntent(null);
+    setMatchedIngredients([]);
     setResponse(null);
 
     try {
@@ -25,69 +28,97 @@ export function AskPanel() {
 
       // Step 2: Extract ingredients using matcher
       const matcher = getMatcher();
-      const words = question.split(/[\s,，、]+/);
-      const matchedIngredients: string[] = [];
-      for (const w of words) {
-        const m = matcher.match(w);
-        if (m.kind === "exact") matchedIngredients.push(m.name);
+      const extracted = matcher.extractFromText(question);
+      const ingredients = extracted.map((m) => m.name);
+      setMatchedIngredients(ingredients);
+
+      if (ingredients.length === 0) {
+        setResponse({
+          answer: "没有识别到可用食材。请补充英文 canonical 名称，或使用当前支持的中文别名，例如番茄、鸡蛋、酱油、豆腐。",
+          trace: {
+            intent: parsed.intent ?? "",
+            ingredients: [],
+            toolsUsed: [],
+          },
+        });
+        return;
       }
 
       // Step 3: Execute skills based on intent
       const skillResults: SkillResult[] = [];
 
-      if (parsed.intent === "pairing" && matchedIngredients.length > 0) {
+      if (parsed.intent === "pairing" && ingredients.length > 0) {
         skillResults.push(
           await executeSkill("find_pairings", {
-            ingredient: matchedIngredients[0],
+            ingredient: ingredients[0],
             model: "cooc",
             top_k: 12,
           })
         );
-      } else if (parsed.intent === "substitute" && matchedIngredients.length > 0) {
+      } else if (parsed.intent === "substitute" && ingredients.length > 0) {
         skillResults.push(
           await executeSkill("find_substitutes", {
-            ingredient: matchedIngredients[0],
+            ingredient: ingredients[0],
             top_k: 12,
           })
         );
-      } else if (parsed.intent === "style_shift" && matchedIngredients.length > 0) {
+      } else if (parsed.intent === "style_shift" && ingredients.length > 0) {
         skillResults.push(
           await executeSkill("shift_style", {
-            ingredients: matchedIngredients,
+            ingredients,
             target_style: parsed.targetStyle ?? "Japanese",
             strength: "medium",
             top_k: 12,
           })
         );
-      } else if (parsed.intent === "complete_combo" && matchedIngredients.length > 0) {
+      } else if (parsed.intent === "complete_combo" && ingredients.length > 0) {
         skillResults.push(
           await executeSkill("complete_combination", {
-            ingredients: matchedIngredients,
+            ingredients,
             model: "core",
             top_k: 12,
           })
         );
-      } else if (parsed.intent === "explain" && matchedIngredients.length > 0) {
+      } else if (parsed.intent === "explain" && ingredients.length > 0) {
         skillResults.push(
           await executeSkill("lookup_mode", {
-            ingredient: matchedIngredients[0],
+            ingredient: ingredients[0],
             model: "core",
           })
         );
-      } else if (matchedIngredients.length > 0) {
+      } else if (ingredients.length > 0) {
         // Fallback: run pairings
         skillResults.push(
           await executeSkill("find_pairings", {
-            ingredient: matchedIngredients[0],
+            ingredient: ingredients[0],
             model: "core",
             top_k: 12,
+          })
+        );
+      }
+
+      const recommendationNames = skillResults.flatMap((r) =>
+        r.recommendations.map((rec) => rec.name)
+      );
+      if (parsed.constraints.length > 0 && recommendationNames.length > 0) {
+        skillResults.push(
+          await executeSkill("constraint_filter", {
+            candidates: recommendationNames,
+            constraints: parsed.constraints,
           })
         );
       }
 
       // Step 4: Compose response
       const askResponse = await composeResponse(question, skillResults, false);
-      setResponse(askResponse);
+      setResponse({
+        ...askResponse,
+        trace: {
+          intent: parsed.intent ?? "",
+          ingredients,
+          toolsUsed: askResponse.trace.toolsUsed,
+        },
+      });
     } catch (e) {
       setResponse({
         answer: `处理请求时出错: ${e instanceof Error ? e.message : "未知错误"}`,
@@ -100,6 +131,10 @@ export function AskPanel() {
 
   return (
     <div>
+      <div className="panel-title">Ask Mode</div>
+      <div className="secondary-note" style={{ marginBottom: 10 }}>
+        用自然语言描述目标。系统会先抽取食材和意图，再调用本地 embedding 工具。
+      </div>
       <textarea
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
@@ -141,11 +176,23 @@ export function AskPanel() {
             fontSize: 13,
           }}
         >
-          <strong>解析结果：</strong>
-          意图={intent.intent ?? "未知"}，
-          置信度={(intent.confidence * 100).toFixed(0)}%
-          {intent.targetStyle && <>，风格={intent.targetStyle}</>}
-          {intent.multiIntent && "（多意图）"}
+          <strong>解析结果</strong>
+          <div style={{ marginTop: 6 }}>
+            意图：{intent.intent ?? "未知"} · 置信度：{(intent.confidence * 100).toFixed(0)}%
+            {intent.targetStyle && <> · 风格：{intent.targetStyle}</>}
+            {intent.multiIntent && " · 多意图"}
+          </div>
+          <div style={{ marginTop: 6 }}>
+            食材：
+            {matchedIngredients.length > 0
+              ? matchedIngredients.map(displayName).join("、")
+              : "未识别，请补充英文 canonical 名称或常见中文别名"}
+          </div>
+          {intent.constraints.length > 0 && (
+            <div style={{ marginTop: 6 }}>
+              约束：{intent.constraints.join("、")}（当前仅提示，不做可靠过滤）
+            </div>
+          )}
         </div>
       )}
 
