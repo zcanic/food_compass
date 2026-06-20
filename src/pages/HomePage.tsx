@@ -40,7 +40,7 @@ const MODE_HELP: Record<AppMode, string> = {
   lookup_mode: "查看食材在 Epicure 空间中靠近哪些食材街区。",
   complete_combo: "把多个食材平均成组合向量，找还可以补什么。",
   compare_models: "同时查看常见搭配、综合推荐和风味相似三种视角的差异。",
-  ask: "用一句话提问，系统会先解析意图，再调用本地工具。",
+  ask: "LLM 负责理解和编排，Cooc/Core/Chem 工具负责产出候选。",
 };
 
 const EXAMPLES: ExampleQuery[] = [

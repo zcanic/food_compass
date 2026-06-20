@@ -19,6 +19,7 @@ export type AskIntent =
 export type StyleStrength = "light" | "medium" | "strong";
 
 export type RetrievalBackend = "worker" | "local" | "mode-atlas";
+export type AskRoutingSource = "llm" | "rules" | "fallback";
 
 export interface QueryDiagnostics {
   backend: RetrievalBackend;
@@ -33,6 +34,7 @@ export interface IntentResult {
   constraints: string[];
   confidence: number;
   multiIntent: boolean;
+  source?: AskRoutingSource;
 }
 
 export interface QueryState {

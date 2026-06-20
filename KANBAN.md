@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-05-31 22:10 CST
+Status timestamp: 2026-06-20 22:16 CST
 
 ## Done
 
@@ -173,10 +173,16 @@ Status timestamp: 2026-05-31 22:10 CST
 - About now separates product seed-set interpolation from paper SLERP direction arithmetic and shows the actual representative seeds.
 - Added static-asset and E2E coverage for the seed-set asset, vocab alignment, and About-page boundary copy.
 - Full gate passed again: `npm run test:all` with 51 unit tests and 42 E2E checks.
+- 2026-06-20 22:16 CST: Ask LLM orchestration boundary card completed.
+- Ask now treats LLM as the intent/tool orchestration and answer-composition layer, while Cooc/Core/Chem tools remain the only source of recommendation candidates.
+- Added a guarded LLM intent parser that filters output to supported intents, style keys, and constraints before building the local skill plan.
+- Ask UI now shows the routing layer, tool layer, LLM configuration state, and answer composer source so fallback behavior is explicit.
+- Added unit coverage for LLM routing sanitization and LLM-only response composition, plus E2E coverage for the visible Ask orchestration trace.
+- Full gate passed again: `npm run test:all` with 54 unit tests and 42 E2E checks.
 
 ## In Progress
 
-- Continue high-impact UX and test improvements before 23:30.
+- Continue high-impact UX and test improvements under the active goal; do not mark complete without a requirement-by-requirement completion audit.
 
 ## Backlog
 
@@ -184,4 +190,5 @@ Status timestamp: 2026-05-31 22:10 CST
 - Add worker timing instrumentation for larger future data assets.
 - Add generated mode-atlas/runtime parity tests for coverage summary copy.
 - Add generated alias coverage summaries for the product localization layer.
+- Add an Ask settings affordance that explains how to configure the LLM endpoint.
 - Add screenshot snapshots only after stabilizing the expanded About evidence page height.

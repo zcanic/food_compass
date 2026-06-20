@@ -25,6 +25,8 @@ export async function composeResponse(
         intent: "",
         ingredients: [],
         toolsUsed,
+        composer: "local",
+        llmUsed: false,
       },
     };
   }
@@ -44,12 +46,14 @@ ${JSON.stringify(skillResults, null, 2)}
         intent: "",
         ingredients: [],
         toolsUsed,
+        composer: "llm",
+        llmUsed: true,
       },
     };
   } catch {
     return {
       answer: buildSimpleAnswer(skillResults),
-      trace: { intent: "", ingredients: [], toolsUsed },
+      trace: { intent: "", ingredients: [], toolsUsed, composer: "fallback", llmUsed: false },
     };
   }
 }

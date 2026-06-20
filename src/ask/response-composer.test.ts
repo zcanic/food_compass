@@ -1,6 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { composeResponse } from "./response-composer";
+import { callLLM } from "./llm-client";
 import type { SkillResult } from "../types/result";
+
+vi.mock("./llm-client", () => ({
+  callLLM: vi.fn(),
+}));
 
 const skill = (result: Partial<SkillResult>): SkillResult => ({
   skillName: "find_pairings",
@@ -10,6 +15,10 @@ const skill = (result: Partial<SkillResult>): SkillResult => ({
 });
 
 describe("composeResponse", () => {
+  beforeEach(() => {
+    vi.mocked(callLLM).mockReset();
+  });
+
   it("groups recommendations by tool source", async () => {
     const response = await composeResponse("番茄鸡蛋做得更日式还能加什么", [
       skill({
@@ -46,5 +55,23 @@ describe("composeResponse", () => {
     expect(response.answer).toContain("食材街区：");
     expect(response.answer).toContain("Japanese vegetables and umami seasonings（core）");
     expect(response.answer).not.toContain("暂未找到匹配");
+  });
+
+  it("uses LLM only to compose already-returned tool results", async () => {
+    vi.mocked(callLLM).mockResolvedValue("LLM organized answer");
+
+    const response = await composeResponse("番茄还能加什么", [
+      skill({
+        skillName: "find_pairings",
+        recommendations: [{ name: "basil", score: 0.6, model: "cooc" }],
+      }),
+    ], true);
+
+    expect(callLLM).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(callLLM).mock.calls[0][0]).toContain("basil");
+    expect(response.answer).toBe("LLM organized answer");
+    expect(response.trace.toolsUsed).toEqual(["find_pairings"]);
+    expect(response.trace.composer).toBe("llm");
+    expect(response.trace.llmUsed).toBe(true);
   });
 });

@@ -1,5 +1,9 @@
 const LLM_API_URL = import.meta.env.VITE_LLM_API_URL ?? "";
 
+export function isLLMConfigured(): boolean {
+  return LLM_API_URL.trim().length > 0;
+}
+
 export async function callLLM(prompt: string, systemPrompt?: string): Promise<string> {
   if (!LLM_API_URL) {
     throw new Error("LLM API URL not configured. Set VITE_LLM_API_URL environment variable.");

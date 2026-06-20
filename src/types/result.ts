@@ -22,6 +22,8 @@ export interface AskResponse {
     intent: string;
     ingredients: string[];
     toolsUsed: string[];
+    composer?: "llm" | "local" | "fallback";
+    llmUsed?: boolean;
     corrections?: string[];
   };
 }

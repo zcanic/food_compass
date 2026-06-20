@@ -1,13 +1,16 @@
 import type { IntentResult } from "../types/query";
+import { routeIntentWithLLM } from "./llm-intent";
 import { ruleBasedIntent } from "./intent-rules";
 
 export async function routeIntent(query: string): Promise<IntentResult> {
   const ruleResult = ruleBasedIntent(query);
+  const llmResult = await routeIntentWithLLM(query, ruleResult);
+  if (llmResult) return llmResult;
+
   if (ruleResult && ruleResult.confidence >= 0.7) {
-    return ruleResult;
+    return { ...ruleResult, source: "rules" };
   }
 
-  // Fallback: return low-confidence, rely on LLM if available
   return {
     intent: null,
     matchedIntents: [],
@@ -15,5 +18,6 @@ export async function routeIntent(query: string): Promise<IntentResult> {
     constraints: [],
     confidence: 0.3,
     multiIntent: false,
+    source: "fallback",
   };
 }

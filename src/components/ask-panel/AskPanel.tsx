@@ -3,7 +3,8 @@ import { routeIntent } from "../../ask/intent-router";
 import { buildSkillPlan } from "../../ask/skill-plan";
 import { executeSkill } from "../../skills";
 import { composeResponse } from "../../ask/response-composer";
-import type { IntentResult, RetrievalBackend } from "../../types/query";
+import { isLLMConfigured } from "../../ask/llm-client";
+import type { AskRoutingSource, IntentResult, RetrievalBackend } from "../../types/query";
 import type { SkillResult, AskResponse } from "../../types/result";
 import { getMatcher, getSearchBackend } from "../../engine";
 import { displayName } from "../../utils/text";
@@ -16,12 +17,27 @@ interface AskDiagnostics {
   vectorToolCount: number;
   modeToolCount: number;
   constraintToolCount: number;
+  intentSource: AskRoutingSource;
+  composer: "llm" | "local" | "fallback";
+  llmConfigured: boolean;
 }
 
 const BACKEND_LABELS: Record<RetrievalBackend, string> = {
   worker: "Worker",
   local: "本地 fallback",
   "mode-atlas": "Mode atlas",
+};
+
+const ROUTER_LABELS: Record<AskRoutingSource, string> = {
+  llm: "LLM",
+  rules: "本地规则",
+  fallback: "fallback",
+};
+
+const COMPOSER_LABELS: Record<"llm" | "local" | "fallback", string> = {
+  llm: "LLM",
+  local: "本地模板",
+  fallback: "本地模板 fallback",
 };
 
 export function AskPanel() {
@@ -33,6 +49,7 @@ export function AskPanel() {
   const [diagnostics, setDiagnostics] = useState<AskDiagnostics | null>(null);
   const [loading, setLoading] = useState(false);
   const recommendationGroups = toolResults.filter((r) => r.recommendations.length > 0);
+  const llmConfigured = isLLMConfigured();
 
   const handleSubmit = async () => {
     if (!question.trim()) return;
@@ -90,6 +107,8 @@ export function AskPanel() {
         executedToolCount += 1;
         constraintToolCount += 1;
       }
+      // Step 4: Compose response
+      const askResponse = await composeResponse(question, skillResults, llmConfigured);
       setDiagnostics({
         backend: vectorToolCount > 0 ? getSearchBackend() : "mode-atlas",
         elapsedMs: Math.max(0, Math.round(readNow() - toolStart)),
@@ -97,10 +116,10 @@ export function AskPanel() {
         vectorToolCount,
         modeToolCount,
         constraintToolCount,
+        intentSource: parsed.source ?? "rules",
+        composer: askResponse.trace.composer ?? "local",
+        llmConfigured,
       });
-
-      // Step 4: Compose response
-      const askResponse = await composeResponse(question, skillResults, false);
       setToolResults(skillResults);
       setResponse({
         ...askResponse,
@@ -124,7 +143,8 @@ export function AskPanel() {
     <div>
       <div className="panel-title">Ask Mode</div>
       <div className="secondary-note" style={{ marginBottom: 10 }}>
-        用自然语言描述目标。系统会先抽取食材和意图，再调用本地 embedding 工具。
+        LLM 负责理解问题、选择工具和组织回答；Cooc/Core/Chem 三层模型工具负责产出候选。
+        {!llmConfigured && " 当前未配置 LLM API，先用本地规则执行同一套工具链。"}
       </div>
       <textarea
         value={question}
@@ -175,6 +195,9 @@ export function AskPanel() {
             {intent.targetStyle && <> · 风格：{intent.targetStyle}</>}
             {intent.multiIntent && " · 多意图"}
           </div>
+          <div style={{ marginTop: 6 }}>
+            编排层：{ROUTER_LABELS[intent.source ?? "rules"]} · 工具层：Cooc/Core/Chem
+          </div>
           {intent.matchedIntents && intent.matchedIntents.length > 1 && (
             <div style={{ marginTop: 6 }}>
               意图链：{intent.matchedIntents.join("、")}
@@ -220,6 +243,7 @@ export function AskPanel() {
             >
               工具执行：{diagnostics.toolCount} 个 · {BACKEND_LABELS[diagnostics.backend]} · {diagnostics.elapsedMs} ms
               {" "}向量工具 {diagnostics.vectorToolCount} · 街区 {diagnostics.modeToolCount} · 约束 {diagnostics.constraintToolCount}
+              {" "}LLM：{diagnostics.llmConfigured ? "已配置" : "未配置"} · 回答组织：{COMPOSER_LABELS[diagnostics.composer]}
             </div>
           )}
         </div>
