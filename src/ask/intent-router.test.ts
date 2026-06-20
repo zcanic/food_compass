@@ -50,4 +50,14 @@ describe("routeIntent", () => {
     expect(result.intent).toBe("style_shift");
     expect(result.matchedIntents).toEqual(["pairing", "style_shift", "complete_combo"]);
   });
+
+  it("falls back to local rules when the LLM router request fails", async () => {
+    vi.mocked(isLLMConfigured).mockReturnValue(true);
+    vi.mocked(callLLM).mockRejectedValue(new Error("LLM API error: 500"));
+
+    const result = await routeIntent("番茄可以和什么搭配？");
+
+    expect(result.source).toBe("rules");
+    expect(result.intent).toBe("pairing");
+  });
 });

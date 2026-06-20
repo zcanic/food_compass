@@ -74,4 +74,19 @@ describe("composeResponse", () => {
     expect(response.trace.composer).toBe("llm");
     expect(response.trace.llmUsed).toBe(true);
   });
+
+  it("falls back to local composition when the LLM composer request fails", async () => {
+    vi.mocked(callLLM).mockRejectedValue(new Error("LLM API error: 500"));
+
+    const response = await composeResponse("番茄还能加什么", [
+      skill({
+        skillName: "find_pairings",
+        recommendations: [{ name: "basil", score: 0.6, model: "cooc" }],
+      }),
+    ], true);
+
+    expect(response.answer).toContain("常见搭配：basil");
+    expect(response.trace.composer).toBe("fallback");
+    expect(response.trace.llmUsed).toBe(false);
+  });
 });

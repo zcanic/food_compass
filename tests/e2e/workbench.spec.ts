@@ -164,6 +164,32 @@ test("ask mode falls back to local rules when LLM routing returns malformed JSON
   await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText("LLM：已配置 · 回答组织：LLM")).toBeVisible();
 });
 
+test("ask mode falls back to local rules and local composition when LLM endpoint fails", async ({ page }) => {
+  await page.route("**/__failing_llm", async (route) => {
+    await route.fulfill({
+      status: 500,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "mock failure" }),
+    });
+  });
+  await page.addInitScript(() => {
+    window.localStorage.setItem("food_compass_llm_api_url", "/__failing_llm");
+  });
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /Ask/ }).click();
+  await page
+    .getByPlaceholder(/描述你想做什么/)
+    .fill("番茄可以和什么搭配？");
+  await page.getByRole("button", { name: "提问" }).click();
+
+  await expect(page.getByText(/编排层：本地规则 · 工具层：Cooc\/Core\/Chem/)).toBeVisible();
+  await expect(page.getByText(/推荐结果：/)).toBeVisible();
+  await expect(page.getByText(/常见搭配：/)).toBeVisible();
+  await expect(page.getByText(/调用工具：find_pairings/)).toBeVisible();
+  await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText("LLM：已配置 · 回答组织：本地模板 fallback")).toBeVisible();
+});
+
 test("unsupported ingredient input gives an actionable recovery message", async ({ page }) => {
   await page.goto("/");
 
