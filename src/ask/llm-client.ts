@@ -1,11 +1,13 @@
 const LLM_API_URL = import.meta.env.VITE_LLM_API_URL ?? "";
+const LLM_API_URL_STORAGE_KEY = "food_compass_llm_api_url";
 
 export function isLLMConfigured(): boolean {
-  return LLM_API_URL.trim().length > 0;
+  return getLLMApiUrl().trim().length > 0;
 }
 
 export async function callLLM(prompt: string, systemPrompt?: string): Promise<string> {
-  if (!LLM_API_URL) {
+  const llmApiUrl = getLLMApiUrl();
+  if (!llmApiUrl) {
     throw new Error("LLM API URL not configured. Set VITE_LLM_API_URL environment variable.");
   }
 
@@ -15,7 +17,7 @@ export async function callLLM(prompt: string, systemPrompt?: string): Promise<st
   }
   messages.push({ role: "user", content: prompt });
 
-  const res = await fetch(LLM_API_URL, {
+  const res = await fetch(llmApiUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ messages, max_tokens: 512 }),
@@ -27,4 +29,13 @@ export async function callLLM(prompt: string, systemPrompt?: string): Promise<st
 
   const data = await res.json();
   return data.content ?? data.choices?.[0]?.message?.content ?? "";
+}
+
+function getLLMApiUrl(): string {
+  if (typeof window === "undefined") return LLM_API_URL;
+  try {
+    return window.localStorage.getItem(LLM_API_URL_STORAGE_KEY) ?? LLM_API_URL;
+  } catch {
+    return LLM_API_URL;
+  }
 }

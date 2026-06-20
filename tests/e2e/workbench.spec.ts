@@ -72,6 +72,49 @@ test("ask mode uses one question box and extracts Chinese ingredients", async ({
   await expect(page.getByRole("list", { name: "组合补全推荐结果" })).toBeVisible();
 });
 
+test("ask mode can use a configured LLM endpoint while keeping recommendations tool-sourced", async ({ page }) => {
+  await page.route("**/__test_llm", async (route) => {
+    const body = route.request().postDataJSON() as {
+      messages: { role: string; content: string }[];
+    };
+    const system = body.messages.find((message) => message.role === "system")?.content ?? "";
+    const content = system.includes("Ask 编排器")
+      ? JSON.stringify({
+          intent: "style_shift",
+          matchedIntents: ["style_shift"],
+          targetStyle: "Japanese",
+          constraints: [],
+          confidence: 0.91,
+        })
+      : "LLM 组织回答：推荐候选仍来自本地三模型工具。";
+
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ content }),
+    });
+  });
+  await page.addInitScript(() => {
+    window.localStorage.setItem("food_compass_llm_api_url", "/__test_llm");
+  });
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /Ask/ }).click();
+  const askStatus = page.getByRole("region", { name: "Ask LLM 状态" });
+  await expect(askStatus.getByText("VITE_LLM_API_URL configured")).toBeVisible();
+  await expect(askStatus.getByText("LLM + rules fallback")).toBeVisible();
+
+  await page
+    .getByPlaceholder(/描述你想做什么/)
+    .fill("番茄和鸡蛋来点新方向");
+  await page.getByRole("button", { name: "提问" }).click();
+
+  await expect(page.getByText(/编排层：LLM · 工具层：Cooc\/Core\/Chem/)).toBeVisible();
+  await expect(page.getByText("LLM 组织回答：推荐候选仍来自本地三模型工具。")).toBeVisible();
+  await expect(page.getByText(/调用工具：shift_style/)).toBeVisible();
+  await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText("LLM：已配置 · 回答组织：LLM")).toBeVisible();
+  await expect(page.getByRole("list", { name: "推荐结果" })).toBeVisible();
+});
+
 test("unsupported ingredient input gives an actionable recovery message", async ({ page }) => {
   await page.goto("/");
 

@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-06-20 22:20 CST
+Status timestamp: 2026-06-20 22:23 CST
 
 ## Done
 
@@ -184,6 +184,11 @@ Status timestamp: 2026-06-20 22:20 CST
 - The status strip is responsive: three compact columns on desktop and a single column on mobile to avoid overflow.
 - Added E2E coverage that verifies the missing-endpoint fallback, rules fallback, and three-model candidate-source indicators.
 - Full gate passed again: `npm run test:all` with 54 unit tests and 42 E2E checks.
+- 2026-06-20 22:23 CST: Configured LLM Ask contract card completed.
+- `llm-client` now supports a browser-side endpoint override for tested/configured proxy flows while still using `VITE_LLM_API_URL` as the production default.
+- Added Playwright coverage with a mocked LLM endpoint proving configured Ask uses LLM for routing and answer composition while recommendation lists still come from local Cooc/Core/Chem tools.
+- The configured mock flow is covered on both desktop and mobile projects.
+- Full gate passed again: `npm run test:all` with 54 unit tests and 44 E2E checks.
 
 ## In Progress
 
@@ -195,5 +200,5 @@ Status timestamp: 2026-06-20 22:20 CST
 - Add worker timing instrumentation for larger future data assets.
 - Add generated mode-atlas/runtime parity tests for coverage summary copy.
 - Add generated alias coverage summaries for the product localization layer.
-- Add Ask endpoint contract tests for configured mock LLM flows in Playwright.
+- Add an Ask UI affordance for editing the browser-side LLM endpoint override.
 - Add screenshot snapshots only after stabilizing the expanded About evidence page height.
