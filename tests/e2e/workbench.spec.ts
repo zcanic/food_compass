@@ -47,7 +47,7 @@ test("ask mode uses one question box and extracts Chinese ingredients", async ({
   await page.getByRole("button", { name: /Ask/ }).click();
   await expect(page.locator('input[placeholder*="输入食材"]')).toHaveCount(0);
   const askStatus = page.getByRole("region", { name: "Ask LLM 状态" });
-  await expect(askStatus.getByText("VITE_LLM_API_URL missing")).toBeVisible();
+  await expect(askStatus.getByText("missing")).toBeVisible();
   await expect(askStatus.getByText("rules fallback")).toBeVisible();
   await expect(askStatus.getByText("Cooc / Core / Chem")).toBeVisible();
 
@@ -100,7 +100,7 @@ test("ask mode can use a configured LLM endpoint while keeping recommendations t
 
   await page.getByRole("button", { name: /Ask/ }).click();
   const askStatus = page.getByRole("region", { name: "Ask LLM 状态" });
-  await expect(askStatus.getByText("VITE_LLM_API_URL configured")).toBeVisible();
+  await expect(askStatus.getByText("configured")).toBeVisible();
   await expect(askStatus.getByText("LLM + rules fallback")).toBeVisible();
 
   await page
@@ -113,6 +113,23 @@ test("ask mode can use a configured LLM endpoint while keeping recommendations t
   await expect(page.getByText(/调用工具：shift_style/)).toBeVisible();
   await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText("LLM：已配置 · 回答组织：LLM")).toBeVisible();
   await expect(page.getByRole("list", { name: "推荐结果" })).toBeVisible();
+});
+
+test("ask endpoint override can be edited from the Ask panel", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /Ask/ }).click();
+  const askStatus = page.getByRole("region", { name: "Ask LLM 状态" });
+  const endpointSettings = page.getByRole("region", { name: "Ask LLM endpoint 设置" });
+
+  await expect(askStatus.getByText("missing")).toBeVisible();
+  await endpointSettings.getByLabel("LLM endpoint override").fill("/__test_llm");
+  await endpointSettings.getByRole("button", { name: "保存" }).click();
+  await expect(askStatus.getByText("configured")).toBeVisible();
+  await expect(askStatus.getByText("LLM + rules fallback")).toBeVisible();
+
+  await endpointSettings.getByRole("button", { name: "清除" }).click();
+  await expect(askStatus.getByText("missing")).toBeVisible();
 });
 
 test("unsupported ingredient input gives an actionable recovery message", async ({ page }) => {

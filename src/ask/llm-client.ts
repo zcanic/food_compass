@@ -31,11 +31,34 @@ export async function callLLM(prompt: string, systemPrompt?: string): Promise<st
   return data.content ?? data.choices?.[0]?.message?.content ?? "";
 }
 
-function getLLMApiUrl(): string {
+export function getLLMApiUrl(): string {
   if (typeof window === "undefined") return LLM_API_URL;
   try {
     return window.localStorage.getItem(LLM_API_URL_STORAGE_KEY) ?? LLM_API_URL;
   } catch {
     return LLM_API_URL;
+  }
+}
+
+export function getLLMEndpointOverride(): string {
+  if (typeof window === "undefined") return "";
+  try {
+    return window.localStorage.getItem(LLM_API_URL_STORAGE_KEY) ?? "";
+  } catch {
+    return "";
+  }
+}
+
+export function setLLMEndpointOverride(url: string): void {
+  if (typeof window === "undefined") return;
+  const normalized = url.trim();
+  try {
+    if (normalized) {
+      window.localStorage.setItem(LLM_API_URL_STORAGE_KEY, normalized);
+    } else {
+      window.localStorage.removeItem(LLM_API_URL_STORAGE_KEY);
+    }
+  } catch {
+    // Storage can be unavailable in private or restricted browser contexts.
   }
 }

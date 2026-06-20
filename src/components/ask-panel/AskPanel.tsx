@@ -3,7 +3,11 @@ import { routeIntent } from "../../ask/intent-router";
 import { buildSkillPlan } from "../../ask/skill-plan";
 import { executeSkill } from "../../skills";
 import { composeResponse } from "../../ask/response-composer";
-import { isLLMConfigured } from "../../ask/llm-client";
+import {
+  getLLMEndpointOverride,
+  isLLMConfigured,
+  setLLMEndpointOverride,
+} from "../../ask/llm-client";
 import type { AskRoutingSource, IntentResult, RetrievalBackend } from "../../types/query";
 import type { SkillResult, AskResponse } from "../../types/result";
 import { getMatcher, getSearchBackend } from "../../engine";
@@ -48,8 +52,22 @@ export function AskPanel() {
   const [response, setResponse] = useState<AskResponse | null>(null);
   const [diagnostics, setDiagnostics] = useState<AskDiagnostics | null>(null);
   const [loading, setLoading] = useState(false);
+  const [endpointOverride, setEndpointOverrideState] = useState(() => getLLMEndpointOverride());
+  const [endpointDraft, setEndpointDraft] = useState(() => getLLMEndpointOverride());
   const recommendationGroups = toolResults.filter((r) => r.recommendations.length > 0);
   const llmConfigured = isLLMConfigured();
+
+  const saveEndpointOverride = () => {
+    setLLMEndpointOverride(endpointDraft);
+    setEndpointOverrideState(getLLMEndpointOverride());
+    setEndpointDraft(getLLMEndpointOverride());
+  };
+
+  const clearEndpointOverride = () => {
+    setLLMEndpointOverride("");
+    setEndpointOverrideState("");
+    setEndpointDraft("");
+  };
 
   const handleSubmit = async () => {
     if (!question.trim()) return;
@@ -145,7 +163,7 @@ export function AskPanel() {
       <section className="ask-stack-status" aria-label="Ask LLM 状态">
         <div className="ask-status-item">
           <span>LLM endpoint</span>
-          <strong>{llmConfigured ? "VITE_LLM_API_URL configured" : "VITE_LLM_API_URL missing"}</strong>
+          <strong>{llmConfigured ? "configured" : "missing"}</strong>
         </div>
         <div className="ask-status-item">
           <span>编排层</span>
@@ -156,6 +174,20 @@ export function AskPanel() {
           <strong>Cooc / Core / Chem</strong>
         </div>
       </section>
+      <div className="ask-endpoint-control" role="region" aria-label="Ask LLM endpoint 设置">
+        <input
+          aria-label="LLM endpoint override"
+          value={endpointDraft}
+          onChange={(event) => setEndpointDraft(event.target.value)}
+          placeholder="/api/llm-proxy"
+        />
+        <button type="button" onClick={saveEndpointOverride}>
+          保存
+        </button>
+        <button type="button" onClick={clearEndpointOverride} disabled={!endpointOverride && !endpointDraft}>
+          清除
+        </button>
+      </div>
       <textarea
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
