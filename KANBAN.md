@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-06-20 22:16 CST
+Status timestamp: 2026-06-20 22:20 CST
 
 ## Done
 
@@ -179,6 +179,11 @@ Status timestamp: 2026-06-20 22:16 CST
 - Ask UI now shows the routing layer, tool layer, LLM configuration state, and answer composer source so fallback behavior is explicit.
 - Added unit coverage for LLM routing sanitization and LLM-only response composition, plus E2E coverage for the visible Ask orchestration trace.
 - Full gate passed again: `npm run test:all` with 54 unit tests and 42 E2E checks.
+- 2026-06-20 22:20 CST: Ask LLM status affordance card completed.
+- Ask now shows a compact status strip for `VITE_LLM_API_URL`, orchestration mode, and Cooc/Core/Chem candidate sourcing before the user submits a question.
+- The status strip is responsive: three compact columns on desktop and a single column on mobile to avoid overflow.
+- Added E2E coverage that verifies the missing-endpoint fallback, rules fallback, and three-model candidate-source indicators.
+- Full gate passed again: `npm run test:all` with 54 unit tests and 42 E2E checks.
 
 ## In Progress
 
@@ -190,5 +195,5 @@ Status timestamp: 2026-06-20 22:16 CST
 - Add worker timing instrumentation for larger future data assets.
 - Add generated mode-atlas/runtime parity tests for coverage summary copy.
 - Add generated alias coverage summaries for the product localization layer.
-- Add an Ask settings affordance that explains how to configure the LLM endpoint.
+- Add Ask endpoint contract tests for configured mock LLM flows in Playwright.
 - Add screenshot snapshots only after stabilizing the expanded About evidence page height.

@@ -46,6 +46,10 @@ test("ask mode uses one question box and extracts Chinese ingredients", async ({
 
   await page.getByRole("button", { name: /Ask/ }).click();
   await expect(page.locator('input[placeholder*="输入食材"]')).toHaveCount(0);
+  const askStatus = page.getByRole("region", { name: "Ask LLM 状态" });
+  await expect(askStatus.getByText("VITE_LLM_API_URL missing")).toBeVisible();
+  await expect(askStatus.getByText("rules fallback")).toBeVisible();
+  await expect(askStatus.getByText("Cooc / Core / Chem")).toBeVisible();
 
   await page
     .getByPlaceholder(/描述你想做什么/)

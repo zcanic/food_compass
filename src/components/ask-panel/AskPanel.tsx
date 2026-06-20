@@ -142,10 +142,20 @@ export function AskPanel() {
   return (
     <div>
       <div className="panel-title">Ask Mode</div>
-      <div className="secondary-note" style={{ marginBottom: 10 }}>
-        LLM 负责理解问题、选择工具和组织回答；Cooc/Core/Chem 三层模型工具负责产出候选。
-        {!llmConfigured && " 当前未配置 LLM API，先用本地规则执行同一套工具链。"}
-      </div>
+      <section className="ask-stack-status" aria-label="Ask LLM 状态">
+        <div className="ask-status-item">
+          <span>LLM endpoint</span>
+          <strong>{llmConfigured ? "VITE_LLM_API_URL configured" : "VITE_LLM_API_URL missing"}</strong>
+        </div>
+        <div className="ask-status-item">
+          <span>编排层</span>
+          <strong>{llmConfigured ? "LLM + rules fallback" : "rules fallback"}</strong>
+        </div>
+        <div className="ask-status-item">
+          <span>候选来源</span>
+          <strong>Cooc / Core / Chem</strong>
+        </div>
+      </section>
       <textarea
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
