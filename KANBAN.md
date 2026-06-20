@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-06-20 22:26 CST
+Status timestamp: 2026-06-20 22:28 CST
 
 ## Done
 
@@ -194,6 +194,10 @@ Status timestamp: 2026-06-20 22:26 CST
 - The endpoint control updates the visible LLM status immediately and collapses to one column on mobile.
 - Added desktop/mobile E2E coverage for saving an override, seeing configured routing state, clearing it, and returning to missing-endpoint fallback.
 - Full gate passed again: `npm run test:all` with 54 unit tests and 46 E2E checks.
+- 2026-06-20 22:28 CST: Malformed LLM routing recovery card completed.
+- Added unit coverage proving malformed LLM router JSON falls back to local rule routing instead of stopping Ask.
+- Added desktop/mobile E2E coverage where a configured mock LLM returns invalid router JSON, Ask falls back to local rules, still executes `shift_style`, `find_pairings`, and `complete_combination`, and keeps LLM answer composition available.
+- Full gate passed again: `npm run test:all` with 55 unit tests and 48 E2E checks.
 
 ## In Progress
 
@@ -205,5 +209,5 @@ Status timestamp: 2026-06-20 22:26 CST
 - Add worker timing instrumentation for larger future data assets.
 - Add generated mode-atlas/runtime parity tests for coverage summary copy.
 - Add generated alias coverage summaries for the product localization layer.
-- Add Ask recovery behavior for malformed LLM JSON responses.
+- Add Ask recovery behavior for LLM network errors and HTTP failures.
 - Add screenshot snapshots only after stabilizing the expanded About evidence page height.

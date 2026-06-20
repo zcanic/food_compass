@@ -132,6 +132,38 @@ test("ask endpoint override can be edited from the Ask panel", async ({ page }) 
   await expect(askStatus.getByText("missing")).toBeVisible();
 });
 
+test("ask mode falls back to local rules when LLM routing returns malformed JSON", async ({ page }) => {
+  await page.route("**/__bad_llm", async (route) => {
+    const body = route.request().postDataJSON() as {
+      messages: { role: string; content: string }[];
+    };
+    const system = body.messages.find((message) => message.role === "system")?.content ?? "";
+    const content = system.includes("Ask 编排器")
+      ? "not-json"
+      : "LLM 回答组织仍可使用，但路由已回退到本地规则。";
+
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ content }),
+    });
+  });
+  await page.addInitScript(() => {
+    window.localStorage.setItem("food_compass_llm_api_url", "/__bad_llm");
+  });
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /Ask/ }).click();
+  await page
+    .getByPlaceholder(/描述你想做什么/)
+    .fill("我有番茄和鸡蛋，想做得更日式一点，可以加什么？");
+  await page.getByRole("button", { name: "提问" }).click();
+
+  await expect(page.getByText(/编排层：本地规则 · 工具层：Cooc\/Core\/Chem/)).toBeVisible();
+  await expect(page.getByText("LLM 回答组织仍可使用，但路由已回退到本地规则。")).toBeVisible();
+  await expect(page.getByText(/调用工具：shift_style、find_pairings、complete_combination/)).toBeVisible();
+  await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText("LLM：已配置 · 回答组织：LLM")).toBeVisible();
+});
+
 test("unsupported ingredient input gives an actionable recovery message", async ({ page }) => {
   await page.goto("/");
 

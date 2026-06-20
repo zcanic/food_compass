@@ -39,4 +39,15 @@ describe("routeIntent", () => {
     expect(result.targetStyle).toBe("Japanese");
     expect(result.constraints).toEqual(["simple"]);
   });
+
+  it("falls back to local rules when the LLM router returns malformed JSON", async () => {
+    vi.mocked(isLLMConfigured).mockReturnValue(true);
+    vi.mocked(callLLM).mockResolvedValue("not json");
+
+    const result = await routeIntent("我有番茄和鸡蛋，想做得更日式一点，可以加什么？");
+
+    expect(result.source).toBe("rules");
+    expect(result.intent).toBe("style_shift");
+    expect(result.matchedIntents).toEqual(["pairing", "style_shift", "complete_combo"]);
+  });
 });
