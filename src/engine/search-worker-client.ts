@@ -9,8 +9,14 @@ type WorkerResponse =
   | { type: "topk_result"; id: number; results: TopKResult[] }
   | { type: "error"; id?: number; message: string };
 
+export interface SearchTiming {
+  backend: "worker" | "local";
+  elapsedMs: number;
+}
+
 let client: SearchWorkerClient | null = null;
 let initPromise: Promise<boolean> | null = null;
+let timings: SearchTiming[] = [];
 
 export async function initSearchWorker(store: EmbeddingStore): Promise<boolean> {
   if (typeof Worker === "undefined") return false;
@@ -40,15 +46,30 @@ export async function topKWorkerOrLocal(
   k: number,
   excludeIndices: Set<number> = new Set()
 ): Promise<TopKResult[]> {
+  const startedAt = readNow();
   if (client?.isReady()) {
-    return client.topK(model, queryVec, k, excludeIndices);
+    const results = await client.topK(model, queryVec, k, excludeIndices);
+    timings.push({ backend: "worker", elapsedMs: elapsedSince(startedAt) });
+    return results;
   }
 
-  return topK(store, model, queryVec, k, excludeIndices);
+  const results = topK(store, model, queryVec, k, excludeIndices);
+  timings.push({ backend: "local", elapsedMs: elapsedSince(startedAt) });
+  return results;
 }
 
 export function getSearchBackend(): "worker" | "local" {
   return client?.isReady() ? "worker" : "local";
+}
+
+export function resetSearchTimings(): void {
+  timings = [];
+}
+
+export function consumeSearchTimings(): SearchTiming[] {
+  const captured = timings;
+  timings = [];
+  return captured;
 }
 
 class SearchWorkerClient {
@@ -173,4 +194,12 @@ class SearchWorkerClient {
 
 function copyBuffer(view: Float32Array): ArrayBuffer {
   return view.slice().buffer;
+}
+
+function readNow(): number {
+  return typeof performance === "undefined" ? Date.now() : performance.now();
+}
+
+function elapsedSince(startedAt: number): number {
+  return Math.max(0, Math.round(readNow() - startedAt));
 }

@@ -335,4 +335,4 @@ export async function compareModelsAsync(
 }
 
 export { constraintFilter };
-export { getSearchBackend } from "./search-worker-client";
+export { consumeSearchTimings, getSearchBackend, resetSearchTimings } from "./search-worker-client";

@@ -13,7 +13,7 @@ import type { AskIntent, AskRoutingSource, IntentResult, RetrievalBackend } from
 import type { SkillResult, AskResponse } from "../../types/result";
 import type { SearchMatch } from "../../types/ingredient";
 import { MODEL_EXPLANATIONS, MODEL_LABELS, type ModelName } from "../../types/model";
-import { getMatcher, getSearchBackend } from "../../engine";
+import { consumeSearchTimings, getMatcher, getSearchBackend, resetSearchTimings } from "../../engine";
 import { STYLE_LABELS, STYLE_SEED_SETS } from "../../utils/constants";
 import { displayName } from "../../utils/text";
 import { ResultList } from "../results/ResultList";
@@ -24,6 +24,8 @@ interface AskDiagnostics {
   elapsedMs: number;
   toolCount: number;
   vectorToolCount: number;
+  vectorCallCount: number;
+  vectorElapsedMs: number;
   modeToolCount: number;
   constraintToolCount: number;
   intentSource: AskRoutingSource;
@@ -269,6 +271,7 @@ export function AskPanel() {
     setDiagnostics(null);
 
     try {
+      resetSearchTimings();
       const toolStart = readNow();
       const vectorToolCount = plan.filter((step) => isVectorSkill(step.name)).length;
       const modeToolCount = plan.filter((step) => step.name === "lookup_mode").length;
@@ -294,15 +297,20 @@ export function AskPanel() {
         constraintToolCount += 1;
       }
 
+      const vectorTimings = consumeSearchTimings();
+      const toolElapsedMs = Math.max(0, Math.round(readNow() - toolStart));
+
       const askResponse = await composeResponse(question, skillResults, llmConfigured, {
         signal: controller.signal,
       });
       if (!isCurrentRequest()) return;
       setDiagnostics({
         backend: vectorToolCount > 0 ? getSearchBackend() : "mode-atlas",
-        elapsedMs: Math.max(0, Math.round(readNow() - toolStart)),
+        elapsedMs: toolElapsedMs,
         toolCount: executedToolCount,
         vectorToolCount,
+        vectorCallCount: vectorTimings.length,
+        vectorElapsedMs: vectorTimings.reduce((total, timing) => total + timing.elapsedMs, 0),
         modeToolCount,
         constraintToolCount,
         intentSource: intent.source ?? "rules",
@@ -586,7 +594,8 @@ export function AskPanel() {
               style={{ marginTop: 6, fontSize: 11, color: "#aaa" }}
             >
               工具执行：{diagnostics.toolCount} 个 · {BACKEND_LABELS[diagnostics.backend]} · {diagnostics.elapsedMs} ms
-              {" "}向量工具 {diagnostics.vectorToolCount} · 街区 {diagnostics.modeToolCount} · 约束 {diagnostics.constraintToolCount}
+              <span> 向量工具 {diagnostics.vectorToolCount} · 街区 {diagnostics.modeToolCount} · 约束 {diagnostics.constraintToolCount}</span>
+              <span> 检索 {diagnostics.vectorCallCount} 次 · {diagnostics.vectorElapsedMs} ms</span>
               {" "}LLM：{diagnostics.llmConfigured ? "已配置" : "未配置"} · 回答组织：{COMPOSER_LABELS[diagnostics.composer]}
             </div>
           )}
