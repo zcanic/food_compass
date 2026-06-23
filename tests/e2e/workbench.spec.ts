@@ -59,12 +59,16 @@ test("ask mode uses one question box and extracts Chinese ingredients", async ({
   await expect(page.getByText(/意图：style_shift/)).toBeVisible();
   await expect(page.getByText(/编排层：本地规则 · 工具层：Cooc\/Core\/Chem/)).toBeVisible();
   await expect(page.getByText(/工具计划：本地默认 · 风格偏移\/core → 常见搭配\/cooc → 组合补全\/core/)).toBeVisible();
+  await expect(page.getByRole("region", { name: "Ask 解析结果" }).getByText(/模型依据：/)).toContainText(
+    "常见搭配：常见搭配（cooc），基于菜谱共现关系，适合找还能加什么。"
+  );
   await expect(page.getByText(/意图链：pairing、style_shift、complete_combo/)).toBeVisible();
   await expect(page.getByText(/食材：tomato、egg/)).toBeVisible();
   await expect(page.getByText(/调用工具：shift_style/)).toBeVisible();
-  await expect(page.getByText(/风格偏移：/)).toBeVisible();
-  await expect(page.getByText(/常见搭配：/)).toBeVisible();
-  await expect(page.getByText(/组合补全：/)).toBeVisible();
+  const answer = page.getByText(/推荐结果：/).first();
+  await expect(answer).toContainText("风格偏移：");
+  await expect(answer).toContainText("常见搭配：");
+  await expect(answer).toContainText("组合补全：");
   await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText(/工具执行：3 个 · (Worker|本地 fallback) · \d+ ms/)).toBeVisible();
   await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText("向量工具 3 · 街区 0 · 约束 0")).toBeVisible();
   await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText("LLM：未配置 · 回答组织：本地模板")).toBeVisible();
@@ -112,6 +116,9 @@ test("ask mode can use a configured LLM endpoint while keeping recommendations t
 
   await expect(page.getByText(/编排层：LLM · 工具层：Cooc\/Core\/Chem/)).toBeVisible();
   await expect(page.getByText("工具计划：LLM 已选择 · 风格偏移/core")).toBeVisible();
+  await expect(page.getByRole("region", { name: "Ask 解析结果" }).getByText(/模型依据：/)).toContainText(
+    "风格偏移：综合推荐（core），结合共现和化学信号，适合不知道选哪个时使用。"
+  );
   await expect(page.getByText("LLM 组织回答：推荐候选仍来自本地三模型工具。")).toBeVisible();
   await expect(page.getByText(/调用工具：shift_style/)).toBeVisible();
   await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText("LLM：已配置 · 回答组织：LLM")).toBeVisible();
@@ -187,8 +194,9 @@ test("ask mode falls back to local rules and local composition when LLM endpoint
   await askAndExecute(page);
 
   await expect(page.getByText(/编排层：本地规则 · 工具层：Cooc\/Core\/Chem/)).toBeVisible();
-  await expect(page.getByText(/推荐结果：/)).toBeVisible();
-  await expect(page.getByText(/常见搭配：/)).toBeVisible();
+  const fallbackAnswer = page.getByText(/推荐结果：/).first();
+  await expect(fallbackAnswer).toBeVisible();
+  await expect(fallbackAnswer).toContainText("常见搭配：");
   await expect(page.getByText(/调用工具：find_pairings/)).toBeVisible();
   await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText("LLM：已配置 · 回答组织：本地模板 fallback")).toBeVisible();
 });

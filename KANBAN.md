@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-06-23 21:49 CST
+Status timestamp: 2026-06-23 21:54 CST
 
 ## Done
 
@@ -231,6 +231,11 @@ Status timestamp: 2026-06-23 21:49 CST
 - Ask now treats blank LLM composer output as a failure and falls back to the local structured answer instead of rendering an empty response.
 - Added unit coverage for whitespace-only composer responses and desktop/mobile E2E coverage for configured empty-response recovery plus the existing retry affordance.
 - Full gate passed again: `npm run test:all` with 63 unit tests and 64 E2E checks.
+- 2026-06-23 21:54 CST: Ask model-evidence explanation card completed.
+- Ask plan review now translates each fixed model lens into its product meaning while retaining the auditable Cooc/Core/Chem code.
+- The explanation distinguishes recipe co-occurrence, balanced context-plus-chemistry retrieval, and flavor-chemistry similarity instead of presenting opaque model names.
+- Added desktop/mobile E2E coverage for evidence-lens copy on both local-rule and configured-LLM plans; tightened older response assertions to their actual answer region.
+- Full gate passed again: `npm run test:all` with 63 unit tests and 64 E2E checks.
 
 ## In Progress
 
@@ -242,5 +247,5 @@ Status timestamp: 2026-06-23 21:49 CST
 - Add worker timing instrumentation for larger future data assets.
 - Add generated mode-atlas/runtime parity tests for coverage summary copy.
 - Add generated alias coverage summaries for the product localization layer.
-- Make each Ask tool plan's Cooc/Core/Chem evidence lens understandable without requiring users to know model codes.
+- Verify in the browser that LLM-selected `topK` parameters control the number of candidates returned by local tools.
 - Add screenshot snapshots only after stabilizing the expanded About evidence page height.

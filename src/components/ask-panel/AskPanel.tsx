@@ -12,6 +12,7 @@ import {
 import type { AskIntent, AskRoutingSource, IntentResult, RetrievalBackend } from "../../types/query";
 import type { SkillResult, AskResponse } from "../../types/result";
 import type { SearchMatch } from "../../types/ingredient";
+import { MODEL_EXPLANATIONS, MODEL_LABELS, type ModelName } from "../../types/model";
 import { getMatcher, getSearchBackend } from "../../engine";
 import { STYLE_LABELS, STYLE_SEED_SETS } from "../../utils/constants";
 import { displayName } from "../../utils/text";
@@ -416,6 +417,11 @@ export function AskPanel() {
             工具计划：{intent.source === "user" ? "用户调整后本地计划" : intent.toolPlan?.length ? "LLM 已选择" : "本地默认"}
             {resolvedPlan.length > 0 && <> · {resolvedPlan.map(planStepLabel).join(" → ")}</>}
           </div>
+          {resolvedPlan.length > 0 && (
+            <div style={{ marginTop: 6, color: "var(--subtle)" }}>
+              模型依据：{resolvedPlan.map(planLensSummary).join("；")}
+            </div>
+          )}
           {intent.matchedIntents && intent.matchedIntents.length > 1 && (
             <div style={{ marginTop: 6 }}>
               意图链：{intent.matchedIntents.join("、")}
@@ -654,6 +660,18 @@ function toolLabel(skillName: string) {
 }
 
 function planStepLabel(step: SkillRequest): string {
-  const model = typeof step.params.model === "string" ? `/${step.params.model}` : "";
-  return `${toolLabel(step.name)}${model}`;
+  const model = getPlanModel(step);
+  const suffix = model ? `/${model}` : "";
+  return `${toolLabel(step.name)}${suffix}`;
+}
+
+function planLensSummary(step: SkillRequest): string {
+  const model = getPlanModel(step);
+  if (!model) return toolLabel(step.name);
+  return `${toolLabel(step.name)}：${MODEL_LABELS[model]}（${model}），${MODEL_EXPLANATIONS[model]}`;
+}
+
+function getPlanModel(step: SkillRequest): ModelName | null {
+  const model = step.params.model;
+  return model === "cooc" || model === "core" || model === "chem" ? model : null;
 }
