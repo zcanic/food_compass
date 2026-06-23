@@ -339,6 +339,32 @@ test("editing an Ask question clears a reviewed plan before execution", async ({
   await expect(page.getByRole("button", { name: "提问" })).toBeVisible();
   await expect(page.getByRole("region", { name: "Ask 解析结果" })).toHaveCount(0);
 });
+test("Ask plan review validates canonical ingredient corrections before execution", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /Ask/ }).click();
+  await page.getByPlaceholder(/描述你想做什么/).fill("番茄可以和什么搭配？");
+  await page.getByRole("button", { name: "提问" }).click();
+
+  const review = page.getByRole("group", { name: "Ask 计划修正" });
+  const ingredients = review.getByRole("group", { name: "Ask 食材修正" });
+  await ingredients.getByRole("button", { name: "移除 Ask 食材 tomato" }).click();
+  await expect(review.getByRole("button", { name: "执行计划" })).toBeDisabled();
+
+  const draft = ingredients.getByLabel("添加 Ask 食材");
+  await draft.fill("tomoto");
+  await expect(ingredients.getByRole("button", { name: "添加" })).toBeDisabled();
+  await ingredients.getByRole("button", { name: "使用 tomato" }).click();
+
+  await draft.fill("鸡蛋");
+  await ingredients.getByRole("button", { name: "添加" }).click();
+  await expect(ingredients.getByRole("button", { name: "移除 Ask 食材 tomato" })).toBeVisible();
+  await expect(ingredients.getByRole("button", { name: "移除 Ask 食材 egg" })).toBeVisible();
+  await expect(page.getByText("工具计划：用户调整后本地计划 · 常见搭配/cooc")).toBeVisible();
+
+  await review.getByRole("button", { name: "执行计划" }).click();
+  await expect(page.getByText(/调用工具：find_pairings/)).toBeVisible();
+});
 test("unsupported ingredient input gives an actionable recovery message", async ({ page }) => {
   await page.goto("/");
 

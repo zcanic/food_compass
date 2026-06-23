@@ -3,9 +3,10 @@ import { displayName } from "../../utils/text";
 interface Props {
   name: string;
   onRemove: () => void;
+  removeLabel?: string;
 }
 
-export function IngredientChip({ name, onRemove }: Props) {
+export function IngredientChip({ name, onRemove, removeLabel }: Props) {
   return (
     <span
       style={{
@@ -21,7 +22,7 @@ export function IngredientChip({ name, onRemove }: Props) {
       {displayName(name)}
       <button
         onClick={onRemove}
-        aria-label={`移除 ${displayName(name)}`}
+        aria-label={removeLabel ?? `移除 ${displayName(name)}`}
         style={{
           border: "none",
           background: "transparent",

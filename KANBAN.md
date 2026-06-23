@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-06-23 21:36 CST
+Status timestamp: 2026-06-23 21:40 CST
 
 ## Done
 
@@ -222,6 +222,11 @@ Status timestamp: 2026-06-23 21:36 CST
 - Editing the question invalidates both active requests and reviewed plans, while LLM retry now retries composition without falsely claiming that routing was retried.
 - Added desktop/mobile E2E coverage for plan correction before execution and clearing a reviewed plan on question edits.
 - Full gate passed again: `npm run test:all` with 62 unit tests and 60 E2E checks.
+- 2026-06-23 21:40 CST: Ask canonical ingredient review card completed.
+- Ask plan review now lets users remove recognized ingredients, add exact canonical names or aliases, and explicitly accept fuzzy candidates before execution.
+- Every ingredient edit rebuilds a deterministic local plan, clears stale output, and prevents execution when no validated ingredient remains.
+- Extended the shared ingredient chip with a contextual removal label and added desktop/mobile E2E coverage for safe ingredient correction.
+- Full gate passed again: `npm run test:all` with 62 unit tests and 62 E2E checks.
 
 ## In Progress
 
@@ -233,5 +238,5 @@ Status timestamp: 2026-06-23 21:36 CST
 - Add worker timing instrumentation for larger future data assets.
 - Add generated mode-atlas/runtime parity tests for coverage summary copy.
 - Add generated alias coverage summaries for the product localization layer.
-- Let users edit reviewed canonical ingredients with local matcher validation before the Ask plan executes.
+- Fall back to local Ask composition when a configured LLM returns an empty response.
 - Add screenshot snapshots only after stabilizing the expanded About evidence page height.

@@ -11,10 +11,12 @@ import {
 } from "../../ask/llm-client";
 import type { AskIntent, AskRoutingSource, IntentResult, RetrievalBackend } from "../../types/query";
 import type { SkillResult, AskResponse } from "../../types/result";
+import type { SearchMatch } from "../../types/ingredient";
 import { getMatcher, getSearchBackend } from "../../engine";
 import { STYLE_LABELS, STYLE_SEED_SETS } from "../../utils/constants";
 import { displayName } from "../../utils/text";
 import { ResultList } from "../results/ResultList";
+import { IngredientChip } from "../search/IngredientChip";
 
 interface AskDiagnostics {
   backend: RetrievalBackend;
@@ -67,6 +69,8 @@ export function AskPanel() {
   const [diagnostics, setDiagnostics] = useState<AskDiagnostics | null>(null);
   const [loading, setLoading] = useState(false);
   const [phase, setPhase] = useState<AskPhase>("idle");
+  const [ingredientDraft, setIngredientDraft] = useState("");
+  const [ingredientMatch, setIngredientMatch] = useState<SearchMatch | null>(null);
   const [endpointOverride, setEndpointOverrideState] = useState(() => getLLMEndpointOverride());
   const [endpointDraft, setEndpointDraft] = useState(() => getLLMEndpointOverride());
   const requestControllerRef = useRef<AbortController | null>(null);
@@ -107,6 +111,8 @@ export function AskPanel() {
     setToolResults([]);
     setResponse(null);
     setDiagnostics(null);
+    setIngredientDraft("");
+    setIngredientMatch(null);
     setQuestion(value);
   };
 
@@ -126,6 +132,8 @@ export function AskPanel() {
     setToolResults([]);
     setResponse(null);
     setDiagnostics(null);
+    setIngredientDraft("");
+    setIngredientMatch(null);
 
     try {
       const parsed = await routeIntent(question, { signal: controller.signal });
@@ -199,6 +207,42 @@ export function AskPanel() {
     setToolResults([]);
     setResponse(null);
     setDiagnostics(null);
+  };
+
+  const updateReviewedIngredients = (nextIngredients: string[]) => {
+    if (!intent) return;
+    const next: IntentResult = {
+      ...intent,
+      source: "user",
+      toolPlan: undefined,
+    };
+    setIntent(next);
+    setMatchedIngredients(nextIngredients);
+    setResolvedPlan(buildSkillPlan(next, nextIngredients));
+    setToolResults([]);
+    setResponse(null);
+    setDiagnostics(null);
+  };
+
+  const handleIngredientDraftChange = (value: string) => {
+    setIngredientDraft(value);
+    setIngredientMatch(value.trim() ? getMatcher().match(value) : null);
+  };
+
+  const addReviewedIngredient = (name?: string) => {
+    if (!intent) return;
+    const resolved = name ?? (ingredientMatch?.kind === "exact" ? ingredientMatch.name : "");
+    if (!resolved) return;
+    const nextIngredients = matchedIngredients.includes(resolved)
+      ? matchedIngredients
+      : [...matchedIngredients, resolved];
+    updateReviewedIngredients(nextIngredients);
+    setIngredientDraft("");
+    setIngredientMatch(null);
+  };
+
+  const removeReviewedIngredient = (name: string) => {
+    updateReviewedIngredients(matchedIngredients.filter((ingredient) => ingredient !== name));
   };
 
   const handleExecutePlan = async () => {
@@ -388,7 +432,7 @@ export function AskPanel() {
               约束：{intent.constraints.join("、")}（当前仅提示，不做可靠过滤）
             </div>
           )}
-          {(phase === "review" || phase === "executing") && matchedIngredients.length > 0 && (
+          {(phase === "review" || phase === "executing") && (
             <div
               role="group"
               aria-label="Ask 计划修正"
@@ -430,6 +474,66 @@ export function AskPanel() {
                   </select>
                 </label>
               )}
+              <div
+                role="group"
+                aria-label="Ask 食材修正"
+                style={{ display: "grid", gap: 5, flex: "1 1 220px", minWidth: 0 }}
+              >
+                <span>已识别食材</span>
+                {matchedIngredients.length > 0 && (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {matchedIngredients.map((name) => (
+                      <IngredientChip
+                        key={name}
+                        name={name}
+                        onRemove={() => removeReviewedIngredient(name)}
+                        removeLabel={`移除 Ask 食材 ${displayName(name)}`}
+                      />
+                    ))}
+                  </div>
+                )}
+                <div style={{ display: "flex", gap: 6 }}>
+                  <input
+                    aria-label="添加 Ask 食材"
+                    value={ingredientDraft}
+                    disabled={loading}
+                    onChange={(event) => handleIngredientDraftChange(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" && ingredientMatch?.kind === "exact") {
+                        event.preventDefault();
+                        addReviewedIngredient();
+                      }
+                    }}
+                    placeholder="添加 canonical 或别名"
+                    style={{ flex: 1, minWidth: 0 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => addReviewedIngredient()}
+                    disabled={loading || ingredientMatch?.kind !== "exact"}
+                  >
+                    添加
+                  </button>
+                </div>
+                {ingredientMatch?.kind === "fuzzy" && (
+                  ingredientMatch.candidates.length > 0 ? (
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {ingredientMatch.candidates.slice(0, 4).map((candidate) => (
+                        <button
+                          key={candidate}
+                          type="button"
+                          disabled={loading}
+                          onClick={() => addReviewedIngredient(candidate)}
+                        >
+                          使用 {displayName(candidate)}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <span style={{ color: "var(--muted)", fontSize: 12 }}>当前词表未匹配该食材</span>
+                  )
+                )}
+              </div>
               <button
                 type="button"
                 onClick={handleExecutePlan}
