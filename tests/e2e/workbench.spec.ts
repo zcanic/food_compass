@@ -122,6 +122,7 @@ test("ask mode can use a configured LLM endpoint while keeping recommendations t
   await expect(page.getByText("LLM 组织回答：推荐候选仍来自本地三模型工具。")).toBeVisible();
   await expect(page.getByText(/调用工具：shift_style/)).toBeVisible();
   await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText("LLM：已配置 · 回答组织：LLM")).toBeVisible();
+  await expect(page.getByText("6 个候选")).toBeVisible();
   await expect(page.getByRole("list", { name: "推荐结果" })).toBeVisible();
 });
 

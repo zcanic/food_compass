@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-06-23 21:54 CST
+Status timestamp: 2026-06-23 21:55 CST
 
 ## Done
 
@@ -236,6 +236,9 @@ Status timestamp: 2026-06-23 21:54 CST
 - The explanation distinguishes recipe co-occurrence, balanced context-plus-chemistry retrieval, and flavor-chemistry similarity instead of presenting opaque model names.
 - Added desktop/mobile E2E coverage for evidence-lens copy on both local-rule and configured-LLM plans; tightened older response assertions to their actual answer region.
 - Full gate passed again: `npm run test:all` with 63 unit tests and 64 E2E checks.
+- 2026-06-23 21:55 CST: LLM `topK` browser-contract card completed.
+- Configured Ask E2E now proves an LLM-selected `topK=6` yields exactly six local tool candidates, alongside its visible LLM plan and tool-source trace.
+- Full gate passed again: `npm run test:all` with 63 unit tests and 64 E2E checks.
 
 ## In Progress
 
@@ -247,5 +250,5 @@ Status timestamp: 2026-06-23 21:54 CST
 - Add worker timing instrumentation for larger future data assets.
 - Add generated mode-atlas/runtime parity tests for coverage summary copy.
 - Add generated alias coverage summaries for the product localization layer.
-- Verify in the browser that LLM-selected `topK` parameters control the number of candidates returned by local tools.
+- Add desktop/mobile overflow checks for the expanded Ask plan-review controls.
 - Add screenshot snapshots only after stabilizing the expanded About evidence page height.
