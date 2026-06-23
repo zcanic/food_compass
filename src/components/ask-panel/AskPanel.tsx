@@ -9,9 +9,10 @@ import {
   isLLMRequestAbort,
   setLLMEndpointOverride,
 } from "../../ask/llm-client";
-import type { AskRoutingSource, IntentResult, RetrievalBackend } from "../../types/query";
+import type { AskIntent, AskRoutingSource, IntentResult, RetrievalBackend } from "../../types/query";
 import type { SkillResult, AskResponse } from "../../types/result";
 import { getMatcher, getSearchBackend } from "../../engine";
+import { STYLE_LABELS, STYLE_SEED_SETS } from "../../utils/constants";
 import { displayName } from "../../utils/text";
 import { ResultList } from "../results/ResultList";
 
@@ -37,6 +38,7 @@ const ROUTER_LABELS: Record<AskRoutingSource, string> = {
   llm: "LLM",
   rules: "本地规则",
   fallback: "fallback",
+  user: "用户调整",
 };
 
 const COMPOSER_LABELS: Record<"llm" | "local" | "fallback", string> = {
@@ -44,6 +46,16 @@ const COMPOSER_LABELS: Record<"llm" | "local" | "fallback", string> = {
   local: "本地模板",
   fallback: "本地模板 fallback",
 };
+
+const INTENT_LABELS: Record<AskIntent, string> = {
+  pairing: "找常见搭配",
+  substitute: "找风味替代",
+  style_shift: "换风格",
+  complete_combo: "组合补全",
+  explain: "查食材街区",
+};
+
+type AskPhase = "idle" | "parsing" | "review" | "executing";
 
 export function AskPanel() {
   const [question, setQuestion] = useState("");
@@ -54,6 +66,7 @@ export function AskPanel() {
   const [response, setResponse] = useState<AskResponse | null>(null);
   const [diagnostics, setDiagnostics] = useState<AskDiagnostics | null>(null);
   const [loading, setLoading] = useState(false);
+  const [phase, setPhase] = useState<AskPhase>("idle");
   const [endpointOverride, setEndpointOverrideState] = useState(() => getLLMEndpointOverride());
   const [endpointDraft, setEndpointDraft] = useState(() => getLLMEndpointOverride());
   const requestControllerRef = useRef<AbortController | null>(null);
@@ -85,20 +98,19 @@ export function AskPanel() {
   }, []);
 
   const handleQuestionChange = (value: string) => {
-    if (requestControllerRef.current) {
-      cancelActiveRequest();
-      setLoading(false);
-      setIntent(null);
-      setMatchedIngredients([]);
-      setResolvedPlan([]);
-      setToolResults([]);
-      setResponse(null);
-      setDiagnostics(null);
-    }
+    cancelActiveRequest();
+    setLoading(false);
+    setPhase("idle");
+    setIntent(null);
+    setMatchedIngredients([]);
+    setResolvedPlan([]);
+    setToolResults([]);
+    setResponse(null);
+    setDiagnostics(null);
     setQuestion(value);
   };
 
-  const handleSubmit = async () => {
+  const handleParse = async () => {
     if (!question.trim()) return;
     cancelActiveRequest();
     const requestId = requestIdRef.current + 1;
@@ -107,6 +119,7 @@ export function AskPanel() {
     requestControllerRef.current = controller;
     const isCurrentRequest = () => requestIdRef.current === requestId;
     setLoading(true);
+    setPhase("parsing");
     setIntent(null);
     setMatchedIngredients([]);
     setResolvedPlan([]);
@@ -133,11 +146,80 @@ export function AskPanel() {
             toolsUsed: [],
           },
         });
+        setPhase("idle");
         return;
       }
 
       const plan = buildSkillPlan(parsed, ingredients);
       setResolvedPlan(plan);
+      setPhase("review");
+    } catch (error) {
+      if (!isCurrentRequest() || isLLMRequestAbort(error)) return;
+      setResponse({
+        answer: `处理请求时出错: ${error instanceof Error ? error.message : "未知错误"}`,
+        trace: { intent: "", ingredients: [], toolsUsed: [] },
+      });
+      setPhase("idle");
+    } finally {
+      if (isCurrentRequest()) {
+        requestControllerRef.current = null;
+        setLoading(false);
+      }
+    }
+  };
+
+  const updateReviewIntent = (nextIntent: AskIntent) => {
+    if (!intent) return;
+    const next: IntentResult = {
+      ...intent,
+      intent: nextIntent,
+      matchedIntents: [nextIntent],
+      targetStyle: nextIntent === "style_shift" ? intent.targetStyle ?? "Japanese" : undefined,
+      multiIntent: false,
+      source: "user",
+      toolPlan: undefined,
+    };
+    setIntent(next);
+    setResolvedPlan(buildSkillPlan(next, matchedIngredients));
+    setToolResults([]);
+    setResponse(null);
+    setDiagnostics(null);
+  };
+
+  const updateReviewStyle = (targetStyle: string) => {
+    if (!intent) return;
+    const next: IntentResult = {
+      ...intent,
+      targetStyle,
+      source: "user",
+      toolPlan: undefined,
+    };
+    setIntent(next);
+    setResolvedPlan(buildSkillPlan(next, matchedIngredients));
+    setToolResults([]);
+    setResponse(null);
+    setDiagnostics(null);
+  };
+
+  const handleExecutePlan = async () => {
+    if (!intent || matchedIngredients.length === 0) return;
+    const plan = buildSkillPlan(intent, matchedIngredients);
+    if (plan.length === 0) return;
+
+    cancelActiveRequest();
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+    const controller = new AbortController();
+    requestControllerRef.current = controller;
+    const isCurrentRequest = () => requestIdRef.current === requestId;
+    setLoading(true);
+    setPhase("executing");
+    setResolvedPlan(plan);
+    setToolResults([]);
+    setResponse(null);
+    setDiagnostics(null);
+
+    try {
       const toolStart = readNow();
       const vectorToolCount = plan.filter((step) => isVectorSkill(step.name)).length;
       const modeToolCount = plan.filter((step) => step.name === "lookup_mode").length;
@@ -151,11 +233,11 @@ export function AskPanel() {
       const recommendationNames = skillResults.flatMap((result) =>
         result.recommendations.map((recommendation) => recommendation.name)
       );
-      if (parsed.constraints.length > 0 && recommendationNames.length > 0) {
+      if (intent.constraints.length > 0 && recommendationNames.length > 0) {
         skillResults.push(
           await executeSkill("constraint_filter", {
             candidates: recommendationNames,
-            constraints: parsed.constraints,
+            constraints: intent.constraints,
           })
         );
         if (!isCurrentRequest()) return;
@@ -174,7 +256,7 @@ export function AskPanel() {
         vectorToolCount,
         modeToolCount,
         constraintToolCount,
-        intentSource: parsed.source ?? "rules",
+        intentSource: intent.source ?? "rules",
         composer: askResponse.trace.composer ?? "local",
         llmConfigured,
       });
@@ -183,8 +265,8 @@ export function AskPanel() {
         ...askResponse,
         trace: {
           ...askResponse.trace,
-          intent: parsed.intent ?? "",
-          ingredients,
+          intent: intent.intent ?? "",
+          ingredients: matchedIngredients,
           toolsUsed: askResponse.trace.toolsUsed,
         },
       });
@@ -198,6 +280,7 @@ export function AskPanel() {
       if (isCurrentRequest()) {
         requestControllerRef.current = null;
         setLoading(false);
+        setPhase("review");
       }
     }
   };
@@ -249,7 +332,7 @@ export function AskPanel() {
         }}
       />
       <button
-        onClick={handleSubmit}
+        onClick={handleParse}
         disabled={loading}
         style={{
           padding: "8px 20px",
@@ -261,7 +344,7 @@ export function AskPanel() {
           fontSize: 14,
         }}
       >
-        {loading ? "处理中..." : "提问"}
+        {loading ? (phase === "parsing" ? "处理中..." : "执行中...") : phase === "review" ? "重新解析" : "提问"}
       </button>
 
       {intent && (
@@ -286,7 +369,7 @@ export function AskPanel() {
             编排层：{ROUTER_LABELS[intent.source ?? "rules"]} · 工具层：Cooc/Core/Chem
           </div>
           <div style={{ marginTop: 6 }}>
-            工具计划：{intent.toolPlan?.length ? "LLM 已选择" : "本地默认"}
+            工具计划：{intent.source === "user" ? "用户调整后本地计划" : intent.toolPlan?.length ? "LLM 已选择" : "本地默认"}
             {resolvedPlan.length > 0 && <> · {resolvedPlan.map(planStepLabel).join(" → ")}</>}
           </div>
           {intent.matchedIntents && intent.matchedIntents.length > 1 && (
@@ -303,6 +386,57 @@ export function AskPanel() {
           {intent.constraints.length > 0 && (
             <div style={{ marginTop: 6 }}>
               约束：{intent.constraints.join("、")}（当前仅提示，不做可靠过滤）
+            </div>
+          )}
+          {(phase === "review" || phase === "executing") && matchedIngredients.length > 0 && (
+            <div
+              role="group"
+              aria-label="Ask 计划修正"
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 10,
+                alignItems: "end",
+                marginTop: 12,
+                paddingTop: 10,
+                borderTop: "1px solid #ddd",
+              }}
+            >
+              <label style={{ display: "grid", gap: 4 }}>
+                <span>主任务</span>
+                <select
+                  aria-label="Ask 主意图"
+                  value={intent.intent ?? "pairing"}
+                  disabled={loading}
+                  onChange={(event) => updateReviewIntent(event.target.value as AskIntent)}
+                >
+                  {Object.entries(INTENT_LABELS).map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </select>
+              </label>
+              {intent.intent === "style_shift" && (
+                <label style={{ display: "grid", gap: 4 }}>
+                  <span>目标风格</span>
+                  <select
+                    aria-label="Ask 目标风格"
+                    value={intent.targetStyle ?? "Japanese"}
+                    disabled={loading}
+                    onChange={(event) => updateReviewStyle(event.target.value)}
+                  >
+                    {Object.keys(STYLE_SEED_SETS).map((style) => (
+                      <option key={style} value={style}>{STYLE_LABELS[style] ?? style}</option>
+                    ))}
+                  </select>
+                </label>
+              )}
+              <button
+                type="button"
+                onClick={handleExecutePlan}
+                disabled={loading || resolvedPlan.length === 0}
+              >
+                {phase === "executing" ? "执行中..." : "执行计划"}
+              </button>
             </div>
           )}
         </div>
@@ -341,7 +475,7 @@ export function AskPanel() {
             <button
               type="button"
               className="ask-retry-button"
-              onClick={handleSubmit}
+              onClick={handleExecutePlan}
               disabled={loading}
             >
               重试 LLM

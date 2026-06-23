@@ -32,7 +32,7 @@ export interface AskToolPlanStep {
 }
 
 export type RetrievalBackend = "worker" | "local" | "mode-atlas";
-export type AskRoutingSource = "llm" | "rules" | "fallback";
+export type AskRoutingSource = "llm" | "rules" | "fallback" | "user";
 
 export interface QueryDiagnostics {
   backend: RetrievalBackend;

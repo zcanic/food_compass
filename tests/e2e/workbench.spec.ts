@@ -54,7 +54,7 @@ test("ask mode uses one question box and extracts Chinese ingredients", async ({
   await page
     .getByPlaceholder(/描述你想做什么/)
     .fill("我有番茄和鸡蛋，想做得更日式一点，可以加什么？");
-  await page.getByRole("button", { name: "提问" }).click();
+  await askAndExecute(page);
 
   await expect(page.getByText(/意图：style_shift/)).toBeVisible();
   await expect(page.getByText(/编排层：本地规则 · 工具层：Cooc\/Core\/Chem/)).toBeVisible();
@@ -108,7 +108,7 @@ test("ask mode can use a configured LLM endpoint while keeping recommendations t
   await page
     .getByPlaceholder(/描述你想做什么/)
     .fill("番茄和鸡蛋来点新方向");
-  await page.getByRole("button", { name: "提问" }).click();
+  await askAndExecute(page);
 
   await expect(page.getByText(/编排层：LLM · 工具层：Cooc\/Core\/Chem/)).toBeVisible();
   await expect(page.getByText("工具计划：LLM 已选择 · 风格偏移/core")).toBeVisible();
@@ -159,7 +159,7 @@ test("ask mode falls back to local rules when LLM routing returns malformed JSON
   await page
     .getByPlaceholder(/描述你想做什么/)
     .fill("我有番茄和鸡蛋，想做得更日式一点，可以加什么？");
-  await page.getByRole("button", { name: "提问" }).click();
+  await askAndExecute(page);
 
   await expect(page.getByText(/编排层：本地规则 · 工具层：Cooc\/Core\/Chem/)).toBeVisible();
   await expect(page.getByText("LLM 回答组织仍可使用，但路由已回退到本地规则。")).toBeVisible();
@@ -184,7 +184,7 @@ test("ask mode falls back to local rules and local composition when LLM endpoint
   await page
     .getByPlaceholder(/描述你想做什么/)
     .fill("番茄可以和什么搭配？");
-  await page.getByRole("button", { name: "提问" }).click();
+  await askAndExecute(page);
 
   await expect(page.getByText(/编排层：本地规则 · 工具层：Cooc\/Core\/Chem/)).toBeVisible();
   await expect(page.getByText(/推荐结果：/)).toBeVisible();
@@ -230,13 +230,13 @@ test("ask mode lets the user retry LLM composition after a transient endpoint fa
 
   await page.getByRole("button", { name: /Ask/ }).click();
   await page.getByPlaceholder(/描述你想做什么/).fill("番茄可以和什么搭配？");
-  await page.getByRole("button", { name: "提问" }).click();
+  await askAndExecute(page);
 
   await expect(page.getByRole("button", { name: "重试 LLM" })).toBeVisible();
   await page.getByRole("button", { name: "重试 LLM" }).click();
 
   await expect(page.getByText("LLM 重试成功，候选仍由 Cooc 工具提供。")).toBeVisible();
-  await expect(page.getByText(/编排层：LLM · 工具层：Cooc\/Core\/Chem/)).toBeVisible();
+  await expect(page.getByText(/编排层：本地规则 · 工具层：Cooc\/Core\/Chem/)).toBeVisible();
   await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText("LLM：已配置 · 回答组织：LLM")).toBeVisible();
   await expect(page.getByRole("button", { name: "重试 LLM" })).toHaveCount(0);
 });
@@ -305,6 +305,39 @@ test("leaving Ask mode cancels a slow LLM request without stale errors", async (
   await page.waitForTimeout(500);
 
   expect(pageErrors).toEqual([]);
+});
+test("Ask plan review lets a user correct the tool plan before execution", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /Ask/ }).click();
+  await page.getByPlaceholder(/描述你想做什么/).fill("番茄可以和什么搭配？");
+  await page.getByRole("button", { name: "提问" }).click();
+
+  const review = page.getByRole("group", { name: "Ask 计划修正" });
+  await expect(review).toBeVisible();
+  await review.getByLabel("Ask 主意图").selectOption("style_shift");
+  await expect(review.getByLabel("Ask 目标风格")).toBeVisible();
+  await review.getByLabel("Ask 目标风格").selectOption("East_Asian");
+  await expect(page.getByText(/编排层：用户调整 · 工具层：Cooc\/Core\/Chem/)).toBeVisible();
+  await expect(page.getByText("工具计划：用户调整后本地计划 · 风格偏移/core")).toBeVisible();
+
+  await review.getByRole("button", { name: "执行计划" }).click();
+  await expect(page.getByText(/调用工具：shift_style/)).toBeVisible();
+  await expect(review.getByLabel("Ask 目标风格")).toHaveValue("East_Asian");
+});
+test("editing an Ask question clears a reviewed plan before execution", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /Ask/ }).click();
+  const question = page.getByPlaceholder(/描述你想做什么/);
+  await question.fill("番茄可以和什么搭配？");
+  await page.getByRole("button", { name: "提问" }).click();
+  await expect(page.getByRole("group", { name: "Ask 计划修正" })).toBeVisible();
+
+  await question.fill("鸡蛋可以和什么搭配？");
+  await expect(page.getByRole("group", { name: "Ask 计划修正" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "提问" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Ask 解析结果" })).toHaveCount(0);
 });
 test("unsupported ingredient input gives an actionable recovery message", async ({ page }) => {
   await page.goto("/");
@@ -501,7 +534,7 @@ test("ask explain mode returns mode-only answers", async ({ page }) => {
 
   await page.getByRole("button", { name: /Ask/ }).click();
   await page.getByPlaceholder(/描述你想做什么/).fill("酱油属于什么食材街区？");
-  await page.getByRole("button", { name: "提问" }).click();
+  await askAndExecute(page);
 
   await expect(page.getByText(/意图：explain/)).toBeVisible();
   await expect(page.getByText(/食材街区：/)).toBeVisible();
@@ -513,7 +546,7 @@ test("ask mode surfaces constraint warnings without pretending to filter", async
 
   await page.getByRole("button", { name: /Ask/ }).click();
   await page.getByPlaceholder(/描述你想做什么/).fill("我想要低脂的番茄搭配");
-  await page.getByRole("button", { name: "提问" }).click();
+  await askAndExecute(page);
 
   const parsed = page.getByRole("region", { name: "Ask 解析结果" });
   await expect(parsed.getByText(/约束：low_fat/)).toBeVisible();
@@ -570,4 +603,9 @@ async function expectNoHorizontalOverflow(page: Page) {
     return root.scrollWidth - root.clientWidth;
   });
   expect(overflow).toBeLessThanOrEqual(1);
+}
+
+async function askAndExecute(page: Page) {
+  await page.getByRole("button", { name: "提问" }).click();
+  await page.getByRole("button", { name: "执行计划" }).click();
 }

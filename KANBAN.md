@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-06-23 21:27 CST
+Status timestamp: 2026-06-23 21:36 CST
 
 ## Done
 
@@ -216,6 +216,12 @@ Status timestamp: 2026-06-23 21:27 CST
 - The Ask parse trace now shows whether the plan came from LLM selection or local fallback, plus the resolved tools and model lenses.
 - Added unit coverage for plan sanitization, primary-intent preservation, model binding, and plan order, alongside desktop/mobile E2E verification of the visible LLM plan trace.
 - Full gate passed again: `npm run test:all` with 62 unit tests and 56 E2E checks.
+- 2026-06-23 21:36 CST: Ask plan-review and correction card completed.
+- Ask now separates natural-language parsing from local execution: users review the detected ingredients, source, and resolved tool/model plan before any retrieval runs.
+- Users can correct the primary task and style target through menu controls; corrections switch to a deterministic local plan while preserving the Cooc/Chem/Core tool contract.
+- Editing the question invalidates both active requests and reviewed plans, while LLM retry now retries composition without falsely claiming that routing was retried.
+- Added desktop/mobile E2E coverage for plan correction before execution and clearing a reviewed plan on question edits.
+- Full gate passed again: `npm run test:all` with 62 unit tests and 60 E2E checks.
 
 ## In Progress
 
@@ -227,5 +233,5 @@ Status timestamp: 2026-06-23 21:27 CST
 - Add worker timing instrumentation for larger future data assets.
 - Add generated mode-atlas/runtime parity tests for coverage summary copy.
 - Add generated alias coverage summaries for the product localization layer.
-- Add an Ask plan-review state so users can correct parsed intent before local tools execute.
+- Let users edit reviewed canonical ingredients with local matcher validation before the Ask plan executes.
 - Add screenshot snapshots only after stabilizing the expanded About evidence page height.
