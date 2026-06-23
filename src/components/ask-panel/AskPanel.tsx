@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { routeIntent } from "../../ask/intent-router";
-import { buildSkillPlan } from "../../ask/skill-plan";
+import { buildSkillPlan, type SkillRequest } from "../../ask/skill-plan";
 import { executeSkill } from "../../skills";
 import { composeResponse } from "../../ask/response-composer";
 import {
@@ -49,6 +49,7 @@ export function AskPanel() {
   const [question, setQuestion] = useState("");
   const [intent, setIntent] = useState<IntentResult | null>(null);
   const [matchedIngredients, setMatchedIngredients] = useState<string[]>([]);
+  const [resolvedPlan, setResolvedPlan] = useState<SkillRequest[]>([]);
   const [toolResults, setToolResults] = useState<SkillResult[]>([]);
   const [response, setResponse] = useState<AskResponse | null>(null);
   const [diagnostics, setDiagnostics] = useState<AskDiagnostics | null>(null);
@@ -89,6 +90,7 @@ export function AskPanel() {
       setLoading(false);
       setIntent(null);
       setMatchedIngredients([]);
+      setResolvedPlan([]);
       setToolResults([]);
       setResponse(null);
       setDiagnostics(null);
@@ -107,6 +109,7 @@ export function AskPanel() {
     setLoading(true);
     setIntent(null);
     setMatchedIngredients([]);
+    setResolvedPlan([]);
     setToolResults([]);
     setResponse(null);
     setDiagnostics(null);
@@ -134,6 +137,7 @@ export function AskPanel() {
       }
 
       const plan = buildSkillPlan(parsed, ingredients);
+      setResolvedPlan(plan);
       const toolStart = readNow();
       const vectorToolCount = plan.filter((step) => isVectorSkill(step.name)).length;
       const modeToolCount = plan.filter((step) => step.name === "lookup_mode").length;
@@ -281,6 +285,10 @@ export function AskPanel() {
           <div style={{ marginTop: 6 }}>
             编排层：{ROUTER_LABELS[intent.source ?? "rules"]} · 工具层：Cooc/Core/Chem
           </div>
+          <div style={{ marginTop: 6 }}>
+            工具计划：{intent.toolPlan?.length ? "LLM 已选择" : "本地默认"}
+            {resolvedPlan.length > 0 && <> · {resolvedPlan.map(planStepLabel).join(" → ")}</>}
+          </div>
           {intent.matchedIntents && intent.matchedIntents.length > 1 && (
             <div style={{ marginTop: 6 }}>
               意图链：{intent.matchedIntents.join("、")}
@@ -405,4 +413,9 @@ function toolLabel(skillName: string) {
     default:
       return skillName;
   }
+}
+
+function planStepLabel(step: SkillRequest): string {
+  const model = typeof step.params.model === "string" ? `/${step.params.model}` : "";
+  return `${toolLabel(step.name)}${model}`;
 }

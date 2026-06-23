@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-06-23 21:08 CST
+Status timestamp: 2026-06-23 21:27 CST
 
 ## Done
 
@@ -210,6 +210,12 @@ Status timestamp: 2026-06-23 21:08 CST
 - Added abort propagation across LLM intent routing and response composition, so editing an Ask question or leaving Ask Mode cancels its active request without stale output or errors.
 - Added unit coverage for external LLM cancellation and desktop/mobile E2E coverage for cancellation on question edits and mode exits.
 - Full gate passed again: `npm run test:all` with 59 unit tests and 56 E2E checks.
+- 2026-06-23 21:27 CST: Auditable LLM tool-plan card completed.
+- Ask now accepts an ordered LLM tool plan only after validating the skill names, intent coverage, `topK`, and style strength; malformed or incomplete plans use the deterministic local plan.
+- Local planning binds canonical ingredients and preserves the model contract: pairings use Cooc, substitutes use Chem, and style/combo/mode tools use Core.
+- The Ask parse trace now shows whether the plan came from LLM selection or local fallback, plus the resolved tools and model lenses.
+- Added unit coverage for plan sanitization, primary-intent preservation, model binding, and plan order, alongside desktop/mobile E2E verification of the visible LLM plan trace.
+- Full gate passed again: `npm run test:all` with 62 unit tests and 56 E2E checks.
 
 ## In Progress
 
@@ -221,5 +227,5 @@ Status timestamp: 2026-06-23 21:08 CST
 - Add worker timing instrumentation for larger future data assets.
 - Add generated mode-atlas/runtime parity tests for coverage summary copy.
 - Add generated alias coverage summaries for the product localization layer.
-- Make LLM-selected Ask tool plans explicit and auditable while retaining deterministic fallback plans for unavailable LLMs.
+- Add an Ask plan-review state so users can correct parsed intent before local tools execute.
 - Add screenshot snapshots only after stabilizing the expanded About evidence page height.

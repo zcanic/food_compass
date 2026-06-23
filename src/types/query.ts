@@ -18,6 +18,19 @@ export type AskIntent =
 
 export type StyleStrength = "light" | "medium" | "strong";
 
+export type AskToolName =
+  | "find_pairings"
+  | "find_substitutes"
+  | "shift_style"
+  | "complete_combination"
+  | "lookup_mode";
+
+export interface AskToolPlanStep {
+  name: AskToolName;
+  topK?: number;
+  strength?: StyleStrength;
+}
+
 export type RetrievalBackend = "worker" | "local" | "mode-atlas";
 export type AskRoutingSource = "llm" | "rules" | "fallback";
 
@@ -35,6 +48,7 @@ export interface IntentResult {
   confidence: number;
   multiIntent: boolean;
   source?: AskRoutingSource;
+  toolPlan?: AskToolPlanStep[];
 }
 
 export interface QueryState {

@@ -40,4 +40,42 @@ describe("buildSkillPlan", () => {
       },
     ]);
   });
+
+  it("uses an LLM-declared tool order while binding local ingredients and model semantics", () => {
+    const plan = buildSkillPlan(
+      baseIntent({
+        intent: "style_shift",
+        matchedIntents: ["pairing", "style_shift", "complete_combo"],
+        targetStyle: "Japanese",
+        multiIntent: true,
+        toolPlan: [
+          { name: "find_pairings", topK: 5 },
+          { name: "shift_style", strength: "strong", topK: 7 },
+          { name: "complete_combination", topK: 6 },
+        ],
+      }),
+      ["tomato", "egg"]
+    );
+
+    expect(plan).toEqual([
+      {
+        name: "find_pairings",
+        params: { ingredient: "tomato", model: "cooc", top_k: 5 },
+      },
+      {
+        name: "shift_style",
+        params: {
+          ingredients: ["tomato", "egg"],
+          target_style: "Japanese",
+          strength: "strong",
+          model: "core",
+          top_k: 7,
+        },
+      },
+      {
+        name: "complete_combination",
+        params: { ingredients: ["tomato", "egg"], model: "core", top_k: 6 },
+      },
+    ]);
+  });
 });

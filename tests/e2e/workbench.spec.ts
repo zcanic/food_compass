@@ -58,6 +58,7 @@ test("ask mode uses one question box and extracts Chinese ingredients", async ({
 
   await expect(page.getByText(/意图：style_shift/)).toBeVisible();
   await expect(page.getByText(/编排层：本地规则 · 工具层：Cooc\/Core\/Chem/)).toBeVisible();
+  await expect(page.getByText(/工具计划：本地默认 · 风格偏移\/core → 常见搭配\/cooc → 组合补全\/core/)).toBeVisible();
   await expect(page.getByText(/意图链：pairing、style_shift、complete_combo/)).toBeVisible();
   await expect(page.getByText(/食材：tomato、egg/)).toBeVisible();
   await expect(page.getByText(/调用工具：shift_style/)).toBeVisible();
@@ -85,6 +86,7 @@ test("ask mode can use a configured LLM endpoint while keeping recommendations t
           targetStyle: "Japanese",
           constraints: [],
           confidence: 0.91,
+          toolPlan: [{ name: "shift_style", strength: "medium", topK: 6 }],
         })
       : "LLM 组织回答：推荐候选仍来自本地三模型工具。";
 
@@ -109,6 +111,7 @@ test("ask mode can use a configured LLM endpoint while keeping recommendations t
   await page.getByRole("button", { name: "提问" }).click();
 
   await expect(page.getByText(/编排层：LLM · 工具层：Cooc\/Core\/Chem/)).toBeVisible();
+  await expect(page.getByText("工具计划：LLM 已选择 · 风格偏移/core")).toBeVisible();
   await expect(page.getByText("LLM 组织回答：推荐候选仍来自本地三模型工具。")).toBeVisible();
   await expect(page.getByText(/调用工具：shift_style/)).toBeVisible();
   await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText("LLM：已配置 · 回答组织：LLM")).toBeVisible();

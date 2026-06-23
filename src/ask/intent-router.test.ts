@@ -30,6 +30,12 @@ describe("routeIntent", () => {
       targetStyle: "Japanese",
       constraints: ["simple", "unsafe_claim"],
       confidence: 0.88,
+      toolPlan: [
+        { name: "find_pairings", topK: 99 },
+        { name: "shift_style", strength: "strong", topK: 4 },
+        { name: "complete_combination", topK: 1 },
+        { name: "lookup_mode" },
+      ],
     }));
 
     const result = await routeIntent("番茄鸡蛋做得更日式一点，简单点");
@@ -39,6 +45,48 @@ describe("routeIntent", () => {
     expect(result.matchedIntents).toEqual(["pairing", "style_shift", "complete_combo"]);
     expect(result.targetStyle).toBe("Japanese");
     expect(result.constraints).toEqual(["simple"]);
+    expect(result.toolPlan).toEqual([
+      { name: "find_pairings", topK: 12 },
+      { name: "shift_style", strength: "strong", topK: 4 },
+      { name: "complete_combination", topK: 3 },
+    ]);
+  });
+
+  it("drops an incomplete LLM plan while retaining its safe intent parse", async () => {
+    vi.mocked(isLLMConfigured).mockReturnValue(true);
+    vi.mocked(callLLM).mockResolvedValue(JSON.stringify({
+      intent: "style_shift",
+      matchedIntents: ["pairing", "style_shift"],
+      targetStyle: "Japanese",
+      constraints: [],
+      confidence: 0.88,
+      toolPlan: [{ name: "shift_style", topK: 8 }],
+    }));
+
+    const result = await routeIntent("番茄做得更日式一点，可以加什么？");
+
+    expect(result.source).toBe("llm");
+    expect(result.toolPlan).toBeUndefined();
+  });
+
+  it("retains the primary intent when an LLM omits it from matchedIntents", async () => {
+    vi.mocked(isLLMConfigured).mockReturnValue(true);
+    vi.mocked(callLLM).mockResolvedValue(JSON.stringify({
+      intent: "style_shift",
+      matchedIntents: ["pairing"],
+      targetStyle: "Japanese",
+      constraints: [],
+      confidence: 0.88,
+      toolPlan: [
+        { name: "shift_style", topK: 8 },
+        { name: "find_pairings", topK: 8 },
+      ],
+    }));
+
+    const result = await routeIntent("番茄做得更日式一点，可以加什么？");
+
+    expect(result.matchedIntents).toEqual(["style_shift", "pairing"]);
+    expect(result.toolPlan?.map((step) => step.name)).toEqual(["shift_style", "find_pairings"]);
   });
 
   it("falls back to local rules when the LLM router returns malformed JSON", async () => {
