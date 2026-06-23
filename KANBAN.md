@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-06-23 20:59 CST
+Status timestamp: 2026-06-23 21:08 CST
 
 ## Done
 
@@ -207,6 +207,9 @@ Status timestamp: 2026-06-23 20:59 CST
 - Ask preserves LLM composer trace metadata and offers a `重试 LLM` action when a configured endpoint falls back to local composition.
 - Added unit coverage for a 25 ms simulated timeout and desktop/mobile E2E coverage for a transient endpoint failure followed by successful LLM retry.
 - Full gate passed again: `npm run test:all` with 58 unit tests and 52 E2E checks.
+- Added abort propagation across LLM intent routing and response composition, so editing an Ask question or leaving Ask Mode cancels its active request without stale output or errors.
+- Added unit coverage for external LLM cancellation and desktop/mobile E2E coverage for cancellation on question edits and mode exits.
+- Full gate passed again: `npm run test:all` with 59 unit tests and 56 E2E checks.
 
 ## In Progress
 
@@ -218,5 +221,5 @@ Status timestamp: 2026-06-23 20:59 CST
 - Add worker timing instrumentation for larger future data assets.
 - Add generated mode-atlas/runtime parity tests for coverage summary copy.
 - Add generated alias coverage summaries for the product localization layer.
-- Add Ask request cancellation when a user edits the question or leaves Ask Mode.
+- Make LLM-selected Ask tool plans explicit and auditable while retaining deterministic fallback plans for unavailable LLMs.
 - Add screenshot snapshots only after stabilizing the expanded About evidence page height.

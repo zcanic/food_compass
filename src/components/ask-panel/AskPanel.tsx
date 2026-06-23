@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { routeIntent } from "../../ask/intent-router";
 import { buildSkillPlan } from "../../ask/skill-plan";
 import { executeSkill } from "../../skills";
@@ -6,6 +6,7 @@ import { composeResponse } from "../../ask/response-composer";
 import {
   getLLMEndpointOverride,
   isLLMConfigured,
+  isLLMRequestAbort,
   setLLMEndpointOverride,
 } from "../../ask/llm-client";
 import type { AskRoutingSource, IntentResult, RetrievalBackend } from "../../types/query";
@@ -54,6 +55,8 @@ export function AskPanel() {
   const [loading, setLoading] = useState(false);
   const [endpointOverride, setEndpointOverrideState] = useState(() => getLLMEndpointOverride());
   const [endpointDraft, setEndpointDraft] = useState(() => getLLMEndpointOverride());
+  const requestControllerRef = useRef<AbortController | null>(null);
+  const requestIdRef = useRef(0);
   const recommendationGroups = toolResults.filter((r) => r.recommendations.length > 0);
   const llmConfigured = isLLMConfigured();
 
@@ -69,8 +72,38 @@ export function AskPanel() {
     setEndpointDraft("");
   };
 
+  const cancelActiveRequest = () => {
+    requestIdRef.current += 1;
+    requestControllerRef.current?.abort();
+    requestControllerRef.current = null;
+  };
+
+  useEffect(() => () => {
+    requestIdRef.current += 1;
+    requestControllerRef.current?.abort();
+  }, []);
+
+  const handleQuestionChange = (value: string) => {
+    if (requestControllerRef.current) {
+      cancelActiveRequest();
+      setLoading(false);
+      setIntent(null);
+      setMatchedIngredients([]);
+      setToolResults([]);
+      setResponse(null);
+      setDiagnostics(null);
+    }
+    setQuestion(value);
+  };
+
   const handleSubmit = async () => {
     if (!question.trim()) return;
+    cancelActiveRequest();
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+    const controller = new AbortController();
+    requestControllerRef.current = controller;
+    const isCurrentRequest = () => requestIdRef.current === requestId;
     setLoading(true);
     setIntent(null);
     setMatchedIngredients([]);
@@ -79,14 +112,13 @@ export function AskPanel() {
     setDiagnostics(null);
 
     try {
-      // Step 1: Intent routing
-      const parsed = await routeIntent(question);
+      const parsed = await routeIntent(question, { signal: controller.signal });
+      if (!isCurrentRequest()) return;
       setIntent(parsed);
 
-      // Step 2: Extract ingredients using matcher
       const matcher = getMatcher();
       const extracted = matcher.extractFromText(question);
-      const ingredients = extracted.map((m) => m.name);
+      const ingredients = extracted.map((match) => match.name);
       setMatchedIngredients(ingredients);
 
       if (ingredients.length === 0) {
@@ -101,7 +133,6 @@ export function AskPanel() {
         return;
       }
 
-      // Step 3: Execute skills based on intent
       const plan = buildSkillPlan(parsed, ingredients);
       const toolStart = readNow();
       const vectorToolCount = plan.filter((step) => isVectorSkill(step.name)).length;
@@ -109,11 +140,12 @@ export function AskPanel() {
       const skillResults: SkillResult[] = await Promise.all(
         plan.map((step) => executeSkill(step.name, step.params))
       );
+      if (!isCurrentRequest()) return;
       let executedToolCount = skillResults.length;
       let constraintToolCount = 0;
 
-      const recommendationNames = skillResults.flatMap((r) =>
-        r.recommendations.map((rec) => rec.name)
+      const recommendationNames = skillResults.flatMap((result) =>
+        result.recommendations.map((recommendation) => recommendation.name)
       );
       if (parsed.constraints.length > 0 && recommendationNames.length > 0) {
         skillResults.push(
@@ -122,11 +154,15 @@ export function AskPanel() {
             constraints: parsed.constraints,
           })
         );
+        if (!isCurrentRequest()) return;
         executedToolCount += 1;
         constraintToolCount += 1;
       }
-      // Step 4: Compose response
-      const askResponse = await composeResponse(question, skillResults, llmConfigured);
+
+      const askResponse = await composeResponse(question, skillResults, llmConfigured, {
+        signal: controller.signal,
+      });
+      if (!isCurrentRequest()) return;
       setDiagnostics({
         backend: vectorToolCount > 0 ? getSearchBackend() : "mode-atlas",
         elapsedMs: Math.max(0, Math.round(readNow() - toolStart)),
@@ -148,13 +184,17 @@ export function AskPanel() {
           toolsUsed: askResponse.trace.toolsUsed,
         },
       });
-    } catch (e) {
+    } catch (error) {
+      if (!isCurrentRequest() || isLLMRequestAbort(error)) return;
       setResponse({
-        answer: `处理请求时出错: ${e instanceof Error ? e.message : "未知错误"}`,
+        answer: `处理请求时出错: ${error instanceof Error ? error.message : "未知错误"}`,
         trace: { intent: "", ingredients: [], toolsUsed: [] },
       });
     } finally {
-      setLoading(false);
+      if (isCurrentRequest()) {
+        requestControllerRef.current = null;
+        setLoading(false);
+      }
     }
   };
 
@@ -191,7 +231,7 @@ export function AskPanel() {
       </div>
       <textarea
         value={question}
-        onChange={(e) => setQuestion(e.target.value)}
+        onChange={(event) => handleQuestionChange(event.target.value)}
         placeholder="描述你想做什么... 如：我有番茄和鸡蛋，想做得更日式一点，可以加什么？"
         rows={3}
         style={{

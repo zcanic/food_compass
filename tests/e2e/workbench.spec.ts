@@ -237,6 +237,72 @@ test("ask mode lets the user retry LLM composition after a transient endpoint fa
   await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText("LLM：已配置 · 回答组织：LLM")).toBeVisible();
   await expect(page.getByRole("button", { name: "重试 LLM" })).toHaveCount(0);
 });
+test("editing an Ask question cancels a slow LLM request and drops stale output", async ({ page }) => {
+  await page.route("**/__slow_cancel", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    try {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          content: JSON.stringify({
+            intent: "pairing",
+            matchedIntents: ["pairing"],
+            constraints: [],
+            confidence: 0.9,
+          }),
+        }),
+      });
+    } catch {
+      // The browser has already canceled this intercepted request.
+    }
+  });
+  await page.addInitScript(() => {
+    window.localStorage.setItem("food_compass_llm_api_url", "/__slow_cancel");
+  });
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /Ask/ }).click();
+  const question = page.getByPlaceholder(/描述你想做什么/);
+  await question.fill("番茄可以和什么搭配？");
+  await page.getByRole("button", { name: "提问" }).click();
+  await expect(page.getByRole("button", { name: "处理中..." })).toBeVisible();
+
+  await question.fill("鸡蛋可以和什么搭配？");
+  await expect(page.getByRole("button", { name: "提问" })).toBeVisible();
+  await page.waitForTimeout(500);
+
+  await expect(page.getByRole("region", { name: "Ask 解析结果" })).toHaveCount(0);
+  await expect(page.getByText(/处理请求时出错/)).toHaveCount(0);
+});
+
+test("leaving Ask mode cancels a slow LLM request without stale errors", async ({ page }) => {
+  const pageErrors: Error[] = [];
+  page.on("pageerror", (error) => pageErrors.push(error));
+  await page.route("**/__slow_leave", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    try {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ content: "{}" }),
+      });
+    } catch {
+      // The browser has already canceled this intercepted request.
+    }
+  });
+  await page.addInitScript(() => {
+    window.localStorage.setItem("food_compass_llm_api_url", "/__slow_leave");
+  });
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /Ask/ }).click();
+  await page.getByPlaceholder(/描述你想做什么/).fill("番茄可以和什么搭配？");
+  await page.getByRole("button", { name: "提问" }).click();
+  await page.getByRole("button", { name: "任务：找搭配" }).click();
+  await expect(page.getByText("当前使用：常见搭配。")).toBeVisible();
+  await page.waitForTimeout(500);
+
+  expect(pageErrors).toEqual([]);
+});
 test("unsupported ingredient input gives an actionable recovery message", async ({ page }) => {
   await page.goto("/");
 

@@ -4,10 +4,15 @@ export const LLM_REQUEST_TIMEOUT_MS = 8_000;
 
 interface LLMRequestOptions {
   timeoutMs?: number;
+  signal?: AbortSignal;
 }
 
 export function isLLMConfigured(): boolean {
   return getLLMApiUrl().trim().length > 0;
+}
+
+export function isLLMRequestAbort(error: unknown): boolean {
+  return error instanceof Error && error.name === "AbortError";
 }
 
 export async function callLLM(
@@ -19,6 +24,9 @@ export async function callLLM(
   if (!llmApiUrl) {
     throw new Error("LLM API URL not configured. Set VITE_LLM_API_URL environment variable.");
   }
+  if (options.signal?.aborted) {
+    throw createAbortError();
+  }
 
   const messages: { role: string; content: string }[] = [];
   if (systemPrompt) {
@@ -29,15 +37,26 @@ export async function callLLM(
   const timeoutMs = Math.max(1, Math.round(options.timeoutMs ?? LLM_REQUEST_TIMEOUT_MS));
   const controller = new AbortController();
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  let removeExternalAbortListener: (() => void) | undefined;
   const timeout = new Promise<never>((_, reject) => {
     timeoutId = setTimeout(() => {
       controller.abort();
       reject(new Error(`LLM request timed out after ${timeoutMs} ms`));
     }, timeoutMs);
   });
+  const cancellation = options.signal
+    ? new Promise<never>((_, reject) => {
+        const abort = () => {
+          controller.abort();
+          reject(createAbortError());
+        };
+        options.signal?.addEventListener("abort", abort, { once: true });
+        removeExternalAbortListener = () => options.signal?.removeEventListener("abort", abort);
+      })
+    : null;
 
   try {
-    const res = await Promise.race([
+    const pending: Promise<Response | never>[] = [
       fetch(llmApiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -45,7 +64,9 @@ export async function callLLM(
         signal: controller.signal,
       }),
       timeout,
-    ]);
+    ];
+    if (cancellation) pending.push(cancellation);
+    const res = await Promise.race(pending);
 
     if (!res.ok) {
       throw new Error(`LLM API error: ${res.status}`);
@@ -55,6 +76,7 @@ export async function callLLM(
     return data.content ?? data.choices?.[0]?.message?.content ?? "";
   } finally {
     if (timeoutId !== undefined) clearTimeout(timeoutId);
+    removeExternalAbortListener?.();
   }
 }
 
@@ -88,4 +110,10 @@ export function setLLMEndpointOverride(url: string): void {
   } catch {
     // Storage can be unavailable in private or restricted browser contexts.
   }
+}
+
+function createAbortError(): Error {
+  const error = new Error("LLM request aborted");
+  error.name = "AbortError";
+  return error;
 }

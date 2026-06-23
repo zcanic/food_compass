@@ -20,4 +20,17 @@ describe("callLLM", () => {
 
     await timeoutExpectation;
   });
+
+  it("honors an external AbortSignal before the timeout elapses", async () => {
+    setLLMEndpointOverride("/__abort_llm");
+    vi.stubGlobal("fetch", vi.fn(() => new Promise<Response>(() => {})));
+    const controller = new AbortController();
+    const abortExpectation = expect(
+      callLLM("test prompt", undefined, { signal: controller.signal })
+    ).rejects.toMatchObject({ name: "AbortError" });
+
+    controller.abort();
+
+    await abortExpectation;
+  });
 });

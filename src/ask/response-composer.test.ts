@@ -5,6 +5,7 @@ import type { SkillResult } from "../types/result";
 
 vi.mock("./llm-client", () => ({
   callLLM: vi.fn(),
+  isLLMRequestAbort: (error: unknown) => error instanceof Error && error.name === "AbortError",
 }));
 
 const skill = (result: Partial<SkillResult>): SkillResult => ({

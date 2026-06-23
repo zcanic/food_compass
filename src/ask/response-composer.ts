@@ -1,5 +1,5 @@
 import type { SkillResult, AskResponse } from "../types/result";
-import { callLLM } from "./llm-client";
+import { callLLM, isLLMRequestAbort } from "./llm-client";
 
 const COMPOSER_SYSTEM_PROMPT = `你是一个食材灵感助手的回答组织器。你的任务是把工具返回的结构化食材推荐结果组织成自然语言回答。
 
@@ -14,7 +14,8 @@ const COMPOSER_SYSTEM_PROMPT = `你是一个食材灵感助手的回答组织器
 export async function composeResponse(
   userQuestion: string,
   skillResults: SkillResult[],
-  useLLM = false
+  useLLM = false,
+  options: { signal?: AbortSignal } = {}
 ): Promise<AskResponse> {
   const toolsUsed = skillResults.map((s) => s.skillName);
 
@@ -39,7 +40,7 @@ ${JSON.stringify(skillResults, null, 2)}
 
 请按规则组织自然语言回答。`;
 
-    const answer = await callLLM(prompt, COMPOSER_SYSTEM_PROMPT);
+    const answer = await callLLM(prompt, COMPOSER_SYSTEM_PROMPT, { signal: options.signal });
     return {
       answer,
       trace: {
@@ -50,7 +51,8 @@ ${JSON.stringify(skillResults, null, 2)}
         llmUsed: true,
       },
     };
-  } catch {
+  } catch (error) {
+    if (isLLMRequestAbort(error)) throw error;
     return {
       answer: buildSimpleAnswer(skillResults),
       trace: { intent: "", ingredients: [], toolsUsed, composer: "fallback", llmUsed: false },

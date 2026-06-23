@@ -5,6 +5,7 @@ import { routeIntent } from "./intent-router";
 vi.mock("./llm-client", () => ({
   callLLM: vi.fn(),
   isLLMConfigured: vi.fn(),
+  isLLMRequestAbort: (error: unknown) => error instanceof Error && error.name === "AbortError",
 }));
 
 describe("routeIntent", () => {

@@ -1,6 +1,6 @@
 import type { AskIntent, IntentResult } from "../types/query";
 import { STYLE_SEED_SETS } from "../utils/constants";
-import { callLLM, isLLMConfigured } from "./llm-client";
+import { callLLM, isLLMConfigured, isLLMRequestAbort } from "./llm-client";
 
 const SUPPORTED_INTENTS: AskIntent[] = [
   "pairing",
@@ -34,7 +34,8 @@ const INTENT_SYSTEM_PROMPT = `你是 Flavor Compass 的 Ask 编排器，只负�
 
 export async function routeIntentWithLLM(
   query: string,
-  ruleFallback: IntentResult | null
+  ruleFallback: IntentResult | null,
+  options: { signal?: AbortSignal } = {}
 ): Promise<IntentResult | null> {
   if (!isLLMConfigured()) return null;
 
@@ -46,9 +47,10 @@ ${JSON.stringify(ruleFallback, null, 2)}
 请返回 JSON 工具计划。`;
 
   try {
-    const raw = await callLLM(prompt, INTENT_SYSTEM_PROMPT);
+    const raw = await callLLM(prompt, INTENT_SYSTEM_PROMPT, { signal: options.signal });
     return sanitizeIntent(JSON.parse(extractJSON(raw)), ruleFallback);
-  } catch {
+  } catch (error) {
+    if (isLLMRequestAbort(error)) throw error;
     return null;
   }
 }
