@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
+  ALIAS_COVERAGE,
   CONTINUOUS_PROBE_EVIDENCE,
   CROSS_MODAL_EVIDENCE,
   EVIDENCE_METRICS,
@@ -101,6 +102,20 @@ describe("research evidence copy", () => {
     }
   });
 
+  it("keeps localization coverage copy aligned with the generated alias summary", () => {
+    const generated = readJSON<AliasCoverageAsset[]>("alias_coverage_summary.json");
+
+    expect(ALIAS_COVERAGE.map((entry) => ({
+      language: entry.language,
+      value: entry.value,
+      source: entry.source,
+    }))).toEqual(generated.map((entry) => ({
+      language: entry.language,
+      value: `${entry.canonicalCount} canonical / ${entry.aliasCount} aliases`,
+      source: "alias_coverage_summary.json",
+    })));
+  });
+
   it("keeps continuous-probe copy aligned with the generated static asset", () => {
     const generated = readJSON<ContinuousProbeAsset[]>("continuous_probe_metrics.json");
     const coreSweet = findContinuousProbe(generated, "core", "cf_sweet");
@@ -163,6 +178,12 @@ interface ModeAtlasSummaryAsset {
   totalModes: number;
   kindCounts: Record<"binary" | "continuous" | "factor", number>;
   largestMode: { label: string; nMembers: number };
+}
+
+interface AliasCoverageAsset {
+  language: "zh" | "ja" | "en_alt";
+  canonicalCount: number;
+  aliasCount: number;
 }
 
 function findLinearProbe(

@@ -355,6 +355,16 @@ function main() {
   };
   fs.writeFileSync(path.join(DATA_OUT, "aliases_zh_en.json"), JSON.stringify(aliases));
   console.log("  aliases_zh_en.json written");
+  const aliasCoverageSummary = (["zh", "ja", "en_alt"] as const).map((language) => {
+    const entries = Object.entries(aliases).filter(([, entry]) => (entry[language] ?? []).length > 0);
+    return {
+      language,
+      canonicalCount: entries.length,
+      aliasCount: new Set(entries.flatMap(([, entry]) => entry[language] ?? [])).size,
+    };
+  });
+  fs.writeFileSync(path.join(DATA_OUT, "alias_coverage_summary.json"), JSON.stringify(aliasCoverageSummary));
+  console.log("  alias_coverage_summary.json written");
 
   console.log("\nPreprocessing complete.");
 }

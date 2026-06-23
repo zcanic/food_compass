@@ -68,6 +68,14 @@ export interface ModeAtlasSummaryEntry {
   detail: string;
 }
 
+export interface AliasCoverageEntry {
+  language: "zh" | "ja" | "en_alt";
+  label: string;
+  value: string;
+  source: string;
+  detail: string;
+}
+
 export const RESEARCH_FACTS: ResearchFact[] = [
   {
     label: "规范食材",
@@ -291,6 +299,30 @@ export const MODE_ATLAS_SUMMARY: ModeAtlasSummaryEntry[] = [
     value: "200 modes",
     source: "mode_atlas_chem.csv",
     detail: "19 binary / 94 continuous / 87 factor；最大街区是 Processed deli meats cheeses and condiments，254 个成员。",
+  },
+];
+
+export const ALIAS_COVERAGE: AliasCoverageEntry[] = [
+  {
+    language: "zh",
+    label: "中文别名",
+    value: "20 canonical / 53 aliases",
+    source: "alias_coverage_summary.json",
+    detail: "当前手工本地化表覆盖 20 个常用 canonical 食材，不代表完整中文词表。",
+  },
+  {
+    language: "ja",
+    label: "日文别名",
+    value: "20 canonical / 26 aliases",
+    source: "alias_coverage_summary.json",
+    detail: "当前日文别名覆盖与常用厨房食材重合，未覆盖完整 Epicure 词表。",
+  },
+  {
+    language: "en_alt",
+    label: "英文替代名",
+    value: "3 canonical / 3 aliases",
+    source: "alias_coverage_summary.json",
+    detail: "当前仅包含少量常见英文复数或空格写法，其余输入仍以 canonical 名称为准。",
   },
 ];
 

@@ -2,6 +2,7 @@ import {
   CONTINUOUS_PROBE_EVIDENCE,
   CROSS_MODAL_EVIDENCE,
   EVIDENCE_METRICS,
+  ALIAS_COVERAGE,
   LINEAR_PROBE_EVIDENCE,
   MODE_ATLAS_SUMMARY,
   MODEL_AXIS,
@@ -95,6 +96,23 @@ export function AboutPage() {
         <div className="evidence-grid">
           {MODE_ATLAS_SUMMARY.map((entry) => (
             <div key={entry.model} className="evidence-card">
+              <div className="evidence-card-label">{entry.label}</div>
+              <div className="evidence-card-value">{entry.value}</div>
+              <div className="evidence-card-source">{entry.source}</div>
+              <div className="evidence-card-detail">{entry.detail}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ marginBottom: 24 }} aria-label="本地化别名覆盖">
+        <h2 style={{ fontSize: 16 }}>本地化别名覆盖</h2>
+        <p style={{ fontSize: 14 }}>
+          这些是当前输入匹配使用的别名表覆盖，不等同于全部 1,790 个 canonical 食材都已完成多语言本地化。
+        </p>
+        <div className="evidence-grid">
+          {ALIAS_COVERAGE.map((entry) => (
+            <div key={entry.language} className="evidence-card">
               <div className="evidence-card-label">{entry.label}</div>
               <div className="evidence-card-value">{entry.value}</div>
               <div className="evidence-card-source">{entry.source}</div>

@@ -131,6 +131,20 @@ describe("preprocessed static data assets", () => {
     expect(Object.keys(aliases).length).toBeGreaterThan(10);
     expect(Object.keys(aliases).every((name) => vocab.has(name))).toBe(true);
   });
+
+  it("ships alias coverage summaries derived from the alias table", () => {
+    const aliases = readJSON<AliasTable>("aliases_zh_en.json");
+    const summaries = readJSON<AliasCoverageAsset[]>("alias_coverage_summary.json");
+
+    expect(summaries.map((entry) => entry.language)).toEqual(["zh", "ja", "en_alt"]);
+    for (const summary of summaries) {
+      const entries = Object.values(aliases).filter((entry) => (entry[summary.language] ?? []).length > 0);
+      const aliasCount = new Set(entries.flatMap((entry) => entry[summary.language] ?? [])).size;
+
+      expect(summary.canonicalCount).toBe(entries.length);
+      expect(summary.aliasCount).toBe(aliasCount);
+    }
+  });
 });
 
 function readJSON<T>(filename: string): T {
@@ -191,4 +205,10 @@ interface ContinuousProbeAsset {
   model: ModelName;
   dimension: string;
   rhoCvMean: number;
+}
+
+interface AliasCoverageAsset {
+  language: "zh" | "ja" | "en_alt";
+  canonicalCount: number;
+  aliasCount: number;
 }

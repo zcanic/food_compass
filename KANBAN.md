@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-06-23 22:11 CST
+Status timestamp: 2026-06-23 22:15 CST
 
 ## Done
 
@@ -254,6 +254,10 @@ Status timestamp: 2026-06-23 22:11 CST
 - Static tests now derive summary counts, kind distribution, and largest-mode metadata from the shipped runtime atlas and compare them to `mode_atlas_summary.json`.
 - Research-copy tests bind About's Cooc/Core/Chem coverage statements to the generated summary asset, preventing stale evidence text after data regeneration.
 - Full gate passed again: `npm run test:all` with 64 unit tests and 64 E2E checks.
+- 2026-06-23 22:15 CST: Localization alias coverage card completed.
+- Preprocessing now ships `alias_coverage_summary.json` for Chinese, Japanese, and English-alternative alias counts.
+- About exposes the current alias-table boundary explicitly; static, research-copy, and desktop/mobile About tests keep the summary and wording aligned.
+- Full gate passed again: `npm run test:all` with 66 unit tests and 64 E2E checks.
 
 ## In Progress
 
@@ -262,5 +266,4 @@ Status timestamp: 2026-06-23 22:11 CST
 ## Backlog
 
 - Add screenshot snapshots only after the visual baseline is stable enough to avoid noisy review churn.
-- Add generated alias coverage summaries for the product localization layer.
 - Add screenshot snapshots only after stabilizing the expanded About evidence page height.

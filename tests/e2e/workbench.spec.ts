@@ -636,6 +636,8 @@ test("about page explains research basis and product limits", async ({ page }) =
   await expect(page.getByRole("region", { name: "三模型设计轴" }).getByText("风味相似", { exact: true })).toBeVisible();
   await expect(page.getByRole("region", { name: "Mode atlas 覆盖" }).getByText("193 modes")).toBeVisible();
   await expect(page.getByRole("region", { name: "Mode atlas 覆盖" }).getByText("mode_atlas_core.csv")).toBeVisible();
+  await expect(page.getByRole("region", { name: "本地化别名覆盖" }).getByText("20 canonical / 53 aliases")).toBeVisible();
+  await expect(page.getByRole("region", { name: "本地化别名覆盖" }).getByText("alias_coverage_summary.json").first()).toBeVisible();
   await expect(page.getByRole("region", { name: "实验风格方向" }).getByText("style_seed_sets.json").first()).toBeVisible();
   await expect(page.getByRole("region", { name: "实验风格方向" }).getByText("soy_sauce").first()).toBeVisible();
   await expect(page.getByRole("region", { name: "主感官轴" }).getByText("Savory-Umami to Sweet-Floral Confection")).toBeVisible();
