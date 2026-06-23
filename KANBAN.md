@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-06-23 22:08 CST
+Status timestamp: 2026-06-23 22:11 CST
 
 ## Done
 
@@ -250,6 +250,10 @@ Status timestamp: 2026-06-23 22:08 CST
 - The search worker client now records each successful Worker/local Top-K call, and Ask diagnostics separates local tool duration from LLM answer organization time.
 - Ask reports vector retrieval call count and aggregate retrieval milliseconds; unit coverage locks local timing capture and E2E covers a three-tool Ask trace.
 - Full gate passed again: `npm run test:all` with 63 unit tests and 64 E2E checks.
+- 2026-06-23 22:11 CST: Mode atlas parity card completed.
+- Static tests now derive summary counts, kind distribution, and largest-mode metadata from the shipped runtime atlas and compare them to `mode_atlas_summary.json`.
+- Research-copy tests bind About's Cooc/Core/Chem coverage statements to the generated summary asset, preventing stale evidence text after data regeneration.
+- Full gate passed again: `npm run test:all` with 64 unit tests and 64 E2E checks.
 
 ## In Progress
 
@@ -258,6 +262,5 @@ Status timestamp: 2026-06-23 22:08 CST
 ## Backlog
 
 - Add screenshot snapshots only after the visual baseline is stable enough to avoid noisy review churn.
-- Add generated mode-atlas/runtime parity tests for coverage summary copy.
 - Add generated alias coverage summaries for the product localization layer.
 - Add screenshot snapshots only after stabilizing the expanded About evidence page height.

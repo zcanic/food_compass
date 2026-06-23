@@ -84,6 +84,23 @@ describe("research evidence copy", () => {
       .toBe(`rho ${format3(coreSodium.spearmanRho)}`);
   });
 
+  it("keeps mode-atlas coverage copy aligned with generated runtime summaries", () => {
+    const generated = readJSON<ModeAtlasSummaryAsset[]>("mode_atlas_summary.json");
+
+    for (const summary of generated) {
+      const entry = MODE_ATLAS_SUMMARY.find((candidate) => candidate.model === summary.model);
+      if (!entry) throw new Error(`Missing mode atlas copy: ${summary.model}`);
+
+      expect(entry.value).toBe(`${summary.totalModes} modes`);
+      expect(entry.source).toBe(`mode_atlas_${summary.model}.csv`);
+      expect(entry.detail).toContain(
+        `${summary.kindCounts.binary} binary / ${summary.kindCounts.continuous} continuous / ${summary.kindCounts.factor} factor`
+      );
+      expect(entry.detail).toContain(summary.largestMode.label);
+      expect(entry.detail).toContain(`${summary.largestMode.nMembers} 个成员`);
+    }
+  });
+
   it("keeps continuous-probe copy aligned with the generated static asset", () => {
     const generated = readJSON<ContinuousProbeAsset[]>("continuous_probe_metrics.json");
     const coreSweet = findContinuousProbe(generated, "core", "cf_sweet");
@@ -139,6 +156,13 @@ interface ContinuousProbeAsset {
   model: "cooc" | "core";
   dimension: string;
   rhoCvMean: number;
+}
+
+interface ModeAtlasSummaryAsset {
+  model: "cooc" | "core" | "chem";
+  totalModes: number;
+  kindCounts: Record<"binary" | "continuous" | "factor", number>;
+  largestMode: { label: string; nMembers: number };
 }
 
 function findLinearProbe(

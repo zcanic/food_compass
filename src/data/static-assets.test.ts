@@ -33,11 +33,29 @@ describe("preprocessed static data assets", () => {
   });
 
   it("ships mode atlas coverage summaries for product limits", () => {
+    const atlas = readJSON<ModeAtlas>("mode_atlas.json");
     const summaries = readJSON<ModeAtlasSummaryAsset[]>("mode_atlas_summary.json");
 
     expect(summaries.map((entry) => entry.model)).toEqual(MODEL_NAMES);
     expect(summaries.every((entry) => entry.totalModes > 100)).toBe(true);
     expect(summaries.some((entry) => entry.model === "chem" && entry.largestMode.nMembers > 250)).toBe(true);
+    for (const summary of summaries) {
+      const modes = atlas[summary.model];
+      const kindCounts = modes.reduce<Record<string, number>>((counts, mode) => {
+        counts[mode.kind] = (counts[mode.kind] ?? 0) + 1;
+        return counts;
+      }, {});
+      const largest = [...modes].sort((a, b) => b.nMembers - a.nMembers)[0];
+
+      expect(summary.totalModes).toBe(modes.length);
+      expect(summary.kindCounts).toEqual(kindCounts);
+      expect(summary.largestMode).toEqual({
+        label: largest.label,
+        nMembers: largest.nMembers,
+        kind: largest.kind,
+        property: largest.property,
+      });
+    }
   });
 
   it("ships paper-derived sensory axes for every sibling model", () => {
@@ -136,7 +154,8 @@ interface SensoryAxisAsset {
 interface ModeAtlasSummaryAsset {
   model: ModelName;
   totalModes: number;
-  largestMode: { nMembers: number };
+  kindCounts: Record<string, number>;
+  largestMode: { label: string; nMembers: number; kind: string; property: string };
 }
 
 interface StyleBenchmarkAsset {
