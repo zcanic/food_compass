@@ -193,6 +193,40 @@ test("ask mode falls back to local rules and local composition when LLM endpoint
   await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText("LLM：已配置 · 回答组织：本地模板 fallback")).toBeVisible();
 });
 
+test("ask mode falls back to local composition when an LLM returns an empty answer", async ({ page }) => {
+  await page.route("**/__empty_llm", async (route) => {
+    const body = route.request().postDataJSON() as {
+      messages: { role: string; content: string }[];
+    };
+    const system = body.messages.find((message) => message.role === "system")?.content ?? "";
+    const content = system.includes("Ask 编排器")
+      ? JSON.stringify({
+          intent: "pairing",
+          matchedIntents: ["pairing"],
+          constraints: [],
+          confidence: 0.9,
+          toolPlan: [{ name: "find_pairings", topK: 8 }],
+        })
+      : "   ";
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ content }),
+    });
+  });
+  await page.addInitScript(() => {
+    window.localStorage.setItem("food_compass_llm_api_url", "/__empty_llm");
+  });
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /Ask/ }).click();
+  await page.getByPlaceholder(/描述你想做什么/).fill("番茄可以和什么搭配？");
+  await askAndExecute(page);
+
+  await expect(page.getByText(/常见搭配：/)).toBeVisible();
+  await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText("LLM：已配置 · 回答组织：本地模板 fallback")).toBeVisible();
+  await expect(page.getByRole("button", { name: "重试 LLM" })).toBeVisible();
+});
+
 test("ask mode lets the user retry LLM composition after a transient endpoint failure", async ({ page }) => {
   let requestCount = 0;
   await page.route("**/__retry_llm", async (route) => {

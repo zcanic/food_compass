@@ -41,6 +41,9 @@ ${JSON.stringify(skillResults, null, 2)}
 请按规则组织自然语言回答。`;
 
     const answer = await callLLM(prompt, COMPOSER_SYSTEM_PROMPT, { signal: options.signal });
+    if (!answer.trim()) {
+      throw new Error("LLM composer returned an empty response");
+    }
     return {
       answer,
       trace: {

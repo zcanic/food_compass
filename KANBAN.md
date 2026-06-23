@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-06-23 21:40 CST
+Status timestamp: 2026-06-23 21:49 CST
 
 ## Done
 
@@ -227,6 +227,10 @@ Status timestamp: 2026-06-23 21:40 CST
 - Every ingredient edit rebuilds a deterministic local plan, clears stale output, and prevents execution when no validated ingredient remains.
 - Extended the shared ingredient chip with a contextual removal label and added desktop/mobile E2E coverage for safe ingredient correction.
 - Full gate passed again: `npm run test:all` with 62 unit tests and 62 E2E checks.
+- 2026-06-23 21:49 CST: Empty LLM composition recovery card completed.
+- Ask now treats blank LLM composer output as a failure and falls back to the local structured answer instead of rendering an empty response.
+- Added unit coverage for whitespace-only composer responses and desktop/mobile E2E coverage for configured empty-response recovery plus the existing retry affordance.
+- Full gate passed again: `npm run test:all` with 63 unit tests and 64 E2E checks.
 
 ## In Progress
 
@@ -238,5 +242,5 @@ Status timestamp: 2026-06-23 21:40 CST
 - Add worker timing instrumentation for larger future data assets.
 - Add generated mode-atlas/runtime parity tests for coverage summary copy.
 - Add generated alias coverage summaries for the product localization layer.
-- Fall back to local Ask composition when a configured LLM returns an empty response.
+- Make each Ask tool plan's Cooc/Core/Chem evidence lens understandable without requiring users to know model codes.
 - Add screenshot snapshots only after stabilizing the expanded About evidence page height.
