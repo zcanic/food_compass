@@ -119,6 +119,7 @@ test("ask mode can use a configured LLM endpoint while keeping recommendations t
   await expect(page.getByRole("region", { name: "Ask 解析结果" }).getByText(/模型依据：/)).toContainText(
     "风格偏移：综合推荐（core），结合共现和化学信号，适合不知道选哪个时使用。"
   );
+  await expect(page.getByText("候选上限：风格偏移 6 项")).toBeVisible();
   await expect(page.getByText("LLM 组织回答：推荐候选仍来自本地三模型工具。")).toBeVisible();
   await expect(page.getByText(/调用工具：shift_style/)).toBeVisible();
   await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText("LLM：已配置 · 回答组织：LLM")).toBeVisible();

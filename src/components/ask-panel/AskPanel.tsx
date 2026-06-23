@@ -77,6 +77,10 @@ export function AskPanel() {
   const requestControllerRef = useRef<AbortController | null>(null);
   const requestIdRef = useRef(0);
   const recommendationGroups = toolResults.filter((r) => r.recommendations.length > 0);
+  const planCandidateLimits = resolvedPlan.flatMap((step) => {
+    const limit = planCandidateLimit(step);
+    return limit ? [limit] : [];
+  });
   const llmConfigured = isLLMConfigured();
 
   const saveEndpointOverride = () => {
@@ -422,6 +426,11 @@ export function AskPanel() {
               模型依据：{resolvedPlan.map(planLensSummary).join("；")}
             </div>
           )}
+          {planCandidateLimits.length > 0 && (
+            <div style={{ marginTop: 6, color: "var(--subtle)" }}>
+              候选上限：{planCandidateLimits.join("；")}
+            </div>
+          )}
           {intent.matchedIntents && intent.matchedIntents.length > 1 && (
             <div style={{ marginTop: 6 }}>
               意图链：{intent.matchedIntents.join("、")}
@@ -669,6 +678,13 @@ function planLensSummary(step: SkillRequest): string {
   const model = getPlanModel(step);
   if (!model) return toolLabel(step.name);
   return `${toolLabel(step.name)}：${MODEL_LABELS[model]}（${model}），${MODEL_EXPLANATIONS[model]}`;
+}
+
+function planCandidateLimit(step: SkillRequest): string | null {
+  const topK = step.params.top_k;
+  return typeof topK === "number" && Number.isFinite(topK)
+    ? `${toolLabel(step.name)} ${topK} 项`
+    : null;
 }
 
 function getPlanModel(step: SkillRequest): ModelName | null {

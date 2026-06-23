@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-06-23 21:57 CST
+Status timestamp: 2026-06-23 22:01 CST
 
 ## Done
 
@@ -242,6 +242,10 @@ Status timestamp: 2026-06-23 21:57 CST
 - 2026-06-23 21:57 CST: Ask review responsive-layout card completed.
 - The desktop/mobile overflow check now exercises a populated Ask review with task correction, style selection, and a second canonical ingredient before validating page width.
 - Full gate passed again: `npm run test:all` with 63 unit tests and 64 E2E checks.
+- 2026-06-23 22:01 CST: Ask candidate-limit preview card completed.
+- Ask plan review now shows each vector tool's requested candidate limit before execution, while mode-only steps remain count-free.
+- Configured LLM E2E verifies the visible `topK=6` plan limit and the resulting six local candidates together.
+- Full gate passed again: `npm run test:all` with 63 unit tests and 64 E2E checks.
 
 ## In Progress
 
@@ -253,5 +257,5 @@ Status timestamp: 2026-06-23 21:57 CST
 - Add worker timing instrumentation for larger future data assets.
 - Add generated mode-atlas/runtime parity tests for coverage summary copy.
 - Add generated alias coverage summaries for the product localization layer.
-- Show each Ask plan step's requested candidate count before execution.
+- Add worker timing instrumentation for larger future data assets.
 - Add screenshot snapshots only after stabilizing the expanded About evidence page height.
