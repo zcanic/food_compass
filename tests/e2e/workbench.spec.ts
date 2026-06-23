@@ -661,6 +661,17 @@ test("key screens avoid horizontal overflow", async ({ page }) => {
   await expect(page.getByRole("region", { name: "模型对比概览" })).toBeVisible();
   await expectNoHorizontalOverflow(page);
 
+  await page.getByRole("button", { name: /Ask/ }).click();
+  await page.getByPlaceholder(/描述你想做什么/).fill("番茄可以和什么搭配？");
+  await page.getByRole("button", { name: "提问" }).click();
+  const review = page.getByRole("group", { name: "Ask 计划修正" });
+  await review.getByLabel("Ask 主意图").selectOption("style_shift");
+  await review.getByLabel("Ask 目标风格").selectOption("East_Asian");
+  const ingredients = review.getByRole("group", { name: "Ask 食材修正" });
+  await ingredients.getByLabel("添加 Ask 食材").fill("鸡蛋");
+  await ingredients.getByRole("button", { name: "添加" }).click();
+  await expectNoHorizontalOverflow(page);
+
   await page.getByRole("button", { name: "关于" }).click();
   await expect(page.getByRole("heading", { name: "关于 Flavor Compass" })).toBeVisible();
   await expectNoHorizontalOverflow(page);
