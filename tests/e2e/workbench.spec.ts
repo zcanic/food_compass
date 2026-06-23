@@ -190,6 +190,53 @@ test("ask mode falls back to local rules and local composition when LLM endpoint
   await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText("LLM：已配置 · 回答组织：本地模板 fallback")).toBeVisible();
 });
 
+test("ask mode lets the user retry LLM composition after a transient endpoint failure", async ({ page }) => {
+  let requestCount = 0;
+  await page.route("**/__retry_llm", async (route) => {
+    requestCount += 1;
+    if (requestCount <= 2) {
+      await route.fulfill({
+        status: 500,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "temporary failure" }),
+      });
+      return;
+    }
+
+    const body = route.request().postDataJSON() as {
+      messages: { role: string; content: string }[];
+    };
+    const system = body.messages.find((message) => message.role === "system")?.content ?? "";
+    const content = system.includes("Ask 编排器")
+      ? JSON.stringify({
+          intent: "pairing",
+          matchedIntents: ["pairing"],
+          constraints: [],
+          confidence: 0.9,
+        })
+      : "LLM 重试成功，候选仍由 Cooc 工具提供。";
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ content }),
+    });
+  });
+  await page.addInitScript(() => {
+    window.localStorage.setItem("food_compass_llm_api_url", "/__retry_llm");
+  });
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /Ask/ }).click();
+  await page.getByPlaceholder(/描述你想做什么/).fill("番茄可以和什么搭配？");
+  await page.getByRole("button", { name: "提问" }).click();
+
+  await expect(page.getByRole("button", { name: "重试 LLM" })).toBeVisible();
+  await page.getByRole("button", { name: "重试 LLM" }).click();
+
+  await expect(page.getByText("LLM 重试成功，候选仍由 Cooc 工具提供。")).toBeVisible();
+  await expect(page.getByText(/编排层：LLM · 工具层：Cooc\/Core\/Chem/)).toBeVisible();
+  await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText("LLM：已配置 · 回答组织：LLM")).toBeVisible();
+  await expect(page.getByRole("button", { name: "重试 LLM" })).toHaveCount(0);
+});
 test("unsupported ingredient input gives an actionable recovery message", async ({ page }) => {
   await page.goto("/");
 

@@ -142,6 +142,7 @@ export function AskPanel() {
       setResponse({
         ...askResponse,
         trace: {
+          ...askResponse.trace,
           intent: parsed.intent ?? "",
           ingredients,
           toolsUsed: askResponse.trace.toolsUsed,
@@ -287,6 +288,16 @@ export function AskPanel() {
               {" "}向量工具 {diagnostics.vectorToolCount} · 街区 {diagnostics.modeToolCount} · 约束 {diagnostics.constraintToolCount}
               {" "}LLM：{diagnostics.llmConfigured ? "已配置" : "未配置"} · 回答组织：{COMPOSER_LABELS[diagnostics.composer]}
             </div>
+          )}
+          {diagnostics?.llmConfigured && diagnostics.composer === "fallback" && (
+            <button
+              type="button"
+              className="ask-retry-button"
+              onClick={handleSubmit}
+              disabled={loading}
+            >
+              重试 LLM
+            </button>
           )}
         </div>
       )}
