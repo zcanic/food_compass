@@ -30,7 +30,7 @@ export function ResultList({
   listLabel = "推荐结果",
 }: Props) {
   if (loading) {
-    return <div style={{ padding: 24, textAlign: "center", color: "#999" }}>检索中...</div>;
+    return <ResultSkeleton />;
   }
 
   if (results.length === 0) {
@@ -56,27 +56,15 @@ export function ResultList({
   }
 
   return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 12,
-          marginBottom: 10,
-        }}
-      >
-        <h3 style={{ fontSize: 15 }}>推荐结果</h3>
-        <span style={{ color: "var(--subtle)", fontSize: 12 }}>
-          {results.length} 个候选
-        </span>
+    <div className="result-list-reveal">
+      <div className="result-list-heading">
+        <h3>推荐结果</h3>
+        <span>{results.length} 个候选</span>
       </div>
       {explanation && (
-        <div style={{ fontSize: 13, color: "#888", marginBottom: 12, lineHeight: 1.6 }}>
-          {explanation}
-        </div>
+        <div className="result-list-explanation">{explanation}</div>
       )}
-      <div style={{ color: "var(--subtle)", fontSize: 11, marginBottom: 8 }}>
+      <div className="result-list-disclaimer">
         分数为向量余弦相似度，用于排序，不是成功概率或安全保证。
       </div>
       {groupByModel ? (
@@ -93,6 +81,28 @@ export function ResultList({
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function ResultSkeleton() {
+  return (
+    <div className="result-skeleton" role="status" aria-label="检索中">
+      <div className="result-skeleton-heading">
+        <span className="result-skeleton-line is-title" />
+        <span className="result-skeleton-line is-count" />
+      </div>
+      {[0, 1, 2].map((index) => (
+        <div className="result-skeleton-row" key={index}>
+          <span className="result-skeleton-rank" />
+          <span className="result-skeleton-copy">
+            <span className="result-skeleton-line is-name" />
+            <span className="result-skeleton-line is-detail" />
+          </span>
+          <span className="result-skeleton-score" />
+        </div>
+      ))}
+      <span className="sr-only">检索中...</span>
     </div>
   );
 }

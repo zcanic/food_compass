@@ -18,6 +18,7 @@ import { STYLE_LABELS, STYLE_SEED_SETS } from "../../utils/constants";
 import { displayName } from "../../utils/text";
 import { ResultList } from "../results/ResultList";
 import { IngredientChip } from "../search/IngredientChip";
+import { Play, RotateCcw, Sparkles } from "lucide-react";
 
 interface AskDiagnostics {
   backend: RetrievalBackend;
@@ -343,8 +344,11 @@ export function AskPanel() {
   };
 
   return (
-    <div>
-      <div className="panel-title">Ask Mode</div>
+    <div className="ask-panel">
+      <div className="ask-heading-row">
+        <div className="panel-title">Ask Mode</div>
+        <span className="ask-heading-badge">LLM + tools</span>
+      </div>
       <section className="ask-stack-status" aria-label="Ask LLM 状态">
         <div className="ask-status-item">
           <span>LLM endpoint</span>
@@ -378,29 +382,14 @@ export function AskPanel() {
         onChange={(event) => handleQuestionChange(event.target.value)}
         placeholder="描述你想做什么... 如：我有番茄和鸡蛋，想做得更日式一点，可以加什么？"
         rows={3}
-        style={{
-          width: "100%",
-          padding: 12,
-          fontSize: 15,
-          border: "1px solid #ccc",
-          borderRadius: 8,
-          resize: "vertical",
-          marginBottom: 8,
-        }}
+        className="ask-question-input"
       />
       <button
         onClick={handleParse}
         disabled={loading}
-        style={{
-          padding: "8px 20px",
-          background: "#2a7",
-          color: "#fff",
-          border: "none",
-          borderRadius: 8,
-          cursor: "pointer",
-          fontSize: 14,
-        }}
+        className={`ask-parse-button ${phase === "review" ? "is-secondary" : ""}`}
       >
+        {phase === "review" ? <RotateCcw size={15} aria-hidden="true" /> : <Sparkles size={15} aria-hidden="true" />}
         {loading ? (phase === "parsing" ? "处理中..." : "执行中...") : phase === "review" ? "重新解析" : "提问"}
       </button>
 
@@ -408,15 +397,9 @@ export function AskPanel() {
         <div
           role="region"
           aria-label="Ask 解析结果"
-          style={{
-            marginTop: 12,
-            padding: "10px 14px",
-            background: "#f5f5f5",
-            borderRadius: 8,
-            fontSize: 13,
-          }}
+          className="ask-review transition-reveal"
         >
-          <strong>解析结果</strong>
+          <strong>{phase === "review" || phase === "executing" ? "执行前审阅" : "解析结果"}</strong>
           <div style={{ marginTop: 6 }}>
             意图：{intent.intent ?? "未知"} · 置信度：{(intent.confidence * 100).toFixed(0)}%
             {intent.targetStyle && <> · 风格：{intent.targetStyle}</>}
@@ -561,7 +544,9 @@ export function AskPanel() {
                 type="button"
                 onClick={handleExecutePlan}
                 disabled={loading || resolvedPlan.length === 0}
+                className="ask-execute-button"
               >
+                <Play size={15} aria-hidden="true" />
                 {phase === "executing" ? "执行中..." : "执行计划"}
               </button>
             </div>
@@ -571,15 +556,7 @@ export function AskPanel() {
 
       {response && (
         <div
-          style={{
-            marginTop: 16,
-            padding: "14px 18px",
-            background: "#fafafa",
-            borderRadius: 8,
-            border: "1px solid #eee",
-            lineHeight: 1.7,
-            whiteSpace: "pre-wrap",
-          }}
+          className="ask-response result-list-reveal"
         >
           {response.answer}
           {response.trace.toolsUsed.length > 0 && (

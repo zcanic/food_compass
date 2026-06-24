@@ -17,27 +17,17 @@ interface Props {
 
 export function ModeTabs({ active, onChange }: Props) {
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 8 }}>
+    <div className="mode-tabs">
       {MODES.map(({ mode, label, short }) => (
         <button
           key={mode}
           onClick={() => onChange(mode)}
           aria-label={`任务：${label}`}
-          style={{
-            padding: "10px 12px",
-            border: active === mode ? "2px solid #2a7" : "1px solid #ccc",
-            borderRadius: 8,
-            background: active === mode ? "#e8f4e8" : "#fff",
-            cursor: "pointer",
-            textAlign: "left",
-          }}
+          aria-pressed={active === mode}
+          className={`mode-tab ${active === mode ? "is-active" : ""}`}
         >
-          <span style={{ display: "block", fontSize: 14, fontWeight: active === mode ? 700 : 600 }}>
-            {label}
-          </span>
-          <span style={{ display: "block", color: "#777", fontSize: 11, marginTop: 2 }}>
-            {short}
-          </span>
+          <span className="mode-tab-label">{label}</span>
+          <span className="mode-tab-detail">{short}</span>
         </button>
       ))}
     </div>

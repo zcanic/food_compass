@@ -1,6 +1,7 @@
 import type { Recommendation } from "../../types/result";
 import { MODEL_LABELS } from "../../types/model";
 import { displayName } from "../../utils/text";
+import { Plus } from "lucide-react";
 
 interface Props {
   rec: Recommendation;
@@ -15,43 +16,30 @@ export function ResultCard({ rec, rank, onAddIngredient }: Props) {
   return (
     <div
       role="listitem"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        padding: "10px 14px",
-        borderBottom: "1px solid #f0f0f0",
-      }}
+      className="result-card"
     >
-      <span style={{ color: "#999", fontSize: 13, minWidth: 20 }}>{rank}</span>
-      <span style={{ flex: 1, fontSize: 15 }}>
+      <span className="result-card-rank">{rank}</span>
+      <span className="result-card-name">
         {name}
-        <span style={{ fontSize: 11, color: "#777", marginLeft: 8 }}>
+        <span className="result-card-model">
           {MODEL_LABELS[rec.model]}
         </span>
         {rec.crossLabel === "chem-only" && (
-          <span style={{ fontSize: 11, color: "#888", marginLeft: 8 }}>
+          <span className="result-card-annotation">
             风味近·菜谱不常见
           </span>
         )}
         {rec.crossLabel === "both" && (
-          <span style={{ fontSize: 11, color: "#2a7", marginLeft: 8 }}>
+          <span className="result-card-annotation is-verified">
             风味近·菜谱验证
           </span>
         )}
       </span>
       <span
         title="向量余弦相似度，不是成功概率"
-        style={{
-          fontSize: 13,
-          color: "#666",
-          background: "#f5f5f5",
-          padding: "2px 8px",
-          borderRadius: 10,
-          whiteSpace: "nowrap",
-        }}
+        className="result-card-score"
       >
-          cos {score}
+        cos {score}
       </span>
       {onAddIngredient && (
         <button
@@ -61,7 +49,7 @@ export function ResultCard({ rec, rank, onAddIngredient }: Props) {
           aria-label={`加入 ${name}`}
           title="加入当前查询"
         >
-          +
+          <Plus size={16} aria-hidden="true" />
         </button>
       )}
     </div>

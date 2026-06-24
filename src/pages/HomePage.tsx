@@ -12,6 +12,7 @@ import type { AppMode } from "../types/query";
 import type { StyleStrength } from "../types/query";
 import type { ModelName } from "../types/model";
 import { MODEL_LABELS } from "../types/model";
+import { ArrowRight, Sparkles } from "lucide-react";
 
 interface ExampleQuery {
   label: string;
@@ -155,9 +156,11 @@ export function HomePage() {
 
   const canExplore = store.matchedIngredients.length > 0 && !store.isLoading;
   const activeHelp = MODE_HELP[store.activeMode];
-  const selectedText = store.matchedIngredients.length > 0
-    ? `已选择 ${store.matchedIngredients.length} 个食材`
-    : "先输入至少 1 个食材";
+  const selectedText = store.activeMode === "ask"
+    ? "从问题中识别食材"
+    : store.matchedIngredients.length > 0
+      ? `已选择 ${store.matchedIngredients.length} 个食材`
+      : "先输入至少 1 个食材";
   const showResultList = store.activeMode !== "lookup_mode" || store.modes.length === 0;
   const showModelToggle = store.activeMode !== "ask" && store.activeMode !== "compare_models";
   const showModeLookupEmptyHint =
@@ -188,18 +191,21 @@ export function HomePage() {
   return (
     <div>
       <header className="workbench-header">
-        <div>
-          <div className="eyebrow">Flavor Compass</div>
+        <div className="workbench-title-block">
+          <div className="eyebrow">EPICURE RETRIEVAL WORKSPACE</div>
           <h1 className="page-title">食材罗盘工作台</h1>
           <p className="page-subtitle">
-            输入食材，选择任务，实时用 Epicure 的三种食材空间检索搭配、替代、组合补全和食材街区。
+            用 Cooc、Core 和 Chem 三种食材空间，把一个食材问题收束为可解释的下一步。
           </p>
         </div>
-        <div className="status-pill">{selectedText}</div>
+        <div className="status-context">
+          <span>检索上下文</span>
+          <strong>{selectedText}</strong>
+        </div>
       </header>
 
       <div className="workbench-grid">
-        <section className="panel control-stack" aria-label="Controls">
+        <section className="panel control-stack control-panel" aria-label="Controls">
           <div>
             <div className="panel-title">1. 选择任务</div>
             <ModeTabs active={store.activeMode} onChange={handleModeChange} />
@@ -247,7 +253,8 @@ export function HomePage() {
               disabled={!canExplore}
               className="primary-button"
             >
-              {store.isLoading ? "检索中..." : "探索"}
+              <Sparkles size={16} aria-hidden="true" />
+              {store.isLoading ? "检索中..." : "开始探索"}
             </button>
           )}
 
@@ -260,29 +267,18 @@ export function HomePage() {
                   type="button"
                   onClick={() => runExample(example)}
                   aria-label={`示例：${example.label}`}
-                  style={{
-                    background: "#fff",
-                    border: "1px solid var(--border)",
-                    borderRadius: 8,
-                    color: "var(--text)",
-                    cursor: "pointer",
-                    padding: "8px 10px",
-                    textAlign: "left",
-                  }}
+                  className="example-button"
                 >
-                  <span style={{ display: "block", fontSize: 13, fontWeight: 700 }}>
-                    {example.label}
-                  </span>
-                  <span style={{ color: "var(--subtle)", display: "block", fontSize: 11, marginTop: 2 }}>
-                    {example.hint}
-                  </span>
+                  <span className="example-button-label">{example.label}</span>
+                  <span className="example-button-hint">{example.hint}</span>
+                  <ArrowRight className="example-button-icon" size={14} aria-hidden="true" />
                 </button>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="panel" aria-label="Results">
+        <section className="panel result-panel" aria-label="Results">
           {store.activeMode === "ask" ? (
             <AskPanel />
           ) : (
@@ -310,39 +306,22 @@ export function HomePage() {
               {showModeLookupEmptyHint && (
                 <section
                   aria-label="街区空态说明"
-                  style={{
-                    background: "#fffaf0",
-                    border: "1px solid #efd5b9",
-                    borderRadius: 8,
-                    color: "var(--muted)",
-                    fontSize: 12,
-                    lineHeight: 1.6,
-                    marginTop: 12,
-                    padding: "10px 12px",
-                  }}
+                  className="mode-empty-hint"
                 >
-                  <div style={{ color: "var(--text)", fontWeight: 700, marginBottom: 4 }}>
+                  <div className="mode-empty-title">
                     mode atlas 未覆盖当前食材
                   </div>
                   <div>
                     这不代表食材没有风味关系，只表示它没有落入当前模型公开的命名街区成员列表。不同模型的街区覆盖和命名会不同。
                   </div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+                  <div className="mode-empty-actions">
                     {["soy_sauce", "tomato", "tofu"].map((name) => (
                       <button
                         key={name}
                         type="button"
                         onClick={() => runModeLookupExample(name)}
                         aria-label={`查街区示例 ${name.replace(/_/g, " ")}`}
-                        style={{
-                          background: "#fff",
-                          border: "1px solid var(--border)",
-                          borderRadius: 999,
-                          color: "var(--accent-strong)",
-                          cursor: "pointer",
-                          fontSize: 12,
-                          padding: "4px 9px",
-                        }}
+                        className="mode-empty-action"
                       >
                         {name.replace(/_/g, " ")}
                       </button>

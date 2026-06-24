@@ -4,6 +4,7 @@ import { useQueryStore } from "../../store/query-store";
 import { IngredientChip } from "./IngredientChip";
 import { getMatcher } from "../../engine";
 import { displayName } from "../../utils/text";
+import { Search, Trash2 } from "lucide-react";
 import {
   addRecentIngredients,
   clearRecentIngredients,
@@ -112,8 +113,9 @@ export function SearchBox() {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
+    <div className="ingredient-search">
+      <form onSubmit={handleSubmit} className="ingredient-search-form">
+        <Search className="ingredient-search-icon" size={18} aria-hidden="true" />
         <input
           type="text"
           value={query}
@@ -123,38 +125,24 @@ export function SearchBox() {
               ? "描述你想做什么菜或解决什么问题..."
               : "输入食材，如 tomato, soy sauce, 番茄、鸡蛋..."
           }
-          style={{
-            width: "100%",
-            padding: "12px 16px",
-            fontSize: 16,
-            border: "1px solid #ccc",
-            borderRadius: 8,
-            background: "#fff",
-          }}
+          className="ingredient-search-input"
         />
       </form>
-      <div style={{ color: "var(--subtle)", fontSize: 12, marginTop: 6 }}>
+      <div className="ingredient-search-help">
         Enter 添加；多个食材可用逗号、顿号或换行分隔。
       </div>
 
       {isBulkInput && (bulkPreview.found.length > 0 || bulkPreview.unresolved.length > 0) && (
         <div
-          style={{
-            border: "1px solid #eee",
-            borderRadius: 8,
-            marginTop: 8,
-            padding: 10,
-            background: "#fff",
-            fontSize: 13,
-          }}
+          className="ingredient-search-preview"
         >
           {bulkPreview.found.length > 0 && (
-            <div style={{ color: "var(--accent-strong)" }}>
+            <div className="ingredient-search-found">
               Enter 将添加：{bulkPreview.found.map(displayName).join("、")}
             </div>
           )}
           {bulkPreview.unresolved.length > 0 && (
-            <div style={{ color: "var(--amber)", marginTop: bulkPreview.found.length > 0 ? 6 : 0 }}>
+            <div className={`ingredient-search-unresolved ${bulkPreview.found.length > 0 ? "has-found" : ""}`}>
               未匹配：{bulkPreview.unresolved.join("、")}
             </div>
           )}
@@ -163,16 +151,10 @@ export function SearchBox() {
 
       {!isBulkInput && query.trim() && match?.kind === "fuzzy" && (
         <div
-          style={{
-            border: "1px solid #eee",
-            borderRadius: 8,
-            marginTop: 4,
-            padding: 8,
-            background: "#fff",
-          }}
+          className="ingredient-suggestions"
         >
           {suggestions.length > 0 && match.score >= 0.75 && (
-            <div style={{ fontSize: 13, color: "#666", marginBottom: 8 }}>
+            <div className="ingredient-suggestions-title">
               你是不是想找...
             </div>
           )}
@@ -181,34 +163,21 @@ export function SearchBox() {
               key={s}
               type="button"
               onClick={() => handleSelect(s)}
-              style={{
-                background: "transparent",
-                border: "none",
-                color: "var(--text)",
-                display: "block",
-                font: "inherit",
-                width: "100%",
-                padding: "6px 12px",
-                cursor: "pointer",
-                borderRadius: 4,
-                textAlign: "left",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "#f0f0f0")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+              className="ingredient-suggestion"
             >
               {displayName(s)}
             </button>
           ))}
           {match.score < 0.75 && (
-            <div style={{ fontSize: 13, color: "#999" }}>
+            <div className="ingredient-suggestions-empty">
               当前词表暂未覆盖该食材，请尝试英文名。
             </div>
           )}
         </div>
       )}
       {matchedIngredients.length > 0 && (
-        <div style={{ marginTop: 8 }}>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+        <div className="ingredient-selection">
+          <div className="ingredient-chip-list">
             {matchedIngredients.map((name) => (
               <IngredientChip
                 key={name}
@@ -226,65 +195,35 @@ export function SearchBox() {
           <button
             type="button"
             onClick={clearSelection}
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "var(--muted)",
-              cursor: "pointer",
-              fontSize: 12,
-              marginTop: 6,
-              padding: 0,
-            }}
+            className="clear-ingredients-button"
           >
+            <Trash2 size={13} aria-hidden="true" />
             清空当前选择
           </button>
         </div>
       )}
       {recentIngredients.length > 0 && (
-        <div style={{ marginTop: 10 }}>
-          <div
-            style={{
-              alignItems: "center",
-              display: "flex",
-              justifyContent: "space-between",
-              gap: 8,
-              marginBottom: 6,
-            }}
-          >
-            <div style={{ color: "var(--subtle)", fontSize: 11 }}>
+        <div className="recent-ingredients">
+          <div className="recent-ingredients-header">
+            <div className="recent-ingredients-label">
               最近食材
             </div>
             <button
               type="button"
               onClick={clearRecent}
-              style={{
-                background: "transparent",
-                border: "none",
-                color: "var(--subtle)",
-                cursor: "pointer",
-                fontSize: 11,
-                padding: 0,
-              }}
+              className="recent-ingredients-clear"
             >
               清空最近
             </button>
           </div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+          <div className="recent-ingredients-list">
             {recentIngredients.map((name) => (
               <button
                 key={name}
                 type="button"
                 onClick={() => handleSelect(name)}
                 aria-label={`添加最近食材 ${displayName(name)}`}
-                style={{
-                  background: "#f8faf7",
-                  border: "1px solid var(--border)",
-                  borderRadius: 999,
-                  color: "var(--muted)",
-                  cursor: "pointer",
-                  fontSize: 12,
-                  padding: "4px 9px",
-                }}
+                className="recent-ingredient-button"
               >
                 {displayName(name)}
               </button>

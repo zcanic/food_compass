@@ -41,11 +41,26 @@ test("switching modes changes the default model and clears stale result state", 
   await expect(page.getByText("当前使用：综合推荐。")).toBeVisible();
 });
 
+test("mobile workbench stays within the viewport", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  await expect(page.getByRole("heading", { name: "食材罗盘工作台" })).toBeVisible();
+  const dimensions = await page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    viewportWidth: window.innerWidth,
+  }));
+
+  expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.viewportWidth);
+});
+
 test("ask mode uses one question box and extracts Chinese ingredients", async ({ page }) => {
   await page.goto("/");
 
   await page.getByRole("button", { name: /Ask/ }).click();
   await expect(page.locator('input[placeholder*="输入食材"]')).toHaveCount(0);
+  await expect(page.getByText("从问题中识别食材")).toBeVisible();
+  await expect(page.getByText("先输入至少 1 个食材")).toHaveCount(0);
   const askStatus = page.getByRole("region", { name: "Ask LLM 状态" });
   await expect(askStatus.getByText("missing")).toBeVisible();
   await expect(askStatus.getByText("rules fallback")).toBeVisible();
@@ -360,6 +375,7 @@ test("Ask plan review lets a user correct the tool plan before execution", async
 
   const review = page.getByRole("group", { name: "Ask 计划修正" });
   await expect(review).toBeVisible();
+  await expect(page.getByRole("region", { name: "Ask 解析结果" }).getByText("执行前审阅")).toBeVisible();
   await review.getByLabel("Ask 主意图").selectOption("style_shift");
   await expect(review.getByLabel("Ask 目标风格")).toBeVisible();
   await review.getByLabel("Ask 目标风格").selectOption("East_Asian");

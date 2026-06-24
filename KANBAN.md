@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-06-23 22:15 CST
+Status timestamp: 2026-06-24 23:12 CST
 
 ## Done
 
@@ -258,6 +258,11 @@ Status timestamp: 2026-06-23 22:15 CST
 - Preprocessing now ships `alias_coverage_summary.json` for Chinese, Japanese, and English-alternative alias counts.
 - About exposes the current alias-table boundary explicitly; static, research-copy, and desktop/mobile About tests keep the summary and wording aligned.
 - Full gate passed again: `npm run test:all` with 66 unit tests and 64 E2E checks.
+- 2026-06-24 23:12 CST: Workspace visual system and transitions card completed.
+- Rebuilt the workbench hierarchy with a responsive navigation bar, task/model/input surfaces, result rows, icon affordances, and a more legible Ask review flow; product logic and Cooc/Core/Chem contracts are unchanged.
+- Added `transitions.dev`-inspired sliding navigation tabs (P16), skeleton-to-result reveal (P14), and short page/content transitions with a `prefers-reduced-motion` fallback.
+- Added desktop/mobile visual review and a dedicated browser regression that locks the 390px workbench to its viewport width.
+- Full gate passed again: `npm run test:all` with 66 unit tests and 66 E2E checks.
 
 ## In Progress
 

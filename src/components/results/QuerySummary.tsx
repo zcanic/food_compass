@@ -49,16 +49,7 @@ export function QuerySummary({
     <div
       role="region"
       aria-label="查询摘要"
-      style={{
-        display: "grid",
-        gap: 10,
-        gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
-        marginBottom: 14,
-        padding: 12,
-        background: "#f8faf7",
-        border: "1px solid var(--border)",
-        borderRadius: 8,
-      }}
+      className="query-summary"
     >
       <SummaryItem label="当前任务" value={MODE_LABELS[mode]} />
       <SummaryItem label="输入食材" value={ingredients.map(displayName).join("、")} />
@@ -77,11 +68,9 @@ export function QuerySummary({
 
 function SummaryItem({ label, value }: { label: string; value: string }) {
   return (
-    <div>
-      <div style={{ color: "var(--subtle)", fontSize: 11 }}>{label}</div>
-      <div style={{ color: "var(--text)", fontSize: 13, fontWeight: 700, marginTop: 2 }}>
-        {value}
-      </div>
+    <div className="query-summary-item">
+      <div className="query-summary-label">{label}</div>
+      <div className="query-summary-value">{value}</div>
     </div>
   );
 }

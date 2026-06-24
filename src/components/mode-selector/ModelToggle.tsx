@@ -10,28 +10,17 @@ export function ModelToggle({ active, onChange }: Props) {
   const models: ModelName[] = ["core", "cooc", "chem"];
 
   return (
-    <div style={{ display: "grid", gap: 8 }}>
+    <div className="model-toggle">
       {models.map((m) => (
         <button
           key={m}
           onClick={() => onChange(m)}
           aria-label={`模型：${MODEL_LABELS[m]}`}
-          style={{
-            padding: "9px 12px",
-            border: active === m ? "2px solid #2a7" : "1px solid #ddd",
-            borderRadius: 8,
-            background: active === m ? "#e8f4e8" : "#fafafa",
-            cursor: "pointer",
-            fontSize: 13,
-            textAlign: "left",
-          }}
+          aria-pressed={active === m}
+          className={`model-option ${active === m ? "is-active" : ""}`}
         >
-          <span style={{ display: "block", fontWeight: active === m ? 700 : 600 }}>
-            {MODEL_LABELS[m]}
-          </span>
-          <span style={{ color: "#777", display: "block", fontSize: 11, lineHeight: 1.45, marginTop: 2 }}>
-            {MODEL_EXPLANATIONS[m]}
-          </span>
+          <span className="model-option-name">{MODEL_LABELS[m]}</span>
+          <span className="model-option-detail">{MODEL_EXPLANATIONS[m]}</span>
         </button>
       ))}
     </div>

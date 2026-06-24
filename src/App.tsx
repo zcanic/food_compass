@@ -3,6 +3,7 @@ import { HomePage } from "./pages/HomePage";
 import { AboutPage } from "./pages/AboutPage";
 import { useEngine } from "./hooks/useEngine";
 import { useState } from "react";
+import { BookOpen, Compass, LayoutDashboard } from "lucide-react";
 
 type Page = "home" | "about";
 
@@ -33,21 +34,37 @@ export default function App() {
 
   return (
     <AppShell>
-      <nav className="top-nav" aria-label="Primary">
-        <button
-          onClick={() => setPage("home")}
-          className={`nav-button ${page === "home" ? "active" : ""}`}
-        >
-          工作台
-        </button>
-        <button
-          onClick={() => setPage("about")}
-          className={`nav-button ${page === "about" ? "active" : ""}`}
-        >
-          关于
-        </button>
-      </nav>
-      {page === "home" ? <HomePage /> : <AboutPage />}
+      <header className="app-topbar">
+        <div className="app-brand" aria-label="Flavor Compass">
+          <span className="app-brand-mark"><Compass size={18} strokeWidth={2.2} /></span>
+          <span>
+            <strong>Flavor Compass</strong>
+            <small>Epicure workspace</small>
+          </span>
+        </div>
+        <nav className={`top-nav ${page === "about" ? "is-about" : "is-home"}`} aria-label="Primary">
+          <span className="nav-indicator" aria-hidden="true" />
+          <button
+            onClick={() => setPage("home")}
+            className={`nav-button ${page === "home" ? "active" : ""}`}
+            aria-current={page === "home" ? "page" : undefined}
+          >
+            <LayoutDashboard size={15} aria-hidden="true" />
+            工作台
+          </button>
+          <button
+            onClick={() => setPage("about")}
+            className={`nav-button ${page === "about" ? "active" : ""}`}
+            aria-current={page === "about" ? "page" : undefined}
+          >
+            <BookOpen size={15} aria-hidden="true" />
+            关于
+          </button>
+        </nav>
+      </header>
+      <main className="page-transition" key={page}>
+        {page === "home" ? <HomePage /> : <AboutPage />}
+      </main>
     </AppShell>
   );
 }
