@@ -76,6 +76,13 @@ const EXAMPLES: ExampleQuery[] = [
     model: "core",
   },
   {
+    label: "番茄鸡蛋补全",
+    hint: "从组合里补一个食材",
+    mode: "complete_combo",
+    ingredients: ["tomato", "egg"],
+    model: "core",
+  },
+  {
     label: "番茄模型对比",
     hint: "看三种模型的差异",
     mode: "compare_models",
@@ -169,6 +176,22 @@ export function HomePage() {
     !store.isLoading &&
     store.modes.length === 0 &&
     store.matchedIngredients.length > 0;
+  const contextExample = EXAMPLES.find((example) => example.mode === store.activeMode);
+  const emptyAction = (() => {
+    if (store.matchedIngredients.length === 0 && contextExample) {
+      return {
+        label: `直接试试：${contextExample.label}`,
+        onClick: () => runExample(contextExample),
+      };
+    }
+    if (!store.hasSearched && store.matchedIngredients.length > 0) {
+      return {
+        label: "查看推荐",
+        onClick: handleSearch,
+      };
+    }
+    return undefined;
+  })();
   const emptyTitle = (() => {
     if (store.matchedIngredients.length === 0) return "先添加食材";
     if (!store.hasSearched) return "准备好了，点击探索";
@@ -301,6 +324,7 @@ export function HomePage() {
                   emptyDetail={emptyDetail}
                   groupByModel={store.activeMode === "compare_models"}
                   onAddIngredient={addRecommendationToQuery}
+                  emptyAction={emptyAction}
                 />
               )}
               {showModeLookupEmptyHint && (

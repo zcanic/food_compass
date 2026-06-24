@@ -7,6 +7,12 @@ import {
 } from "../../utils/model-comparison-summary";
 import { displayName } from "../../utils/text";
 import { ResultCard } from "./ResultCard";
+import { ArrowRight, Compass } from "lucide-react";
+
+interface EmptyAction {
+  label: string;
+  onClick: () => void;
+}
 
 interface Props {
   results: Recommendation[];
@@ -17,6 +23,7 @@ interface Props {
   groupByModel?: boolean;
   onAddIngredient?: (name: string) => void;
   listLabel?: string;
+  emptyAction?: EmptyAction;
 }
 
 export function ResultList({
@@ -28,6 +35,7 @@ export function ResultList({
   groupByModel = false,
   onAddIngredient,
   listLabel = "推荐结果",
+  emptyAction,
 }: Props) {
   if (loading) {
     return <ResultSkeleton />;
@@ -35,23 +43,19 @@ export function ResultList({
 
   if (results.length === 0) {
     return (
-      <div
-        style={{
-          padding: "34px 20px",
-          textAlign: "center",
-          color: "var(--muted)",
-          background: "var(--panel-soft)",
-          border: "1px dashed var(--border)",
-          borderRadius: 8,
-        }}
-      >
-        <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text)" }}>
-          {emptyTitle}
-        </div>
-        <div style={{ fontSize: 13, lineHeight: 1.6, marginTop: 8 }}>
-          {emptyDetail}
-        </div>
-      </div>
+      <section className="result-empty-state" aria-label="推荐结果空态">
+        <span className="result-empty-icon" aria-hidden="true">
+          <Compass size={22} strokeWidth={2} />
+        </span>
+        <div className="result-empty-title">{emptyTitle}</div>
+        <div className="result-empty-detail">{emptyDetail}</div>
+        {emptyAction && (
+          <button type="button" className="result-empty-action" onClick={emptyAction.onClick}>
+            {emptyAction.label}
+            <ArrowRight size={15} aria-hidden="true" />
+          </button>
+        )}
+      </section>
     );
   }
 

@@ -991,6 +991,65 @@ select:focus-visible {
 .result-list-explanation { color: var(--muted); font-size: 12px; line-height: 1.6; margin-bottom: 10px; }
 .result-list-disclaimer { color: var(--subtle); font-size: 10px; line-height: 1.45; margin-bottom: 9px; }
 
+.result-empty-state {
+  align-content: center;
+  display: grid;
+  justify-items: center;
+  min-height: 390px;
+  padding: 36px 20px;
+  text-align: center;
+}
+
+.result-empty-icon {
+  align-items: center;
+  background: #e7f2ee;
+  border: 1px solid #c9dfd6;
+  border-radius: 50%;
+  color: var(--accent-strong);
+  display: inline-flex;
+  height: 48px;
+  justify-content: center;
+  width: 48px;
+}
+
+.result-empty-title {
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 760;
+  line-height: 1.35;
+  margin-top: 14px;
+}
+
+.result-empty-detail {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+  margin-top: 7px;
+  max-width: 430px;
+}
+
+.result-empty-action {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #9fc9bc;
+  color: var(--accent-strong);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 760;
+  gap: 6px;
+  margin-top: 18px;
+  padding: 5px 2px;
+  transition: border-color var(--duration-fast) var(--ease-smooth), color var(--duration-fast) var(--ease-smooth), transform var(--duration-fast) var(--ease-smooth);
+}
+
+.result-empty-action:hover {
+  border-color: var(--accent-strong);
+  color: #073e39;
+  transform: translateX(2px);
+}
+
 /* transitions.dev P14: a soft skeleton phase followed by a blurred content reveal. */
 .result-skeleton {
   display: grid;

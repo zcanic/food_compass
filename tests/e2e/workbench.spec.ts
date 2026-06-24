@@ -41,6 +41,18 @@ test("switching modes changes the default model and clears stale result state", 
   await expect(page.getByText("当前使用：综合推荐。")).toBeVisible();
 });
 
+test("result empty state offers a direct, task-aware example", async ({ page }) => {
+  await page.goto("/");
+
+  const emptyState = page.getByRole("region", { name: "推荐结果空态" });
+  await expect(emptyState.getByText("先添加食材")).toBeVisible();
+  await emptyState.getByRole("button", { name: "直接试试：番茄找搭配" }).click();
+
+  await expect(page.getByRole("region", { name: "查询摘要" }).getByText("已检索")).toBeVisible();
+  await expect(page.getByRole("list", { name: "推荐结果" })).toBeVisible();
+  await expect(page.getByText("20 个候选")).toBeVisible();
+});
+
 test("mobile workbench stays within the viewport", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
@@ -248,7 +260,7 @@ test("ask mode falls back to local composition when an LLM returns an empty answ
   await page.getByPlaceholder(/描述你想做什么/).fill("番茄可以和什么搭配？");
   await askAndExecute(page);
 
-  await expect(page.getByText(/常见搭配：/)).toBeVisible();
+  await expect(page.locator(".ask-response")).toContainText("常见搭配：");
   await expect(page.getByRole("region", { name: "Ask 执行诊断" }).getByText("LLM：已配置 · 回答组织：本地模板 fallback")).toBeVisible();
   await expect(page.getByRole("button", { name: "重试 LLM" })).toBeVisible();
 });

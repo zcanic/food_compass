@@ -1,6 +1,6 @@
 # Food Compass Optimization Kanban
 
-Status timestamp: 2026-06-24 23:12 CST
+Status timestamp: 2026-06-24 23:23 CST
 
 ## Done
 
@@ -263,6 +263,11 @@ Status timestamp: 2026-06-24 23:12 CST
 - Added `transitions.dev`-inspired sliding navigation tabs (P16), skeleton-to-result reveal (P14), and short page/content transitions with a `prefers-reduced-motion` fallback.
 - Added desktop/mobile visual review and a dedicated browser regression that locks the 390px workbench to its viewport width.
 - Full gate passed again: `npm run test:all` with 66 unit tests and 66 E2E checks.
+- 2026-06-24 23:23 CST: Task-aware result empty-state card completed.
+- The result panel now gives the first-time user a current-task example action, and gives users with selected ingredients an in-context `查看推荐` action that reuses the existing retrieval pipeline.
+- Added a complete-combination example, visually centered empty-state guidance, and unique accessible names so the left and right primary actions remain unambiguous.
+- Added desktop/mobile E2E coverage for running the empty-state example; scoped an Ask fallback assertion to its response region instead of relying on a global duplicate text match.
+- Full gate passed again: `npm run test:all` with 66 unit tests and 68 E2E checks.
 
 ## In Progress
 
